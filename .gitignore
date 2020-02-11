@@ -31,5 +31,9 @@
 *.out
 *.app
 
+#STM32 debug config
+*.cfg
+
 # directories
 .vscode/
+build-Raspberry-Desktop*
