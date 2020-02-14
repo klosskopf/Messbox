@@ -1,29 +1,45 @@
 #include "mainwindow.h"
-#include <stdio.h>
-#include <string>
-#include <QString>
 
 mainWindow::mainWindow(QWidget *parent) : QWidget(parent)
 {
-    setGeometry(0,0,800,500);
-
-    #include <QtCharts>
+    setGeometry(0,0,1280,720);
 
     menubar= new QMenuBar;
+
     parameterauswahl = new Parameterauswahl();
-    startstopbutton = new QPushButton;
+
+    startstopbutton = new QPushButton("Start");
+    connect(startstopbutton, SIGNAL (pressed()),this, SLOT (handlestartstopbutton()));
+    startstopbutton->setAutoFillBackground(true);
+    startstopbutton->setFont(QFont("Arial", 15,QFont::Bold));
+    startstopbutton->setStyleSheet("background-color: rgb(0, 255, 0); color: rgb(0, 0, 0)");
     startstopbutton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    modebutton = new QPushButton;
+
+    modebutton = new QPushButton("Start/Stop");
+    connect(modebutton, SIGNAL (pressed()),this, SLOT (handlemodebutton()));
+    modebutton->setFont(QFont("Arial", 12));
     modebutton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     timeframe = new QLineEdit;
     timeframe->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    savebutton = new QPushButton;
+
+    savebutton = new QPushButton("Save");
+    savebutton->setFont(QFont("Arial", 12));
     savebutton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     graph = new QChart;
+    QLineSeries *series = new QLineSeries(graph);
+    for(float f=0; f<10; f+=0.001)
+    series->append(f,f*f);
+    series->setName("Daten!!!");
+    graph->addSeries(series);
+
     graph->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     graphview = new QChartView;
     graphview->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     graphview->setChart(graph);
+
     kombinationsfeld = new QGroupBox;
     kombinationsfeld->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -49,5 +65,32 @@ mainWindow::mainWindow(QWidget *parent) : QWidget(parent)
     this->setLayout(mainLayout);
 
     // Window title
-    setWindowTitle("Buttonbox");
+    setWindowTitle("Messbox2000");
+    setWindowState(Qt::WindowFullScreen);
+}
+
+void mainWindow::handlestartstopbutton()
+{
+    if(startstopbutton->text()=="Start")
+    {
+        startstopbutton->setText("Stop");
+        startstopbutton->setStyleSheet("background-color: rgb(255, 0, 0); color: rgb(0, 0, 0)");
+    }
+    else
+    {
+        startstopbutton->setText("Start");
+        startstopbutton->setStyleSheet("background-color: rgb(0, 255, 0); color: rgb(0, 0, 0)");
+    }
+}
+
+void mainWindow::handlemodebutton()
+{
+    if(modebutton->text()=="Start/Stop")
+    {
+        modebutton->setText("Cont.");
+    }
+    else
+    {
+        modebutton->setText("Start/Stop");
+    }
 }

@@ -9,6 +9,10 @@
 #include <QtCharts>
 #include <QGridLayout>
 #include "parameterauswahl.h"
+#include <stdio.h>
+#include <string>
+#include <QPalette>
+#include <QString>
 
 using namespace QtCharts;
 
@@ -19,7 +23,8 @@ public:
     explicit mainWindow(QWidget *parent = nullptr);
 
 private slots:
- //   void handleButton1();
+    void handlestartstopbutton();
+    void handlemodebutton();
 public:
     QMenuBar* menubar;
     Parameterauswahl* parameterauswahl;
