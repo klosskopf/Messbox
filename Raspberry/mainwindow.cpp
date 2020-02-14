@@ -27,15 +27,6 @@ mainWindow::mainWindow(QWidget *parent) : QWidget(parent)
     kombinationsfeld = new QGroupBox;
     kombinationsfeld->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    for (int i=0;i<10;i++)
-    {
-        QString text("Karte");
-        text.append(QString::number(100-i));
-        parameterauswahl->add_karte(text);
-    }
-
-   // parameterauswahl->
-
     QGridLayout *mainLayout = new QGridLayout;
 
     mainLayout->addWidget(parameterauswahl,0,0,10,3);

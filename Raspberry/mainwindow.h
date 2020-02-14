@@ -20,7 +20,7 @@ public:
 
 private slots:
  //   void handleButton1();
-private:
+public:
     QMenuBar* menubar;
     Parameterauswahl* parameterauswahl;
     QPushButton* startstopbutton;

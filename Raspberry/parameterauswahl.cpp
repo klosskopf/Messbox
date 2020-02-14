@@ -1,5 +1,4 @@
 #include "parameterauswahl.h"
-#include "karte.h"
 
 #include <QPushButton>
 
@@ -9,17 +8,12 @@ Parameterauswahl::Parameterauswahl(QWidget *parent) : QListWidget(parent)
     setSortingEnabled(true);
 }
 
-void Parameterauswahl::add_karte(QString n_name)
+void Parameterauswahl::add_karte(Karte* karte)
 {
-    //Karte* karte = new Karte(n_name);
-    QListWidgetItem* listitem = new QListWidgetItem(this);
+    Karte_GUI* karte_gui = new Karte_GUI(karte);
+    ListItem* listitem = new ListItem(karte->index);
+    listitem->setSizeHint(QSize(200,97));
+    setViewMode(QListView::ListMode);
     addItem(listitem);
-
-    QGroupBox* box = new QGroupBox;
-    QPushButton* button = new QPushButton("Ahhh");
-    QGridLayout* layout = new QGridLayout;
-    layout->addWidget(button);
-    box->setLayout(layout);
-
-    setItemWidget(listitem, box);
+    setItemWidget(listitem, karte_gui);
 }
