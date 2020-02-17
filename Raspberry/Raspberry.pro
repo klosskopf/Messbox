@@ -4,16 +4,15 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     parameter.cpp \
-    parameter_gui.cpp \
     parameterauswahl.cpp \
     rechenblock.cpp
 
 HEADERS += \
+    daten.h \
     karte.h \
     karte_gui.h \
     mainwindow.h \
     parameter.h \
-    parameter_gui.h \
     parameterauswahl.h \
     rechenblock.h
 

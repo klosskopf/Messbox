@@ -11,12 +11,18 @@ class Karte;
 
 class Karte_GUI : public QGroupBox
 {
+    Q_OBJECT
 public:
     Karte_GUI(Karte* karte);
     QLabel* name;
-    QComboBox* Parameter;
-    QComboBox* Wert;
+    QComboBox* parameter;
+    QComboBox* wert;
     Karte* karte;
+private:
+    void set_wert_to_parameter(std::string name);
+private slots:
+    void parameter_activated(const QString& name);
+    void wert_activated(const QString& name);
 };
 
 class ListItem : public QListWidgetItem

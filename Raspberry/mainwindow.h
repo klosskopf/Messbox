@@ -13,6 +13,7 @@
 #include <string>
 #include <QPalette>
 #include <QString>
+class Parameterauswahl;
 
 using namespace QtCharts;
 

@@ -3,16 +3,20 @@
 #include <QString>
 #include <list>
 #include "parameter.h"
-#include "parameterauswahl.h"
-class Parameterauswahl;
-
+#include "mainwindow.h"
+#include "karte_gui.h"
+class mainWindow;
+class Karte_GUI;
 class Karte
 {
 public:
-    Karte(Parameterauswahl* parameterliste, int n_index, std::string n_name);
+    Karte(mainWindow* gui, int n_index, std::string n_name);
+    Karte_GUI* karte_gui;
     std::list<Parameter*> parameter;
     int index;
     std::string name;
+    void add_parameter(Parameter* parameter);
+    Parameter* find_parameter(std::string name);
 };
 
 #endif // KARTE_H
