@@ -1,0 +1,5 @@
+Steckkarten-uC: STM32L431CBT6
+Steckkarten-Flash: W25Q128JVSIQ
+Miso-Optokoppler: TLP2768A(TP,E
+SPI-Optokoppler: ACSL-6400-00TE
+DC-DC-Wandler: RFM-0505S
