@@ -1,4 +1,5 @@
 SOURCES += \
+    control.cpp \
     karte.cpp \
     karte_gui.cpp \
     main.cpp \
@@ -8,6 +9,7 @@ SOURCES += \
     rechenblock.cpp
 
 HEADERS += \
+    control.h \
     daten.h \
     karte.h \
     karte_gui.h \

@@ -1,8 +1,10 @@
 #include "mainwindow.h"
 
-mainWindow::mainWindow(QWidget *parent) : QWidget(parent)
+mainWindow::mainWindow()
 {
     setGeometry(0,0,1280,720);
+
+    centralwidget = new QWidget(this);
 
     menubar= new QMenuBar;
 
@@ -62,11 +64,20 @@ mainWindow::mainWindow(QWidget *parent) : QWidget(parent)
 
     // Set the outer layout as a main layout
     // of the widget
-    this->setLayout(mainLayout);
+    centralwidget->setLayout(mainLayout);
+
+    this->setCentralWidget(centralwidget);
 
     // Window title
     setWindowTitle("Messbox2000");
     setWindowState(Qt::WindowFullScreen);
+
+    control = new Control(this);
+    QObject::connect(control,&Control::let_create_karte,this->parameterauswahl,&Parameterauswahl::create_karte);
+    QObject::connect(control,&Control::let_delete_karte,this->parameterauswahl,&Parameterauswahl::delete_karte);
+
+    Karte* testKarte = new Karte(this,2,"test");
+    emit control->let_create_karte(testKarte);
 }
 
 void mainWindow::handlestartstopbutton()

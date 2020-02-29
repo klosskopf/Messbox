@@ -2,6 +2,7 @@
 #define PARAMETER_H
 #include "rechenblock.h"
 #include "daten.h"
+#include <string>
 #include <list>
 
 enum Parametrierbar { NEIN, FREI, LISTE };

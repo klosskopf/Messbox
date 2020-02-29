@@ -13,20 +13,24 @@
 #include <string>
 #include <QPalette>
 #include <QString>
+#include "control.h"
 class Parameterauswahl;
+class Control;
 
 using namespace QtCharts;
 
-class mainWindow : public QWidget
+class mainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit mainWindow(QWidget *parent = nullptr);
+    explicit mainWindow();
 
 private slots:
     void handlestartstopbutton();
     void handlemodebutton();
 public:
+    Control* control;
+    QWidget* centralwidget;
     QMenuBar* menubar;
     Parameterauswahl* parameterauswahl;
     QPushButton* startstopbutton;

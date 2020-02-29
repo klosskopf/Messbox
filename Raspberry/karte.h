@@ -4,14 +4,17 @@
 #include <list>
 #include "parameter.h"
 #include "mainwindow.h"
+#include "parameterauswahl.h"
 #include "karte_gui.h"
 class mainWindow;
 class Karte_GUI;
+class Parameterauswahl;
+
 class Karte
 {
 public:
     Karte(mainWindow* gui, int n_index, std::string n_name);
-    Karte_GUI* karte_gui;
+    mainWindow* gui;
     std::list<Parameter*> parameter;
     int index;
     std::string name;
