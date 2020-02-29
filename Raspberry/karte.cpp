@@ -1,22 +1,25 @@
 #include "karte.h"
 
-Karte::Karte(mainWindow* n_gui, int n_index, std::string n_name)
-    : gui(n_gui), index(n_index), name(n_name)
+Karte::Karte(mainWindow* n_gui, int n_index, std::string n_name, std::list<Parameter*> *n_parameter)
+    : gui(n_gui), index(n_index), name(n_name), parameter(n_parameter)
 {
-
+    QObject::connect(this, &Karte::let_delete_karte_gui, gui->parameterauswahl, &Parameterauswahl::delete_karte);
+    QObject::connect(this, &Karte::let_create_karte_gui, gui->parameterauswahl, &Parameterauswahl::create_karte);
+    emit let_create_karte_gui(this);
 }
 
-
-void Karte::add_parameter(Parameter* parameter)
+Karte::~Karte()
 {
-    this->parameter.push_back(parameter);
-    gui->parameterauswahl->addparameter(name,parameter->name);
-    //karte_gui->parameter->addItem(QString::fromUtf8(parameter->name.c_str()));
+    if (karte_gui)emit let_delete_karte_gui(karte_gui);
+    for (Parameter* param : *parameter)
+    {
+        delete param;
+    }
 }
 
 Parameter* Karte::find_parameter(std::string name)
 {
-    for(Parameter* param : parameter)
+    for(Parameter* param : *parameter)
     {
         if(param->name==name)
             return param;

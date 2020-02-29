@@ -15,7 +15,6 @@
 #include <QString>
 #include "control.h"
 class Parameterauswahl;
-class Control;
 
 using namespace QtCharts;
 
@@ -29,7 +28,6 @@ private slots:
     void handlestartstopbutton();
     void handlemodebutton();
 public:
-    Control* control;
     QWidget* centralwidget;
     QMenuBar* menubar;
     Parameterauswahl* parameterauswahl;

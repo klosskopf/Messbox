@@ -4,19 +4,24 @@
 #include <QObject>
 #include <list>
 #include <string>
+#include "mainwindow.h"
 #include "karte.h"
 class Karte;
+class mainWindow;
 
-class Control : public QObject
+enum Modus {CONT,STARTSTOP};
+enum Zustand {MESS,STOP};
+
+class Control
 {
-    Q_OBJECT
 public:
-    explicit Control(QObject *parent = nullptr);
-    void controlThread();
-    std::list<Karte*> Kartenset;
-signals:
-    void let_create_karte(Karte* karte);
-    void let_delete_karte(std::string name);
+    static void controlThread(mainWindow* n_gui);
+    static std::list<Karte*> Kartenset;
+    static Modus modus;
+    static Zustand zustand;
+    static Rechenblock* xAchse;
+    static Rechenblock* yAchse;
+    static std::list<Daten*> kennlinie;
 };
 
 #endif // CONTROL_H

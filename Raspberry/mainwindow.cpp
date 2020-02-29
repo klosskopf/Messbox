@@ -72,36 +72,34 @@ mainWindow::mainWindow()
     setWindowTitle("Messbox2000");
     setWindowState(Qt::WindowFullScreen);
 
-    control = new Control(this);
-    QObject::connect(control,&Control::let_create_karte,this->parameterauswahl,&Parameterauswahl::create_karte);
-    QObject::connect(control,&Control::let_delete_karte,this->parameterauswahl,&Parameterauswahl::delete_karte);
-
-    Karte* testKarte = new Karte(this,2,"test");
-    emit control->let_create_karte(testKarte);
 }
 
 void mainWindow::handlestartstopbutton()
 {
-    if(startstopbutton->text()=="Start")
+    if(Control::zustand == MESS)
     {
+        Control::zustand = STOP;
         startstopbutton->setText("Stop");
-        startstopbutton->setStyleSheet("background-color: rgb(255, 0, 0); color: rgb(0, 0, 0)");
+        startstopbutton->setStyleSheet("background-color: rgb(0, 255, 0); color: rgb(0, 0, 0)");
     }
     else
     {
-        startstopbutton->setText("Start");
-        startstopbutton->setStyleSheet("background-color: rgb(0, 255, 0); color: rgb(0, 0, 0)");
+        Control::zustand = MESS;
+        startstopbutton->setText("misst...");
+        startstopbutton->setStyleSheet("background-color: rgb(255, 0, 0); color: rgb(0, 0, 0)");
     }
 }
 
 void mainWindow::handlemodebutton()
 {
-    if(modebutton->text()=="Start/Stop")
+    if(Control::modus == STARTSTOP)
     {
+        Control::modus = CONT;
         modebutton->setText("Cont.");
     }
     else
     {
+        Control::modus = STARTSTOP;
         modebutton->setText("Start/Stop");
     }
 }

@@ -8,16 +8,19 @@
 #include <QVBoxLayout>
 #include "karte.h"
 class Karte;
+class ListItem;
 
 class Karte_GUI : public QGroupBox
 {
     Q_OBJECT
 public:
     Karte_GUI(Karte* karte);
+    virtual ~Karte_GUI();
     QLabel* name;
     QComboBox* parameter;
     QComboBox* wert;
     Karte* karte;
+    ListItem* listitem;
 private:
     void set_wert_to_parameter(std::string name);
 private slots:

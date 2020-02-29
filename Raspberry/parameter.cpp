@@ -5,6 +5,14 @@ Parameter::Parameter(bool n_f_nots, std::string n_name, Parametrierbar n_paramet
 
 }
 
+Parameter::~Parameter()
+{
+    for (Daten* datum : daten)
+    {
+        delete datum;
+    }
+}
+
 
 float Parameter::get_data(float time)
 {

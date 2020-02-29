@@ -10,6 +10,11 @@ Karte_GUI::Karte_GUI(Karte* karte)
     parameter->setEditable(false);
     parameter->setInsertPolicy(QComboBox::NoInsert);
     parameter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    for(Parameter* param : *karte->parameter)
+    {
+        parameter->addItem(QString::fromUtf8(param->name.c_str()));
+    }
+
     QObject::connect(parameter, SIGNAL(currentIndexChanged(const QString&)), this, SLOT (parameter_activated(const QString&)));
 
     wert = new QComboBox;
@@ -23,6 +28,15 @@ Karte_GUI::Karte_GUI(Karte* karte)
     layout->addWidget(parameter,10);
     layout->addWidget(wert,10);
     setLayout(layout);
+    set_wert_to_parameter(parameter->currentText().toUtf8().constData());
+}
+
+Karte_GUI::~Karte_GUI()
+{
+    delete name;
+    delete parameter;
+    delete wert;
+    delete listitem;
 }
 
 void Karte_GUI::parameter_activated(const QString& name)

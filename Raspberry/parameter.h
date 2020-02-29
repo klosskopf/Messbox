@@ -11,6 +11,7 @@ class Parameter : public Rechenblock
 {
 public:
     Parameter(bool n_f_nots, std::string n_name, Parametrierbar n_parametrierar);
+    virtual ~Parameter();
     const bool f_nots;
     const std::string name;
     const Parametrierbar parametrierbar;

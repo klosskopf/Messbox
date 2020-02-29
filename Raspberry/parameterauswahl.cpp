@@ -11,10 +11,21 @@ Parameterauswahl::Parameterauswahl(QWidget *parent) : QListWidget(parent)
 
 void Parameterauswahl::create_karte(Karte* karte)
 {
-    Karte_GUI* karte_gui = new Karte_GUI(karte);
-    ListItem* listitem = new ListItem(karte->index);
-    listitem->setSizeHint(QSize(200,97));
-    addItem(listitem);
-    setItemWidget(listitem, karte_gui);
+    if (karte)
+    {
+        Karte_GUI* karte_gui = new Karte_GUI(karte);
+        ListItem* listitem = new ListItem(karte->index);
+        karte_gui->listitem = listitem;
+        listitem->setSizeHint(QSize(200,100));
+        addItem(listitem);
+        setItemWidget(listitem, karte_gui);
+        karte->karte_gui=karte_gui;
+    }
+
 }
 
+void Parameterauswahl::delete_karte(Karte_GUI* karte_gui)
+{
+    removeItemWidget(karte_gui->listitem);
+    delete karte_gui;
+}

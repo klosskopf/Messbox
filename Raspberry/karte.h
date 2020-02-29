@@ -1,6 +1,7 @@
 #ifndef KARTE_H
 #define KARTE_H
 #include <QString>
+#include <QObject>
 #include <list>
 #include "parameter.h"
 #include "mainwindow.h"
@@ -10,16 +11,21 @@ class mainWindow;
 class Karte_GUI;
 class Parameterauswahl;
 
-class Karte
+class Karte : public QObject
 {
+    Q_OBJECT
 public:
-    Karte(mainWindow* gui, int n_index, std::string n_name);
+    Karte(mainWindow* gui, int n_index, std::string n_name, std::list<Parameter*> *n_parameter);
+    virtual ~Karte();
     mainWindow* gui;
-    std::list<Parameter*> parameter;
+    Karte_GUI* karte_gui;
     int index;
     std::string name;
-    void add_parameter(Parameter* parameter);
+    std::list<Parameter*> *parameter;
     Parameter* find_parameter(std::string name);
+signals:
+    void let_create_karte_gui(Karte* karte);
+    void let_delete_karte_gui(Karte_GUI* karte_gui);
 };
 
 #endif // KARTE_H
