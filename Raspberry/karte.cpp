@@ -3,6 +3,7 @@
 Karte::Karte(mainWindow* n_gui, int n_index, std::string n_name, std::list<Parameter*> *n_parameter)
     : gui(n_gui), index(n_index), name(n_name), parameter(n_parameter)
 {
+    karte_gui=NULL;
     QObject::connect(this, &Karte::let_delete_karte_gui, gui->parameterauswahl, &Parameterauswahl::delete_karte);
     QObject::connect(this, &Karte::let_create_karte_gui, gui->parameterauswahl, &Parameterauswahl::create_karte);
     emit let_create_karte_gui(this);

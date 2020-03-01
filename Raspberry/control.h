@@ -6,6 +6,8 @@
 #include <string>
 #include "mainwindow.h"
 #include "karte.h"
+#include "gpio.h"
+#include "post.h"
 class Karte;
 class mainWindow;
 
@@ -16,12 +18,16 @@ class Control
 {
 public:
     static void controlThread(mainWindow* n_gui);
+    static mainWindow* gui;
     static std::list<Karte*> Kartenset;
     static Modus modus;
     static Zustand zustand;
     static Rechenblock* xAchse;
     static Rechenblock* yAchse;
     static std::list<Daten*> kennlinie;
+
+    static void check_karten();
+    static void build_kennlinie();
 };
 
 #endif // CONTROL_H

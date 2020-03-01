@@ -70,7 +70,7 @@ mainWindow::mainWindow()
 
     // Window title
     setWindowTitle("Messbox2000");
-    setWindowState(Qt::WindowFullScreen);
+    //setWindowState(Qt::WindowFullScreen);
 
 }
 
