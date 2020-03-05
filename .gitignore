@@ -36,8 +36,8 @@
 
 #Eagle
 *.s#*
-*.s#*
-*.s#*
+*.b#*
+*.l#*
 
 # directories
 .vscode/
