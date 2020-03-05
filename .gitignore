@@ -34,6 +34,11 @@
 #STM32 debug config
 *.cfg
 
+#Eagle
+*.s#*
+*.s#*
+*.s#*
+
 # directories
 .vscode/
 build-Raspberry-Desktop*
