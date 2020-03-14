@@ -3,3 +3,10 @@ Steckkarten-Flash: W25Q128JVSIQ
 Miso-Optokoppler: TLP2768A(TP,E
 SPI-Optokoppler: ACSL-6400-00TE
 DC-DC-Wandler: RFM-0505S
+boost-converter: TPS613222ADBVR
+boost-coil: SRP1038C-2R2M
+boost-schotky: NTS12120EMFST1G
+boost-enable-transistor: NTF5P03T3G
+batterie-Lader: DIO5158XS8
+buck-converter: AP63205WU-7
+buck-coil: SRN5040TA-4R7M
