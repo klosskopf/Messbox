@@ -42,3 +42,5 @@
 # directories
 .vscode/
 build-Raspberry-Desktop*
+Steckkarte/Debug
+Steckkarte/HAL_Driver
