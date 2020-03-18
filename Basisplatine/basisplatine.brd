@@ -3,10 +3,10 @@
 <eagle version="9.3.2">
 <drawing>
 <settings>
-<setting alwaysvectorfont="no"/>
+<setting alwaysvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="15.7480315" unitdist="mil" unit="mil" style="dots" multiple="1" display="yes" altdistance="5" altunitdist="mil" altunit="mil"/>
+<grid distance="0.4" unitdist="mm" unit="mm" style="dots" multiple="1" display="yes" altdistance="5" altunitdist="mil" altunit="mil"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="16" fill="1" visible="no" active="no"/>
@@ -73,6 +73,7 @@
 <layer number="99" name="SpiceOrder" color="5" fill="1" visible="no" active="no"/>
 </layers>
 <board>
+<fusionsync huburn="a.cGVyc29uYWw6dWUyZGRmNTA2" projecturn="a.cGVyc29uYWw6dWUyZGRmNTA2IzIwMTgwNTA2MTMwNzExMzAx" f3durn="urn:adsk.wipprod:dm.lineage:3hwBGvu_S66CZU5-ojK2Yw" pcbguid="5ea09747-d6e2-472b-a562-3bb1003f8d6e" lastpulledtime="" lastsyncedchangeguid="b0dd3c20-b3ad-b5aa-3085-8f733a7e77ac"/>
 <plain>
 <wire x1="0" y1="0" x2="146" y2="0" width="0" layer="20"/>
 <wire x1="146" y1="0" x2="146" y2="65.2" width="0" layer="20"/>
@@ -4514,6 +4515,11 @@ design rules under a new name.</description>
 Since Version 8.2, EAGLE supports online libraries. The ids
 of those online libraries will not be understood (or retained)
 with this version.
+</note>
+<note version="8.3" severity="warning">
+Since Version 8.3, EAGLE supports Fusion synchronisation.
+This feature will not be available in this version and saving
+the document will break the link to the Fusion PCB feature.
 </note>
 <note version="8.3" severity="warning">
 Since Version 8.3, EAGLE supports URNs for individual library

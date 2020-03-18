@@ -13,7 +13,7 @@ void init_spi(SPI_TypeDef * spi, SPI_SLAVEMASTER slavemaster, void (*interruptfk
 	const GPIO_PIN MISO1PIN ={GPIOA, 11};
 	const GPIO_PIN MOSI1PIN ={GPIOA, 12};
 
-	const GPIO_PIN SS2PIN ={GPIOB, 12};
+	const GPIO_PIN SS2PIN ={GPIOB, 9};
 	const GPIO_PIN CLK2PIN ={GPIOB, 10};
 	const GPIO_PIN MISO2PIN ={GPIOB, 14};
 	const GPIO_PIN MOSI2PIN ={GPIOB, 15};
@@ -21,10 +21,10 @@ void init_spi(SPI_TypeDef * spi, SPI_SLAVEMASTER slavemaster, void (*interruptfk
 	switch ((int)spi)
 	{
 	case (int)SPI1:
-		if (slavemaster==SLAVE)init_gpio(SS1PIN, AF5, PUSH_PULL, OPEN, VERY_HIGH);
-		init_gpio(CLK1PIN, AF5, PUSH_PULL, OPEN, VERY_HIGH);
-		init_gpio(MISO1PIN, AF5, PUSH_PULL, OPEN, VERY_HIGH);
-		init_gpio(MOSI1PIN, AF5, PUSH_PULL, OPEN, VERY_HIGH);
+		init_gpio(SS1PIN, AF5, PUSH_PULL, PULL_UP, LOW);
+		init_gpio(CLK1PIN, AF5, PUSH_PULL, OPEN, LOW);
+		init_gpio(MISO1PIN, AF5, PUSH_PULL, OPEN, LOW);
+		init_gpio(MOSI1PIN, AF5, PUSH_PULL, OPEN, LOW);
 		spi1int=interruptfkt;
 		RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
 		NVIC_SetPriority(SPI1_IRQn, 15);        // set lowest prio
@@ -32,7 +32,7 @@ void init_spi(SPI_TypeDef * spi, SPI_SLAVEMASTER slavemaster, void (*interruptfk
 		NVIC_EnableIRQ(SPI1_IRQn);              // enable interrupt in NVIC
 		break;
 	case (int)SPI2:
-		if (slavemaster==SLAVE)init_gpio(SS2PIN, AF5, PUSH_PULL, OPEN, LOW);
+		init_gpio(SS2PIN, AF5, PUSH_PULL, OPEN, LOW);
 		init_gpio(CLK2PIN, AF5, PUSH_PULL, OPEN, LOW);
 		init_gpio(MISO2PIN, AF5, PUSH_PULL, OPEN, LOW);
 		init_gpio(MOSI2PIN, AF5, PUSH_PULL, OPEN, LOW);
@@ -52,7 +52,8 @@ void init_spi(SPI_TypeDef * spi, SPI_SLAVEMASTER slavemaster, void (*interruptfk
 		spi->CR1 |= SPI_CR1_SSM;
 		spi->CR1 |= SPI_CR1_SSI;
 		spi->CR1 |= SPI_CR1_MSTR;
-		spi->CR2 |= SPI_CR2_TXEIE;
+		spi->CR2 |= SPI_CR2_TXEIE;;
+		spi->CR2 |= SPI_CR2_NSSP;
 	}
 	else
 	{
