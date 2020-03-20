@@ -1,0 +1,24 @@
+{
+    "Header": {
+        "Comment": "All values are metric (mm)",
+        "CreationDate": "2020-03-19T14:02:17Z",
+        "GenerationSoftware": {
+            "Application": "EAGLE",
+            "Vendor": "Autodesk",
+            "Version": "9.3.1"
+        },
+        "Part": "Single"
+    },
+    "Overall": {
+        "BoardThickness": 1.57,
+        "LayerNumber": 2,
+        "Name": {
+            "ProjectId": "Steckkarte"
+        },
+        "Owner": "Timo Erdmannsdoerfer <timo.erdmannsdoerfer@e-t-a.de>",
+        "Size": {
+            "X": 63,
+            "Y": 92.5
+        }
+    }
+}
