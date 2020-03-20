@@ -23483,9 +23483,8 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 </segment>
 <segment>
 <pinref part="U8" gate="A" pin="CATHODE3"/>
-<wire x1="-83.82" y1="-193.04" x2="-99.06" y2="-193.04" width="0.1524" layer="91"/>
+<wire x1="-83.82" y1="-193.04" x2="-96.52" y2="-193.04" width="0.1524" layer="91"/>
 <label x="-93.98" y="-193.04" size="1.778" layer="95"/>
-<pinref part="R16" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="SF_EXT" class="0">
@@ -23506,8 +23505,10 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <net name="SS_EXT" class="0">
 <segment>
 <pinref part="U8" gate="A" pin="CATHODE4"/>
-<wire x1="-83.82" y1="-195.58" x2="-93.98" y2="-195.58" width="0.1524" layer="91"/>
+<wire x1="-83.82" y1="-195.58" x2="-99.06" y2="-195.58" width="0.1524" layer="91"/>
 <label x="-93.98" y="-195.58" size="1.778" layer="95"/>
+<pinref part="R16" gate="G$1" pin="1"/>
+<wire x1="-99.06" y1="-195.58" x2="-99.06" y2="-193.04" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="JP1" gate="A" pin="5"/>
