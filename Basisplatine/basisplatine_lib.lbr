@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.3.2">
+<eagle version="9.5.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -518,6 +518,32 @@
 <wire x1="-3.175" y1="-14.23" x2="12.065" y2="-14.23" width="0.1" layer="21"/>
 <wire x1="12.065" y1="-14.23" x2="12.065" y2="-8.23" width="0.1" layer="21"/>
 </package>
+<package name="ASMBUTF00D20B">
+<description>&lt;b&gt;ASMB-UTF0-0D20B-1&lt;/b&gt;&lt;br&gt;
+</description>
+<smd name="1" x="-1.35" y="0.9" dx="1.4" dy="0.5" layer="1"/>
+<smd name="2" x="1.35" y="0.9" dx="1.4" dy="0.5" layer="1"/>
+<smd name="3" x="-1.35" y="0" dx="1.4" dy="0.5" layer="1"/>
+<smd name="4" x="1.35" y="0" dx="1.4" dy="0.5" layer="1"/>
+<smd name="5" x="-1.35" y="-0.9" dx="1.4" dy="0.5" layer="1"/>
+<smd name="6" x="1.35" y="-0.9" dx="1.4" dy="0.5" layer="1"/>
+<text x="-0.325" y="0" size="1.27" layer="25" align="center">&gt;NAME</text>
+<text x="-0.325" y="0" size="1.27" layer="27" align="center">&gt;VALUE</text>
+<wire x1="-1.4" y1="-1.35" x2="1.4" y2="-1.35" width="0.2" layer="51"/>
+<wire x1="1.4" y1="-1.35" x2="1.4" y2="1.35" width="0.2" layer="51"/>
+<wire x1="1.4" y1="1.35" x2="-1.4" y2="1.35" width="0.2" layer="51"/>
+<wire x1="-1.4" y1="1.35" x2="-1.4" y2="-1.35" width="0.2" layer="51"/>
+<wire x1="-3.7" y1="2.35" x2="3.05" y2="2.35" width="0.1" layer="51"/>
+<wire x1="3.05" y1="2.35" x2="3.05" y2="-2.35" width="0.1" layer="51"/>
+<wire x1="3.05" y1="-2.35" x2="-3.7" y2="-2.35" width="0.1" layer="51"/>
+<wire x1="-3.7" y1="-2.35" x2="-3.7" y2="2.35" width="0.1" layer="51"/>
+<wire x1="-2.7" y1="0.9" x2="-2.7" y2="0.9" width="0.2" layer="21"/>
+<wire x1="-2.7" y1="0.9" x2="-2.6" y2="0.9" width="0.2" layer="21" curve="180"/>
+<wire x1="-2.6" y1="0.9" x2="-2.6" y2="0.9" width="0.2" layer="21"/>
+<wire x1="-2.6" y1="0.9" x2="-2.7" y2="0.9" width="0.2" layer="21" curve="180"/>
+<wire x1="-2.7" y1="0.9" x2="-2.7" y2="0.9" width="0.2" layer="21"/>
+<wire x1="-2.7" y1="0.9" x2="-2.6" y2="0.9" width="0.2" layer="21" curve="180"/>
+</package>
 </packages>
 <symbols>
 <symbol name="RASPBERRY_PI_ZERO_W__V1.3_">
@@ -749,6 +775,20 @@
 <pin name="6" x="20.32" y="-2.54" length="middle" rot="R180"/>
 <pin name="7" x="20.32" y="-5.08" length="middle" rot="R180"/>
 <pin name="8" x="20.32" y="-7.62" length="middle" rot="R180"/>
+</symbol>
+<symbol name="ASMB-UTF0-0D20B">
+<wire x1="5.08" y1="2.54" x2="43.18" y2="2.54" width="0.254" layer="94"/>
+<wire x1="43.18" y1="-7.62" x2="43.18" y2="2.54" width="0.254" layer="94"/>
+<wire x1="43.18" y1="-7.62" x2="5.08" y2="-7.62" width="0.254" layer="94"/>
+<wire x1="5.08" y1="2.54" x2="5.08" y2="-7.62" width="0.254" layer="94"/>
+<text x="44.45" y="7.62" size="1.778" layer="95" align="center-left">&gt;NAME</text>
+<text x="44.45" y="5.08" size="1.778" layer="96" align="center-left">&gt;VALUE</text>
+<pin name="RED_ANODE" x="0" y="0" length="middle"/>
+<pin name="RED_CATHODE" x="48.26" y="0" length="middle" rot="R180"/>
+<pin name="GREEN_ANODE" x="0" y="-2.54" length="middle"/>
+<pin name="GREEN_CATHODE" x="48.26" y="-2.54" length="middle" rot="R180"/>
+<pin name="BLUE_ANODE" x="0" y="-5.08" length="middle"/>
+<pin name="BLUE_CATHODE" x="48.26" y="-5.08" length="middle" rot="R180"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -1083,6 +1123,35 @@ Source: &lt;a href="https://www.amphenol-icc.com/media/wysiwyg/files/drawing/c-b
 <attribute name="MANUFACTURER_PART_NUMBER" value="54601-908WPLF" constant="no"/>
 <attribute name="MOUSER_PART_NUMBER" value="649-54601-908WPLF" constant="no"/>
 <attribute name="MOUSER_PRICE-STOCK" value="https://www.mouser.com/Search/Refine.aspx?Keyword=649-54601-908WPLF" constant="no"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="ASMB-UTF0-0D20B" prefix="LED">
+<description>&lt;b&gt;Standard LEDs - SMD 2828 Tricolor PLCC6 LEDs&lt;/b&gt;&lt;p&gt;
+Source: &lt;a href="https://docs.broadcom.com/docs/ASMB-UTF0-0D20B-DS100"&gt; Datasheet &lt;/a&gt;</description>
+<gates>
+<gate name="G$1" symbol="ASMB-UTF0-0D20B" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="ASMBUTF00D20B">
+<connects>
+<connect gate="G$1" pin="BLUE_ANODE" pad="5"/>
+<connect gate="G$1" pin="BLUE_CATHODE" pad="6"/>
+<connect gate="G$1" pin="GREEN_ANODE" pad="3"/>
+<connect gate="G$1" pin="GREEN_CATHODE" pad="4"/>
+<connect gate="G$1" pin="RED_ANODE" pad="1"/>
+<connect gate="G$1" pin="RED_CATHODE" pad="2"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="DESCRIPTION" value="Standard LEDs - SMD 2828 Tricolor PLCC6 LEDs" constant="no"/>
+<attribute name="HEIGHT" value="2.6mm" constant="no"/>
+<attribute name="MANUFACTURER_NAME" value="Avago Technologies" constant="no"/>
+<attribute name="MANUFACTURER_PART_NUMBER" value="ASMB-UTF0-0D20B" constant="no"/>
+<attribute name="MOUSER_PART_NUMBER" value="630-ASMB-UTF0-0D20B" constant="no"/>
+<attribute name="MOUSER_PRICE-STOCK" value="https://www.mouser.com/Search/Refine.aspx?Keyword=630-ASMB-UTF0-0D20B" constant="no"/>
 </technology>
 </technologies>
 </device>
