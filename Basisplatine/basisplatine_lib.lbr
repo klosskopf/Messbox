@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.5.2">
+<eagle version="9.3.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -544,6 +544,29 @@
 <wire x1="-2.7" y1="0.9" x2="-2.7" y2="0.9" width="0.2" layer="21"/>
 <wire x1="-2.7" y1="0.9" x2="-2.6" y2="0.9" width="0.2" layer="21" curve="180"/>
 </package>
+<package name="SBRT10U50SP513">
+<description>&lt;b&gt;SBRT10U50SP5-13-2&lt;/b&gt;&lt;br&gt;
+</description>
+<smd name="1" x="-0.92" y="-2.856" dx="1.4" dy="1.39" layer="1" rot="R90"/>
+<smd name="2" x="0.92" y="-2.856" dx="1.4" dy="1.39" layer="1" rot="R90"/>
+<smd name="3" x="0" y="1.126" dx="4.86" dy="3.36" layer="1" rot="R90"/>
+<text x="0" y="0" size="1.27" layer="25" align="center">&gt;NAME</text>
+<text x="0" y="0" size="1.27" layer="27" align="center">&gt;VALUE</text>
+<wire x1="-2.025" y1="2.725" x2="2.025" y2="2.725" width="0.2" layer="51"/>
+<wire x1="2.025" y1="2.725" x2="2.025" y2="-2.725" width="0.2" layer="51"/>
+<wire x1="2.025" y1="-2.725" x2="-2.025" y2="-2.725" width="0.2" layer="51"/>
+<wire x1="-2.025" y1="-2.725" x2="-2.025" y2="2.725" width="0.2" layer="51"/>
+<wire x1="-3.025" y1="4.556" x2="3.025" y2="4.556" width="0.1" layer="51"/>
+<wire x1="3.025" y1="4.556" x2="3.025" y2="-4.556" width="0.1" layer="51"/>
+<wire x1="3.025" y1="-4.556" x2="-3.025" y2="-4.556" width="0.1" layer="51"/>
+<wire x1="-3.025" y1="-4.556" x2="-3.025" y2="4.556" width="0.1" layer="51"/>
+<wire x1="-2.025" y1="2.725" x2="-2.025" y2="-2.725" width="0.1" layer="21"/>
+<wire x1="2.025" y1="2.725" x2="2.025" y2="-2.725" width="0.1" layer="21"/>
+<wire x1="-1" y1="-4.1" x2="-1" y2="-4.1" width="0.1" layer="21"/>
+<wire x1="-1" y1="-4.1" x2="-0.9" y2="-4.1" width="0.1" layer="21" curve="180"/>
+<wire x1="-0.9" y1="-4.1" x2="-0.9" y2="-4.1" width="0.1" layer="21"/>
+<wire x1="-0.9" y1="-4.1" x2="-1" y2="-4.1" width="0.1" layer="21" curve="180"/>
+</package>
 </packages>
 <symbols>
 <symbol name="RASPBERRY_PI_ZERO_W__V1.3_">
@@ -635,8 +658,8 @@
 <pin name="SF2" x="7.62" y="-2.54" length="short" direction="in" function="dot" rot="R180"/>
 <pin name="MISO1" x="-15.24" y="-5.08" length="short" direction="out" function="dot"/>
 <pin name="MISO2" x="7.62" y="-5.08" length="short" direction="out" function="dot" rot="R180"/>
-<pin name="NC1" x="-15.24" y="-7.62" length="short" direction="nc" function="dot"/>
-<pin name="NC2" x="7.62" y="-7.62" length="short" direction="nc" function="dot" rot="R180"/>
+<pin name="3.3V1" x="-15.24" y="-7.62" length="short" direction="pwr" function="dot"/>
+<pin name="3.3V2" x="7.62" y="-7.62" length="short" direction="pwr" function="dot" rot="R180"/>
 <pin name="GND1" x="-15.24" y="-10.16" length="short" direction="pwr" function="dot"/>
 <pin name="GND2" x="7.62" y="-10.16" length="short" direction="pwr" function="dot" rot="R180"/>
 <pin name="GND3" x="-15.24" y="-12.7" length="short" direction="pwr" function="dot"/>
@@ -790,6 +813,17 @@
 <pin name="BLUE_ANODE" x="0" y="-5.08" length="middle"/>
 <pin name="BLUE_CATHODE" x="48.26" y="-5.08" length="middle" rot="R180"/>
 </symbol>
+<symbol name="SBRT10U50SP5-13">
+<wire x1="5.08" y1="2.54" x2="17.78" y2="2.54" width="0.254" layer="94"/>
+<wire x1="17.78" y1="-5.08" x2="17.78" y2="2.54" width="0.254" layer="94"/>
+<wire x1="17.78" y1="-5.08" x2="5.08" y2="-5.08" width="0.254" layer="94"/>
+<wire x1="5.08" y1="2.54" x2="5.08" y2="-5.08" width="0.254" layer="94"/>
+<text x="19.05" y="7.62" size="1.778" layer="95" align="center-left">&gt;NAME</text>
+<text x="19.05" y="5.08" size="1.778" layer="96" align="center-left">&gt;VALUE</text>
+<pin name="A_1" x="0" y="0" length="middle"/>
+<pin name="A_2" x="0" y="-2.54" length="middle"/>
+<pin name="K" x="22.86" y="0" length="middle" rot="R180"/>
+</symbol>
 </symbols>
 <devicesets>
 <deviceset name="RASPBERRY_PI_ZERO_W__V1.3_" prefix="IC">
@@ -897,6 +931,8 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/ATTINY13A-SSU
 <devices>
 <device name="" package="2X10">
 <connects>
+<connect gate="G$1" pin="3.3V1" pad="15"/>
+<connect gate="G$1" pin="3.3V2" pad="16"/>
 <connect gate="G$1" pin="CLK1" pad="9"/>
 <connect gate="G$1" pin="CLK2" pad="10"/>
 <connect gate="G$1" pin="GND1" pad="17"/>
@@ -907,8 +943,6 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/ATTINY13A-SSU
 <connect gate="G$1" pin="MISO2" pad="14"/>
 <connect gate="G$1" pin="MOSI1" pad="7"/>
 <connect gate="G$1" pin="MOSI2" pad="8"/>
-<connect gate="G$1" pin="NC1" pad="15"/>
-<connect gate="G$1" pin="NC2" pad="16"/>
 <connect gate="G$1" pin="SF1" pad="11"/>
 <connect gate="G$1" pin="SF2" pad="12"/>
 <connect gate="G$1" pin="SS1" pad="5"/>
@@ -1152,6 +1186,32 @@ Source: &lt;a href="https://docs.broadcom.com/docs/ASMB-UTF0-0D20B-DS100"&gt; Da
 <attribute name="MANUFACTURER_PART_NUMBER" value="ASMB-UTF0-0D20B" constant="no"/>
 <attribute name="MOUSER_PART_NUMBER" value="630-ASMB-UTF0-0D20B" constant="no"/>
 <attribute name="MOUSER_PRICE-STOCK" value="https://www.mouser.com/Search/Refine.aspx?Keyword=630-ASMB-UTF0-0D20B" constant="no"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="SBRT10U50SP5-13" prefix="D">
+<description>&lt;b&gt;Diodes Inc 50V 10A, Diode, 3-Pin PowerDI 5 SBRT10U50SP5-13&lt;/b&gt;&lt;p&gt;
+Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/SBRT10U50SP5-13.pdf"&gt; Datasheet &lt;/a&gt;</description>
+<gates>
+<gate name="G$1" symbol="SBRT10U50SP5-13" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="SBRT10U50SP513">
+<connects>
+<connect gate="G$1" pin="A_1" pad="1"/>
+<connect gate="G$1" pin="A_2" pad="2"/>
+<connect gate="G$1" pin="K" pad="3"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="DESCRIPTION" value="Diodes Inc 50V 10A, Diode, 3-Pin PowerDI 5 SBRT10U50SP5-13" constant="no"/>
+<attribute name="HEIGHT" value="1.15mm" constant="no"/>
+<attribute name="MANUFACTURER_NAME" value="Diodes Inc." constant="no"/>
+<attribute name="MANUFACTURER_PART_NUMBER" value="SBRT10U50SP5-13" constant="no"/>
+<attribute name="MOUSER_PART_NUMBER" value="621-SBRT10U50SP5-13" constant="no"/>
+<attribute name="MOUSER_PRICE-STOCK" value="https://www.mouser.com/Search/Refine.aspx?Keyword=621-SBRT10U50SP5-13" constant="no"/>
 </technology>
 </technologies>
 </device>
