@@ -10,7 +10,8 @@ class Gpio
 public:
     static void init();
     static std::list<int> get_new_karten();
-    static void set_SS(Karte* karte);
+    static void enable_slave(uint8_t index);
+    static void disable_slave(uint8_t index);
 };
 
 #endif // GPIO_H

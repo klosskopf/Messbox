@@ -54,25 +54,33 @@ void Karte_GUI::wert_activated(const QString& name)
 void Karte_GUI::set_wert_to_parameter(std::string name)
 {
     Parameter* parameter = karte->find_parameter(name);
-    if(parameter->parametrierbar == LISTE)
+    if (parameter != NULL)
+    {
+        if(parameter->parametrierbar == LISTE)
+        {
+            wert->clear();
+            wert->setEditable(false);
+            for(std::string moeglichkeit : parameter->auswahlliste)
+            wert->addItem(QString::fromStdString(moeglichkeit));
+        }
+        else if (parameter->parametrierbar == FREI)
+        {
+            wert->clear();
+            wert->setEditable(true);
+            for(std::string moeglichkeit : parameter->auswahlliste)
+            wert->addItem(QString::fromStdString(moeglichkeit));
+        }
+        else if ((parameter->parametrierbar == NEIN))
+        {
+            wert->clear();
+            wert->setEditable(false);
+            for(std::string moeglichkeit : parameter->auswahlliste)
+            wert->addItem(QString::fromStdString(moeglichkeit));
+        }
+    }
+    else
     {
         wert->clear();
         wert->setEditable(false);
-        for(std::string moeglichkeit : parameter->auswahlliste)
-        wert->addItem(QString::fromStdString(moeglichkeit));
-    }
-    else if (parameter->parametrierbar == FREI)
-    {
-        wert->clear();
-        wert->setEditable(true);
-        for(std::string moeglichkeit : parameter->auswahlliste)
-        wert->addItem(QString::fromStdString(moeglichkeit));
-    }
-    else if ((parameter->parametrierbar == NEIN))
-    {
-        wert->clear();
-        wert->setEditable(false);
-        for(std::string moeglichkeit : parameter->auswahlliste)
-        wert->addItem(QString::fromStdString(moeglichkeit));
     }
 }
