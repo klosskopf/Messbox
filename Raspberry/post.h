@@ -3,6 +3,8 @@
 
 #include <list>
 #include "paket.h"
+#include "spi.h"
+#include "decoder.h"
 class Paket;
 
 class Post

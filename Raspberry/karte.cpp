@@ -25,5 +25,5 @@ Parameter* Karte::find_parameter(std::string name)
         if(param->name==name)
             return param;
     }
-    return new Parameter(false,"",NEIN);
+    return NULL;
 }

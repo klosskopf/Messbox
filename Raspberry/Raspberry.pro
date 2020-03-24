@@ -1,5 +1,6 @@
 SOURCES += \
     control.cpp \
+    decoder.cpp \
     gpio.cpp \
     karte.cpp \
     karte_gui.cpp \
@@ -9,11 +10,13 @@ SOURCES += \
     parameter.cpp \
     parameterauswahl.cpp \
     post.cpp \
-    rechenblock.cpp
+    rechenblock.cpp \
+    spi.cpp
 
 HEADERS += \
     control.h \
     daten.h \
+    decoder.h \
     gpio.h \
     karte.h \
     karte_gui.h \
@@ -22,7 +25,8 @@ HEADERS += \
     parameter.h \
     parameterauswahl.h \
     post.h \
-    rechenblock.h
+    rechenblock.h \
+    spi.h
 
 QT += widgets
 QT += charts

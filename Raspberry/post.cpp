@@ -1,25 +1,68 @@
 #include "post.h"
 
+std::list<Paket*> Post::Briefkasten;
+
+void Post::spi_thread()
+{
+    Paket* currentpaket;
+    while(1)
+    {
+        if (Briefkasten.size())
+        {
+            currentpaket=Briefkasten.front();
+            switch(currentpaket->befehl)
+            {
+            case GET_PARAMETER:
+            {
+                uint8_t ask_for[5]={(uint8_t)GET_PARAMETER,0,0,0,0};
+                Gpio::enable_slave(currentpaket->empfaengerindex);
+                Spi::txrx(ask_for, 5);
+                currentpaket->laenge = ((uint32_t)ask_for[4]) + ((uint32_t)ask_for[3]<<8) +((uint32_t)ask_for[2]<<16) + ((uint32_t)ask_for[1]<<24);
+                currentpaket->daten = new uint8_t[currentpaket->laenge];
+                Spi::txrx(currentpaket->daten, currentpaket->laenge);
+                Gpio::disable_slave(currentpaket->empfaengerindex);
+                Post::Briefkasten.pop_front();
+                Decoder::add_paket(currentpaket);
+                break;
+            }
+            case SET_PARAMETER:
+            {
+                break;
+            }
+            case GET_DATEN:
+            {
+                break;
+            }
+            case START_KONT:
+            {
+                break;
+            }
+            case START_STARTSTOP:
+            {
+                break;
+            }
+            case SET_SAMPLE_FREQ:
+            {
+                break;
+            }
+            case GET_STATUS:
+            {
+                break;
+            }
+            default:
+            {
+                break;
+            }
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+}
 
 void Post::send_get_parameter(int index)
 {
-    std::list<Parameter*> *parameterliste = new std::list<Parameter*>;
-    Parameter* parameter= new Parameter(true,"Begrenzer Wert",FREI);
-    parameterliste->push_back(parameter);
-    parameter = new Parameter(true,"Leistung",NEIN);
-    parameterliste->push_back(parameter);
-    parameter= new Parameter(true,"Spannung",NEIN);
-    parameterliste->push_back(parameter);
-    parameter= new Parameter(true,"Strom",NEIN);
-    parameterliste->push_back(parameter);
-    parameter= new Parameter(false,"Begrenzung",LISTE);
-    parameter->add_auswahl("Spannung");
-    parameter->add_auswahl("Strom");
-    parameter->add_auswahl("Leistung");
-    parameterliste->push_back(parameter);
-    Karte* karte = new Karte(Control::gui, index, "Elektronische Last",parameterliste);
-    Control::Kartenset.push_back(karte);
+    Paket* getparameterpaket = new Paket();
+    getparameterpaket->befehl=GET_PARAMETER;
+    getparameterpaket->empfaengerindex=index;
+    Briefkasten.push_back(getparameterpaket);
 }
-
-
-std::list<Paket*> Post::Briefkasten;

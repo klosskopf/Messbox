@@ -17,7 +17,7 @@ enum Zustand {MESS,STOP};
 class Control
 {
 public:
-    static void controlThread(mainWindow* n_gui);
+    static void control_thread(mainWindow* n_gui);
     static mainWindow* gui;
     static std::list<Karte*> Kartenset;
     static Modus modus;
@@ -25,6 +25,7 @@ public:
     static Rechenblock* xAchse;
     static Rechenblock* yAchse;
     static std::list<Daten*> kennlinie;
+    static bool newkarte;
 
     static void check_karten();
     static void build_kennlinie();

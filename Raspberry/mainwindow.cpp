@@ -30,11 +30,6 @@ mainWindow::mainWindow()
     savebutton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     graph = new QChart;
-    QLineSeries *series = new QLineSeries(graph);
-    for(float f=0; f<10; f+=0.001)
-    series->append(f,f*f);
-    series->setName("Daten!!!");
-    graph->addSeries(series);
 
     graph->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 

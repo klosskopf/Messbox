@@ -11,7 +11,12 @@ std::list<int> Gpio::get_new_karten()
     n_Karten.push_back(4);
     return n_Karten;
 }
-void Gpio::set_SS(Karte* karte)
+void Gpio::enable_slave(uint8_t)
+{
+
+}
+
+void Gpio::disable_slave(uint8_t)
 {
 
 }
