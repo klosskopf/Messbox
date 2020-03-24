@@ -1,6 +1,6 @@
 #include "parameter.h"
-Parameter::Parameter(bool n_f_nots, std::string n_name, Parametrierbar n_parametrierar, float n_min, float n_max)
-    :f_nots(n_f_nots), name(n_name), parametrierbar(n_parametrierar), min(n_min), max(n_max)
+Parameter::Parameter(uint32_t n_nummer,bool n_f_nots, std::string n_name, Parametrierbar n_parametrierar, float n_min, float n_max)
+    :nummer(n_nummer), f_nots(n_f_nots), name(n_name), parametrierbar(n_parametrierar), min(n_min), max(n_max)
 {
 
 }

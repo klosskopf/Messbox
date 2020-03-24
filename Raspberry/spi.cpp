@@ -3,7 +3,7 @@
 
 void Spi::txrx(uint8_t * data, uint32_t laenge)
 {
-    const char* retdata="Spannungsmesser,Spannung,f,f,0,5{0,1,2,3,4,5}Strom,f,n,0,0";
+    const char* retdata="Spannungsmesser,0,Spannung,f,f,0,5{0,1,2,3,4,5}1,Strom,f,n,0,0,2,Form,s,l,0,0{Rechteck,Sinus,Dreieck,Saegezahn,Ich liebe Julia}";
     static int n=0;
     for (uint32_t i=0;i<laenge;i++)
     {

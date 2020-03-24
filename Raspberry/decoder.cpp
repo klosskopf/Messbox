@@ -45,7 +45,7 @@ void Decoder::decoder_thread()
 
 }
 
-typedef enum {KARTENNAME,NAME,TYP,PARAMETRIERBAR,MIN,MAX,WAHL}GET_PARAMETER_STATES;
+typedef enum {KARTENNAME,NUMMER,NAME,TYP,PARAMETRIERBAR,MIN,MAX,WAHL}GET_PARAMETER_STATES;
 void Decoder::decode_get_parameter(Paket* paket)
 {
     std::string* wort = NULL;
@@ -56,6 +56,7 @@ void Decoder::decode_get_parameter(Paket* paket)
 
     std::list<Parameter*> *parameterliste = new std::list<Parameter*>;
 
+    uint32_t parameternummer;
     bool floatnotstring;
     std::string* parametername = NULL;
     Parametrierbar parametrierbar;
@@ -71,6 +72,13 @@ void Decoder::decode_get_parameter(Paket* paket)
             if (kartenname!= NULL)delete kartenname;
             kartenname=new std::string();
             limiter = get_next_word(paket, kartenname);
+            state=NUMMER;
+            break;
+        case NUMMER:
+            if (wort)delete wort;
+            wort=new std::string();
+            limiter = get_next_word(paket, wort);
+            parameternummer=std::atoi((*wort).c_str());
             state=NAME;
             break;
         case NAME:
@@ -107,17 +115,17 @@ void Decoder::decode_get_parameter(Paket* paket)
             wort=new std::string();
             limiter = get_next_word(paket, wort);
             max = std::atof((*wort).c_str());
-            parameter= new Parameter(floatnotstring,*parametername,parametrierbar,min,max);
+            parameter= new Parameter(parameternummer,floatnotstring,*parametername,parametrierbar,min,max);
             parameterliste->push_back(parameter);
             if (limiter == '{')state=WAHL;
-            else state=NAME;
+            else state=NUMMER;
             break;
         case WAHL:
             if (wort!= NULL)delete wort;
             wort=new std::string();
             limiter = get_next_word(paket, wort);
             parameter->add_auswahl(*wort);
-            if (limiter == '}')state=NAME;
+            if (limiter == '}')state=NUMMER;
             else state=WAHL;
             break;
         }
@@ -132,6 +140,7 @@ void Decoder::decode_get_parameter(Paket* paket)
 }
 void Decoder::decode_get_daten(Paket* paket)
 {
+
 
 }
 void Decoder::decode_start_cont()

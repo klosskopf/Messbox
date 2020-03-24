@@ -27,6 +27,13 @@ public:
     static std::list<Daten*> kennlinie;
     static bool newkarte;
 
+    static float vcc5V;
+    static float vcc33V;
+    static float icharge;
+    static float vbat;
+    static float vlade;
+    static float vin;
+
     static void check_karten();
     static void build_kennlinie();
 };

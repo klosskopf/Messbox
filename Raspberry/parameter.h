@@ -10,8 +10,9 @@ enum Parametrierbar { NEIN, FREI, LISTE };
 class Parameter : public Rechenblock
 {
 public:
-    Parameter(bool n_f_nots, std::string n_name, Parametrierbar n_parametrierar, float n_min, float n_max);
+    Parameter(uint32_t n_nummer, bool n_f_nots, std::string n_name, Parametrierbar n_parametrierar, float n_min, float n_max);
     virtual ~Parameter();
+    const uint32_t nummer;
     const bool f_nots;
     const std::string name;
     const Parametrierbar parametrierbar;

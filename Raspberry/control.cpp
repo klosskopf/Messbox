@@ -4,14 +4,14 @@ void Control::control_thread(mainWindow* n_gui)
 {
     gui=n_gui;
     std::list<Parameter*> *parameterliste = new std::list<Parameter*>;
-    Parameter* parameter = new Parameter(true,"Spannung",LISTE,0,5);
+    Parameter* parameter = new Parameter(0,true,"Spannung",LISTE,0,5);
     parameter->add_auswahl("5");
     parameter->add_auswahl("3,3");
     parameterliste->push_back(parameter);
-    parameter= new Parameter(true,"Frequenz",FREI,0,5);
+    parameter= new Parameter(0,true,"Frequenz",FREI,0,5);
     parameter->add_auswahl("1000");
     parameterliste->push_back(parameter);
-    parameter= new Parameter(false,"Form",LISTE,0,5);
+    parameter= new Parameter(0,false,"Form",LISTE,0,5);
     parameter->add_auswahl("Rechteck");
     parameter->add_auswahl("Sägezahn");
     parameter->add_auswahl("Dreieck");
@@ -22,24 +22,24 @@ void Control::control_thread(mainWindow* n_gui)
     Kartenset.push_back(karte);
 
     parameterliste = new std::list<Parameter*>;
-    parameter = new Parameter(true,"Spannung",NEIN,0,5);
+    parameter = new Parameter(0,true,"Spannung",NEIN,0,5);
     parameterliste->push_back(parameter);
-    parameter = new Parameter(true,"RMS",NEIN,0,5);
+    parameter = new Parameter(0,true,"RMS",NEIN,0,5);
     parameterliste->push_back(parameter);
     karte = new Karte(gui, 2, "Spannungsmesser",parameterliste);
     Kartenset.push_back(karte);
 
     parameterliste = new std::list<Parameter*>;
-    parameter = new Parameter(true,"Temperatur",NEIN,0,5);
+    parameter = new Parameter(0,true,"Temperatur",NEIN,0,5);
     parameterliste->push_back(parameter);
-    parameter = new Parameter(true,"R0",FREI,0,5);
+    parameter = new Parameter(0,true,"R0",FREI,0,5);
     parameter->add_auswahl("10000");
     parameter->add_auswahl("1000");
     parameterliste->push_back(parameter);
-    parameter = new Parameter(true,"alpha",FREI,0,5);
+    parameter = new Parameter(0,true,"alpha",FREI,0,5);
     parameter->add_auswahl("1");
     parameterliste->push_back(parameter);
-    parameter = new Parameter(true,"beta",FREI,0,5);
+    parameter = new Parameter(0,true,"beta",FREI,0,5);
     parameter->add_auswahl("1");
     parameterliste->push_back(parameter);
     karte = new Karte(gui, 3, "Temperaturmesser",parameterliste);
@@ -109,3 +109,9 @@ Rechenblock* Control::xAchse=NULL;
 Rechenblock* Control::yAchse=NULL;
 std::list<Daten*> Control::kennlinie;
 bool Control::newkarte=false;
+float Control::vcc5V = -1;
+float Control::vcc33V = -1;
+float Control::icharge = -1;
+float Control::vbat = -1;
+float Control::vlade = -1;
+float Control::vin = -1;
