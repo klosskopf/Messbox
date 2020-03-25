@@ -23,7 +23,7 @@ public:
     float get_data(float time) override;
     void delete_old();
     bool is_plotbar() const;
-    void add_datum(float time, float datum);
+    void add_datum(uint32_t time, float datum);
     void add_auswahl(std::string auswahl);
 };
 

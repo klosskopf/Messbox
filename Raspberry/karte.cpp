@@ -27,3 +27,13 @@ Parameter* Karte::find_parameter(std::string name)
     }
     return NULL;
 }
+
+Parameter* Karte::find_parameter(uint32_t nummer)
+{
+    for(Parameter* param : *parameter)
+    {
+        if(param->nummer==nummer)
+            return param;
+    }
+    return NULL;
+}

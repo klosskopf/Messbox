@@ -34,7 +34,7 @@ void Parameter::add_auswahl(std::string auswahl)
 
 }
 
-void Parameter::add_datum(float time, float datum)
+void Parameter::add_datum(uint32_t time, float datum)
 {
     daten.push_back(new Daten(time,datum));
 }

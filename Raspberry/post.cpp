@@ -39,6 +39,8 @@ void Post::spi_thread()
             }
             case GET_DATEN:
             {
+                uint8_t nummer[4];
+                memcpy(nummer,currentpaket->daten,4);
                 uint8_t ask_for[9];
                 ask_for[0]=(uint8_t)GET_DATEN;
                 ask_for[1]=currentpaket->daten[0];
@@ -49,9 +51,13 @@ void Post::spi_thread()
                 Spi::txrx(ask_for, 9);
                 currentpaket->laenge = ((uint32_t)ask_for[8]) + ((uint32_t)ask_for[7]<<8) +((uint32_t)ask_for[6]<<16) + ((uint32_t)ask_for[5]<<24);
                 delete [] currentpaket->daten;
-                currentpaket->daten = new uint8_t[currentpaket->laenge];
-                Spi::txrx(currentpaket->daten, currentpaket->laenge);
+                currentpaket->daten = new uint8_t[currentpaket->laenge + 8];
+                Spi::txrx(currentpaket->daten, currentpaket->laenge + 4);
                 Gpio::disable_slave(currentpaket->empfaengerindex);
+                currentpaket->daten[currentpaket->laenge+4]=nummer[0];
+                currentpaket->daten[currentpaket->laenge+5]=nummer[1];
+                currentpaket->daten[currentpaket->laenge+6]=nummer[2];
+                currentpaket->daten[currentpaket->laenge+7]=nummer[3];
                 break;
             }
             case START_KONT:

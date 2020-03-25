@@ -2,6 +2,7 @@ SOURCES += \
     control.cpp \
     decoder.cpp \
     gpio.cpp \
+    graphersteller.cpp \
     karte.cpp \
     karte_gui.cpp \
     main.cpp \
@@ -18,6 +19,7 @@ HEADERS += \
     daten.h \
     decoder.h \
     gpio.h \
+    graphersteller.h \
     karte.h \
     karte_gui.h \
     mainwindow.h \

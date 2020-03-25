@@ -8,6 +8,7 @@
 #include "karte.h"
 #include "gpio.h"
 #include "post.h"
+#include "graphersteller.h"
 class Karte;
 class mainWindow;
 
@@ -22,6 +23,7 @@ public:
     static std::list<Karte*> Kartenset;
     static Modus modus;
     static Zustand zustand;
+    static float samplefreq;
     static Rechenblock* xAchse;
     static Rechenblock* yAchse;
     static std::list<Daten*> kennlinie;
@@ -35,7 +37,7 @@ public:
     static float vin;
 
     static void check_karten();
-    static void build_kennlinie();
+    static Karte* findkarte(int Karte);
 };
 
 #endif // CONTROL_H

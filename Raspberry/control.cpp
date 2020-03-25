@@ -1,64 +1,20 @@
 #include "control.h"
 
+static Graphersteller graphersteller;
+
 void Control::control_thread(mainWindow* n_gui)
 {
     gui=n_gui;
-    std::list<Parameter*> *parameterliste = new std::list<Parameter*>;
-    Parameter* parameter = new Parameter(0,true,"Spannung",LISTE,0,5);
-    parameter->add_auswahl("5");
-    parameter->add_auswahl("3,3");
-    parameterliste->push_back(parameter);
-    parameter= new Parameter(0,true,"Frequenz",FREI,0,5);
-    parameter->add_auswahl("1000");
-    parameterliste->push_back(parameter);
-    parameter= new Parameter(0,false,"Form",LISTE,0,5);
-    parameter->add_auswahl("Rechteck");
-    parameter->add_auswahl("Sägezahn");
-    parameter->add_auswahl("Dreieck");
-    parameter->add_auswahl("Sinus");
-    parameter->add_auswahl("Stufen");
-    parameterliste->push_back(parameter);
-    Karte* karte = new Karte(gui, 1, "Spannungsquelle",parameterliste);
-    Kartenset.push_back(karte);
-
-    parameterliste = new std::list<Parameter*>;
-    parameter = new Parameter(0,true,"Spannung",NEIN,0,5);
-    parameterliste->push_back(parameter);
-    parameter = new Parameter(0,true,"RMS",NEIN,0,5);
-    parameterliste->push_back(parameter);
-    karte = new Karte(gui, 2, "Spannungsmesser",parameterliste);
-    Kartenset.push_back(karte);
-
-    parameterliste = new std::list<Parameter*>;
-    parameter = new Parameter(0,true,"Temperatur",NEIN,0,5);
-    parameterliste->push_back(parameter);
-    parameter = new Parameter(0,true,"R0",FREI,0,5);
-    parameter->add_auswahl("10000");
-    parameter->add_auswahl("1000");
-    parameterliste->push_back(parameter);
-    parameter = new Parameter(0,true,"alpha",FREI,0,5);
-    parameter->add_auswahl("1");
-    parameterliste->push_back(parameter);
-    parameter = new Parameter(0,true,"beta",FREI,0,5);
-    parameter->add_auswahl("1");
-    parameterliste->push_back(parameter);
-    karte = new Karte(gui, 3, "Temperaturmesser",parameterliste);
-    Kartenset.push_back(karte);
+    QObject::connect(&graphersteller,&Graphersteller::create_graph,gui,&mainWindow::draw_graph);
     std::this_thread::sleep_for(std::chrono::seconds(2));
-
-    QLineSeries *series = new QLineSeries(gui->graph);
-    for(float f=0; f<10; f+=0.001)
-    series->append(f,f*f);
-    series->setName("Daten!!!");
-    gui->graph->addSeries(series);
 
     while(1)
     {
         check_karten();
+        graphersteller.draw();
+        Post::send_get_daten(1,1);
 
-
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
 }
@@ -101,12 +57,22 @@ void Control::check_karten()
     }
 }
 
+Karte* Control::findkarte(int karte)
+{
+    for (Karte* moeglichekarte : Kartenset)
+    {
+        if (moeglichekarte->index == karte)return moeglichekarte;
+    }
+    return NULL;
+}
+
 mainWindow* Control::gui;
 std::list<Karte*> Control::Kartenset;
 Modus Control::modus=STARTSTOP;
 Zustand Control::zustand=STOP;
 Rechenblock* Control::xAchse=NULL;
 Rechenblock* Control::yAchse=NULL;
+float Control::samplefreq=10000;
 std::list<Daten*> Control::kennlinie;
 bool Control::newkarte=false;
 float Control::vcc5V = -1;

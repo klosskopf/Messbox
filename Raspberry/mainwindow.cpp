@@ -30,7 +30,6 @@ mainWindow::mainWindow()
     savebutton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     graph = new QChart;
-
     graph->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     graphview = new QChartView;
@@ -98,3 +97,19 @@ void mainWindow::handlemodebutton()
         modebutton->setText("Start/Stop");
     }
 }
+
+void mainWindow::draw_graph()
+{
+
+    for (QAbstractSeries * series : graph->series())
+    {
+        graph->removeSeries(series);
+        delete series;
+    }
+    QLineSeries *series = new QLineSeries();
+    for(float f=0; f<10; f+=0.1)
+    series->append(f,f*f);
+    series->setName("Daten!!!");
+    graph->addSeries(series);
+}
+

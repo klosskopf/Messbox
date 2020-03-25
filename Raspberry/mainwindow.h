@@ -27,6 +27,8 @@ public:
 private slots:
     void handlestartstopbutton();
     void handlemodebutton();
+public slots:
+    void draw_graph();
 public:
     QWidget* centralwidget;
     QMenuBar* menubar;

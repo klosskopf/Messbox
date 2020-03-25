@@ -23,6 +23,7 @@ public:
     std::string name;
     std::list<Parameter*> *parameter;
     Parameter* find_parameter(std::string name);
+    Parameter* find_parameter(uint32_t nummer);
 signals:
     void let_create_karte_gui(Karte* karte);
     void let_delete_karte_gui(Karte_GUI* karte_gui);

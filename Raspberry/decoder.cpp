@@ -40,7 +40,7 @@ void Decoder::decoder_thread()
             Sammelzentrum.pop_front();
             delete currentpaket;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
 }
@@ -140,8 +140,23 @@ void Decoder::decode_get_parameter(Paket* paket)
 }
 void Decoder::decode_get_daten(Paket* paket)
 {
-
-
+    uint32_t nummer = (paket->daten[paket->laenge+4]<<24) + (paket->daten[paket->laenge+5]<<16) + (paket->daten[paket->laenge+6]<<8) + paket->daten[paket->laenge+7];
+    uint32_t starttime;
+    Karte* karte = Control::findkarte(paket->empfaengerindex);
+    if (karte)
+    {
+        Parameter* parameter = karte->find_parameter(nummer);
+        if (parameter)
+        {
+            starttime=(paket->daten[0]<<24) + (paket->daten[1]<<16) + (paket->daten[2]<<8) + paket->daten[3];
+            paket->ausgewaertet=4;
+            while(paket->ausgewaertet < paket->laenge+4)
+            {
+                parameter->add_datum(starttime,get_next_float(paket));
+                starttime+=1;
+            }
+        }
+    }
 }
 void Decoder::decode_start_cont()
 {
@@ -153,7 +168,12 @@ void Decoder::decode_start_startstop()
 }
 void Decoder::decode_get_status(Paket* paket)
 {
-
+    Control::vcc5V=get_next_float(paket);
+    Control::vcc33V=get_next_float(paket);
+    Control::icharge=get_next_float(paket);
+    Control::vbat=get_next_float(paket);
+    Control::vlade=get_next_float(paket);
+    Control::vin=get_next_float(paket);
 }
 
 
@@ -168,4 +188,18 @@ char Decoder::get_next_word(Paket* paket, std::string* wort)
         else if( paket->daten[paket->ausgewaertet] == '}'){paket->ausgewaertet++;return '{';}
         else{*wort += paket->daten[paket->ausgewaertet];paket->ausgewaertet++;}
     }
+}
+
+float Decoder::get_next_float(Paket* paket)
+{
+    union {
+        float asfloat;
+        uint8_t asbytes[4];
+      } convert;
+    convert.asbytes[0]=paket->daten[paket->ausgewaertet];
+    convert.asbytes[1]=paket->daten[paket->ausgewaertet+1];
+    convert.asbytes[2]=paket->daten[paket->ausgewaertet+2];
+    convert.asbytes[3]=paket->daten[paket->ausgewaertet+3];
+    paket->ausgewaertet+=4;
+    return convert.asfloat;
 }
