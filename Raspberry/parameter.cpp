@@ -14,18 +14,30 @@ Parameter::~Parameter()
 }
 
 
-float Parameter::get_data(float time)
-{
-    float lasttime = daten.front()->zeitpunkt;
-    float lastwert = daten.front()->messwert;
-    for (Daten* datum : daten)
+float Parameter::get_data(uint32_t time)
+{   if(daten.size())
     {
-        if (datum->zeitpunkt > time)
+        float lasttime = daten.front()->zeitpunkt;
+        float lastwert = daten.front()->messwert;
+        for (Daten* datum : daten)
         {
-            return (lastwert*(lasttime-time) + datum->messwert * (time - datum->zeitpunkt) )/(lasttime - datum->zeitpunkt);
+            if (datum->zeitpunkt > time)
+            {
+               // return (lastwert*(lasttime-time) + datum->messwert * (time - datum->zeitpunkt) )/(float)(datum->zeitpunkt - lasttime);
+                return datum->messwert;
+            }
+            lasttime=datum->zeitpunkt;
+            lastwert=datum->messwert;
         }
+        return lastwert;
     }
-    return lastwert;
+    return 0;
+}
+
+uint32_t Parameter::newest()
+{
+    if(daten.size())return daten.back()->zeitpunkt;
+    return 0;
 }
 
 void Parameter::add_auswahl(std::string auswahl)

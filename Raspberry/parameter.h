@@ -20,11 +20,12 @@ public:
     float min;
     float max;
     std::list<Daten*> daten;
-    float get_data(float time) override;
+    float get_data(uint32_t time) override;
     void delete_old();
     bool is_plotbar() const;
     void add_datum(uint32_t time, float datum);
     void add_auswahl(std::string auswahl);
+    uint32_t newest() override;
 };
 
 #endif // PARAMETER_H

@@ -9,6 +9,8 @@
 #include "gpio.h"
 #include "post.h"
 #include "graphersteller.h"
+#include "daten.h"
+#include "rechenbloecke.h"
 class Karte;
 class mainWindow;
 
@@ -23,10 +25,11 @@ public:
     static std::list<Karte*> Kartenset;
     static Modus modus;
     static Zustand zustand;
+    static float timeframe;
     static float samplefreq;
     static Rechenblock* xAchse;
     static Rechenblock* yAchse;
-    static std::list<Daten*> kennlinie;
+    static std::list<Kennliniendaten*> kennlinie;
     static bool newkarte;
 
     static float vcc5V;
@@ -36,6 +39,7 @@ public:
     static float vlade;
     static float vin;
 
+    static void create_kennlinie();
     static void check_karten();
     static Karte* findkarte(int Karte);
 };

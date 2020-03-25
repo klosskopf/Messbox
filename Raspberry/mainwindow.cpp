@@ -107,8 +107,10 @@ void mainWindow::draw_graph()
         delete series;
     }
     QLineSeries *series = new QLineSeries();
-    for(float f=0; f<10; f+=0.1)
-    series->append(f,f*f);
+    for (Kennliniendaten* datum:Control::kennlinie)
+    {
+        series->append(datum->x,datum->y);
+    }
     series->setName("Daten!!!");
     graph->addSeries(series);
 }

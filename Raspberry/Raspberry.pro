@@ -12,6 +12,7 @@ SOURCES += \
     parameterauswahl.cpp \
     post.cpp \
     rechenblock.cpp \
+    rechenbloecke.cpp \
     spi.cpp
 
 HEADERS += \
@@ -28,6 +29,7 @@ HEADERS += \
     parameterauswahl.h \
     post.h \
     rechenblock.h \
+    rechenbloecke.h \
     spi.h
 
 QT += widgets
