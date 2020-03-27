@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.3.2">
+<eagle version="9.5.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -76,12 +76,6 @@
 <board>
 <fusionsync huburn="a.cGVyc29uYWw6dWUyZGRmNTA2" projecturn="a.cGVyc29uYWw6dWUyZGRmNTA2IzIwMTgwNTA2MTMwNzExMzAx" f3durn="urn:adsk.wipprod:dm.lineage:3hwBGvu_S66CZU5-ojK2Yw" pcbguid="5ea09747-d6e2-472b-a562-3bb1003f8d6e" lastpulledtime="" lastsyncedchangeguid="b0dd3c20-b3ad-b5aa-3085-8f733a7e77ac"/>
 <plain>
-<wire x1="0" y1="0" x2="146" y2="0" width="0" layer="20"/>
-<wire x1="146" y1="0" x2="146" y2="65.2" width="0" layer="20"/>
-<wire x1="77.2" y1="84.8" x2="0" y2="84.8" width="0" layer="20"/>
-<wire x1="0" y1="84.8" x2="0" y2="0" width="0" layer="20"/>
-<wire x1="77.2" y1="84.8" x2="77.2" y2="65.2" width="0.3048" layer="20"/>
-<wire x1="77.2" y1="65.2" x2="146" y2="65.2" width="0.3048" layer="20"/>
 <circle x="24.8" y="45.2" radius="0.3782" width="0" layer="101"/>
 <circle x="24.8" y="47.6" radius="0.3782" width="0" layer="101"/>
 <circle x="7.2" y="56.4" radius="0.3782" width="0" layer="101"/>
@@ -143,6 +137,12 @@
 <circle x="14.4" y="63.2" radius="0.3782" width="0" layer="101"/>
 <circle x="14" y="70.8" radius="0.3782" width="0" layer="101"/>
 <circle x="26.8985" y="79.6985" radius="0.3782" width="0" layer="101"/>
+<wire x1="0" y1="84.8" x2="0" y2="0" width="0" layer="20"/>
+<wire x1="0" y1="0" x2="146" y2="0" width="0" layer="20"/>
+<wire x1="146" y1="0" x2="146" y2="66.4" width="0" layer="20"/>
+<wire x1="146" y1="66.4" x2="78" y2="66.4" width="0" layer="20"/>
+<wire x1="78" y1="66.4" x2="78" y2="84.8" width="0" layer="20"/>
+<wire x1="78" y1="84.8" x2="0" y2="84.8" width="0" layer="20"/>
 </plain>
 <libraries>
 <library name="basisplatine_lib">
