@@ -20,7 +20,7 @@ public:
     float min;
     float max;
     std::list<Daten*> daten;
-    float get_data(uint32_t time) override;
+    double get_data(uint32_t time) override;
     void delete_old();
     bool is_plotbar() const;
     void add_datum(uint32_t time, float datum);

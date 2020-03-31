@@ -140,7 +140,7 @@ void Decoder::decode_get_parameter(Paket* paket)
 }
 void Decoder::decode_get_daten(Paket* paket)
 {
-    uint32_t nummer = (paket->daten[paket->laenge+4]<<24) + (paket->daten[paket->laenge+5]<<16) + (paket->daten[paket->laenge+6]<<8) + paket->daten[paket->laenge+7];
+    uint32_t nummer = (paket->daten[paket->laenge+7]<<24) + (paket->daten[paket->laenge+6]<<16) + (paket->daten[paket->laenge+5]<<8) + paket->daten[paket->laenge+4];
     uint32_t starttime;
     Karte* karte = Control::findkarte(paket->empfaengerindex);
     if (karte)
@@ -148,7 +148,7 @@ void Decoder::decode_get_daten(Paket* paket)
         Parameter* parameter = karte->find_parameter(nummer);
         if (parameter)
         {
-            starttime=(paket->daten[0]<<24) + (paket->daten[1]<<16) + (paket->daten[2]<<8) + paket->daten[3];
+            starttime=(paket->daten[3]<<24) + (paket->daten[2]<<16) + (paket->daten[1]<<8) + paket->daten[0];
             paket->ausgewaertet=4;
             while(paket->ausgewaertet < paket->laenge+4)
             {

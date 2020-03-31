@@ -14,7 +14,7 @@ Parameter::~Parameter()
 }
 
 
-float Parameter::get_data(uint32_t time)
+double Parameter::get_data(uint32_t time)
 {   if(daten.size())
     {
         float lasttime = daten.front()->zeitpunkt;
@@ -23,13 +23,13 @@ float Parameter::get_data(uint32_t time)
         {
             if (datum->zeitpunkt > time)
             {
-               // return (lastwert*(lasttime-time) + datum->messwert * (time - datum->zeitpunkt) )/(float)(datum->zeitpunkt - lasttime);
-                return datum->messwert;
+               // return (lastwert*(lasttime-time) + datum->messwert * (time - datum->zeitpunkt) )/(double)(datum->zeitpunkt - lasttime);
+                return (double)datum->messwert;
             }
             lasttime=datum->zeitpunkt;
             lastwert=datum->messwert;
         }
-        return lastwert;
+        return (double)lastwert;
     }
     return 0;
 }

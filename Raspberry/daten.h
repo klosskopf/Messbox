@@ -14,10 +14,10 @@ public:
 class Kennliniendaten
 {
 public:
-    Kennliniendaten(float n_x, float n_y):x(n_x), y(n_y) {}
+    Kennliniendaten(double n_x, double n_y):x(n_x), y(n_y) {}
     virtual ~Kennliniendaten(){}
-    const float x;
-    const float y;
+    const double x;
+    const double y;
 };
 
 #endif // DATEN_H

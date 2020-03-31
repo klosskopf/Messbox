@@ -8,7 +8,7 @@ class Time : public Rechenblock
 public:
     Time(){}
     ~Time(){}
-    virtual float get_data(uint32_t time) override;
+    virtual double get_data(uint32_t time) override;
     virtual uint32_t newest() override;
 };
 

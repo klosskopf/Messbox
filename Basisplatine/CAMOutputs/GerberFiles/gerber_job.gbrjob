@@ -1,0 +1,24 @@
+{
+    "Header": {
+        "Comment": "All values are metric (mm)",
+        "CreationDate": "2020-03-14T17:08:01Z",
+        "GenerationSoftware": {
+            "Application": "EAGLE",
+            "Vendor": "Autodesk",
+            "Version": "9.3.2"
+        },
+        "Part": "Single"
+    },
+    "Overall": {
+        "BoardThickness": 1.57,
+        "LayerNumber": 2,
+        "Name": {
+            "ProjectId": "basisplatine"
+        },
+        "Owner": "Johannes Wittmann <wittmann96@gmail.com>",
+        "Size": {
+            "X": 146,
+            "Y": 84.8
+        }
+    }
+}

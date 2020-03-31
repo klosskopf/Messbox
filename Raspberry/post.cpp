@@ -17,7 +17,7 @@ void Post::spi_thread()
                 uint8_t ask_for[5]={(uint8_t)GET_PARAMETER,0,0,0,0};
                 Gpio::enable_slave(currentpaket->empfaengerindex);
                 Spi::txrx(ask_for, 5);
-                currentpaket->laenge = ((uint32_t)ask_for[4]) + ((uint32_t)ask_for[3]<<8) +((uint32_t)ask_for[2]<<16) + ((uint32_t)ask_for[1]<<24);
+                currentpaket->laenge = ((uint32_t)ask_for[1]) + ((uint32_t)ask_for[2]<<8) +((uint32_t)ask_for[3]<<16) + ((uint32_t)ask_for[4]<<24);
                 currentpaket->daten = new uint8_t[currentpaket->laenge];
                 Spi::txrx(currentpaket->daten, currentpaket->laenge);
                 Gpio::disable_slave(currentpaket->empfaengerindex);
@@ -27,10 +27,10 @@ void Post::spi_thread()
             {
                 uint8_t ask_for[5];
                 ask_for[0]=(uint8_t)SET_PARAMETER;
-                ask_for[1]=(currentpaket->laenge)>>24;
-                ask_for[2]=(currentpaket->laenge)>>16;
-                ask_for[3]=(currentpaket->laenge)>>8;
-                ask_for[4]=currentpaket->laenge;
+                ask_for[4]=(currentpaket->laenge)>>24;
+                ask_for[3]=(currentpaket->laenge)>>16;
+                ask_for[2]=(currentpaket->laenge)>>8;
+                ask_for[1]=currentpaket->laenge;
                 Gpio::enable_slave(currentpaket->empfaengerindex);
                 Spi::txrx(ask_for, 5);
                 Spi::txrx(currentpaket->daten, currentpaket->laenge);
@@ -49,7 +49,7 @@ void Post::spi_thread()
                 ask_for[4]=currentpaket->daten[3];
                 Gpio::enable_slave(currentpaket->empfaengerindex);
                 Spi::txrx(ask_for, 9);
-                currentpaket->laenge = ((uint32_t)ask_for[8]) + ((uint32_t)ask_for[7]<<8) +((uint32_t)ask_for[6]<<16) + ((uint32_t)ask_for[5]<<24);
+                currentpaket->laenge = ((uint32_t)ask_for[5]) + ((uint32_t)ask_for[6]<<8) +((uint32_t)ask_for[7]<<16) + ((uint32_t)ask_for[8]<<24);
                 delete [] currentpaket->daten;
                 currentpaket->daten = new uint8_t[currentpaket->laenge + 8];
                 Spi::txrx(currentpaket->daten, currentpaket->laenge + 4);
@@ -125,10 +125,10 @@ void Post::send_set_parameter(int index, uint32_t nummer, std::string wert)
     setparameterpaket->laenge = 4 + wert.length();
     setparameterpaket->befehl=SET_PARAMETER;
     setparameterpaket->daten=new uint8_t[setparameterpaket->laenge];
-    setparameterpaket->daten[0]= nummer>>24;
-    setparameterpaket->daten[1]= nummer>>16;
-    setparameterpaket->daten[2]= nummer>>8;
-    setparameterpaket->daten[3]= nummer;
+    setparameterpaket->daten[3]= nummer>>24;
+    setparameterpaket->daten[2]= nummer>>16;
+    setparameterpaket->daten[1]= nummer>>8;
+    setparameterpaket->daten[0]= nummer;
     for(uint32_t i=0;i<wert.length();i++)setparameterpaket->daten[i+4]= wert.at(i);
     setparameterpaket->empfaengerindex=index;
     Briefkasten.push_back(setparameterpaket);
@@ -138,10 +138,10 @@ void Post::send_get_daten(int index, uint32_t nummer)
     Paket* getdatenpaket = new Paket();
     getdatenpaket->daten = new uint8_t[4];
     getdatenpaket->befehl=GET_DATEN;
-    getdatenpaket->daten[0]= nummer>>24;
-    getdatenpaket->daten[1]= nummer>>16;
-    getdatenpaket->daten[2]= nummer>>8;
-    getdatenpaket->daten[3]= nummer;
+    getdatenpaket->daten[3]= nummer>>24;
+    getdatenpaket->daten[2]= nummer>>16;
+    getdatenpaket->daten[1]= nummer>>8;
+    getdatenpaket->daten[0]= nummer;
     getdatenpaket->empfaengerindex=index;
     Briefkasten.push_back(getdatenpaket);
 }

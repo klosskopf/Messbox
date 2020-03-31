@@ -26,6 +26,20 @@ union {
     get_daten simple;
 } getdatendaten;
 
+typedef struct{
+    uint8_t befehl;
+    float v5v;
+    float v33v;
+    float icharge;
+    float vbat;
+    float vlade;
+    float vin;
+}get_status;
+union {
+    uint8_t bytes[sizeof(get_status)];
+    get_status simple;
+} getstatusdaten;
+
 void Spi::txrx(uint8_t * data, uint32_t laenge)
 {
     get_parameter_daten.simple.lenght=strlen(get_parameter_daten.simple.daten);
@@ -33,8 +47,14 @@ void Spi::txrx(uint8_t * data, uint32_t laenge)
     {
         getdatendaten.simple.daten[o]=((float)(o*o));
     }
-    getdatendaten.simple.lenght=0x00100000;
-    getdatendaten.simple.startzeit=0x0;         //starttime of 0x12345678 would be 0x78563412
+    getdatendaten.simple.lenght=0x1000;
+    getdatendaten.simple.startzeit=0xffff0000;
+    getstatusdaten.simple.v5v=5.01;
+    getstatusdaten.simple.vin=14.12;
+    getstatusdaten.simple.v33v=3.4;
+    getstatusdaten.simple.vbat=4.21;
+    getstatusdaten.simple.vlade=5.00;
+    getstatusdaten.simple.icharge=0.75;
 
     for (uint32_t n=0;n<laenge;n++)
     {
@@ -45,7 +65,7 @@ void Spi::txrx(uint8_t * data, uint32_t laenge)
         switch(befehl)
         {
         case 0x01:
-            if (i<5)data[n] = get_parameter_daten.bytes[i]; //Stimmt zwar eigentlich nicht, macht aber nicx bei längen < 256: Endianess is a bitch
+            if (i<1)data[n] = get_parameter_daten.bytes[i];
             else data[n] = get_parameter_daten.bytes[i+3];
             break;
 
@@ -53,7 +73,10 @@ void Spi::txrx(uint8_t * data, uint32_t laenge)
             if (i<1)data[n] = getdatendaten.bytes[i];
             else data[n] = getdatendaten.bytes[i+3];
             break;
-
+        case 0x09:
+            if (i<1)data[n] = getstatusdaten.bytes[i];
+            else data[n] = getstatusdaten.bytes[i+3];
+            break;
         default:
             break;
         }

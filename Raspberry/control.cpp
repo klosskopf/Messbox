@@ -16,6 +16,7 @@ void Control::control_thread(mainWindow* n_gui)
         create_kennlinie();
         graphersteller.draw();
         Post::send_get_daten(1,1);
+        Post::send_get_status();
 
         if (findkarte(1))
         {
@@ -76,8 +77,8 @@ void Control::create_kennlinie()
         kennlinie.clear();
         for (uint32_t time=newestime; time>(newestime-number); time--)
         {
-            float xvalue=xAchse->get_data(time);
-            float yvalue=yAchse->get_data(time);
+            double xvalue=xAchse->get_data(time);
+            double yvalue=yAchse->get_data(time);
             kennlinie.push_back(new Kennliniendaten(xvalue, yvalue));
         }
     }
