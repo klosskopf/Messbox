@@ -27,6 +27,8 @@ private:
 private slots:
     void parameter_activated(const QString& name);
     void wert_activated(const QString& name);
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
 };
 
 class ListItem : public QListWidgetItem

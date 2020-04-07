@@ -60,21 +60,21 @@ void Karte_GUI::set_wert_to_parameter(std::string name)
         {
             wert->clear();
             wert->setEditable(false);
-            for(std::string moeglichkeit : parameter->auswahlliste)
+            for(std::string moeglichkeit : *(parameter->auswahlliste))
             wert->addItem(QString::fromStdString(moeglichkeit));
         }
         else if (parameter->parametrierbar == FREI)
         {
             wert->clear();
             wert->setEditable(true);
-            for(std::string moeglichkeit : parameter->auswahlliste)
+            for(std::string moeglichkeit : *(parameter->auswahlliste))
             wert->addItem(QString::fromStdString(moeglichkeit));
         }
         else if ((parameter->parametrierbar == NEIN))
         {
             wert->clear();
             wert->setEditable(false);
-            for(std::string moeglichkeit : parameter->auswahlliste)
+            for(std::string moeglichkeit : *(parameter->auswahlliste))
             wert->addItem(QString::fromStdString(moeglichkeit));
         }
     }
@@ -82,5 +82,25 @@ void Karte_GUI::set_wert_to_parameter(std::string name)
     {
         wert->clear();
         wert->setEditable(false);
+    }
+}
+
+void Karte_GUI::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        Parameter* gefunden = karte->find_parameter(parameter->currentText().toUtf8().constData());
+        if (gefunden && gefunden->f_nots)
+        {
+            Control::clipboard=gefunden;
+            QDrag *drag = new QDrag(this);
+            QMimeData *mimeData = new QMimeData;
+
+            mimeData->setText("Rechenblock");
+            drag->setMimeData(mimeData);
+            //drag->setPixmap(iconPixmap);
+
+            Qt::DropAction dropAction = drag->exec();
+        }
     }
 }

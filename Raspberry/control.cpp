@@ -6,12 +6,13 @@ void Control::control_thread(mainWindow* n_gui)
 {
     gui=n_gui;
     QObject::connect(&graphersteller,&Graphersteller::create_graph,gui,&mainWindow::draw_graph);
-    xAchse=new Time();
-    yAchse=new Time();
+    xAchse=new Time_Block();
+    yAchse=new Time_Block();
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
     while(1)
     {
+        delete_bloecke();
         check_karten();
         create_kennlinie();
         graphersteller.draw();
@@ -64,6 +65,16 @@ void Control::check_karten()
     }
 }
 
+void Control::delete_bloecke()
+{
+    while(delete_block.size())
+    {
+        Rechenblock* block = delete_block.front();
+        delete_block.pop_front();
+        delete block;
+    }
+}
+
 void Control::create_kennlinie()
 {
     if(xAchse && yAchse)
@@ -102,7 +113,9 @@ Rechenblock* Control::yAchse=NULL;
 float Control::samplefreq=1;
 float Control::timeframe=1000;
 std::list<Kennliniendaten*> Control::kennlinie;
+std::list<Rechenblock*> Control::delete_block;
 bool Control::newkarte=false;
+Rechenblock* Control::clipboard = NULL;
 float Control::vcc5V = -1;
 float Control::vcc33V = -1;
 float Control::icharge = -1;

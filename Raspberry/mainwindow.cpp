@@ -36,7 +36,7 @@ mainWindow::mainWindow()
     graphview->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     graphview->setChart(graph);
 
-    kombinationsfeld = new QGroupBox;
+    kombinationsfeld = new Kombinationsfeld();
     kombinationsfeld->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QGridLayout *mainLayout = new QGridLayout;

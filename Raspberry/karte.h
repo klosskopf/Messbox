@@ -10,6 +10,7 @@
 class mainWindow;
 class Karte_GUI;
 class Parameterauswahl;
+class Parameter;
 
 class Karte : public QObject
 {

@@ -14,7 +14,9 @@
 #include <QPalette>
 #include <QString>
 #include "control.h"
+#include "kombinationsfeld.h"
 class Parameterauswahl;
+class Kombinationsfeld;
 
 using namespace QtCharts;
 
@@ -39,7 +41,7 @@ public:
     QPushButton* savebutton;
     QChart* graph;
     QChartView* graphview;
-    QGroupBox* kombinationsfeld;
+    Kombinationsfeld* kombinationsfeld;
 };
 
 #endif // MAINWINDOW_H

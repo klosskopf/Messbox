@@ -5,6 +5,7 @@ SOURCES += \
     graphersteller.cpp \
     karte.cpp \
     karte_gui.cpp \
+    kombinationsfeld.cpp \
     main.cpp \
     mainwindow.cpp \
     paket.cpp \
@@ -23,6 +24,7 @@ HEADERS += \
     graphersteller.h \
     karte.h \
     karte_gui.h \
+    kombinationsfeld.h \
     mainwindow.h \
     paket.h \
     parameter.h \

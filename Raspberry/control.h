@@ -4,6 +4,7 @@
 #include <QObject>
 #include <list>
 #include <string>
+#include "rechenblock.h"
 #include "mainwindow.h"
 #include "karte.h"
 #include "gpio.h"
@@ -13,6 +14,7 @@
 #include "rechenbloecke.h"
 class Karte;
 class mainWindow;
+class Rechenblock;
 
 enum Modus {CONT,STARTSTOP};
 enum Zustand {MESS,STOP};
@@ -31,6 +33,8 @@ public:
     static Rechenblock* yAchse;
     static std::list<Kennliniendaten*> kennlinie;
     static bool newkarte;
+    static Rechenblock* clipboard;
+    static std::list<Rechenblock*>delete_block;
 
     static float vcc5V;
     static float vcc33V;
@@ -41,6 +45,7 @@ public:
 
     static void create_kennlinie();
     static void check_karten();
+    static void delete_bloecke();
     static Karte* findkarte(int Karte);
 };
 
