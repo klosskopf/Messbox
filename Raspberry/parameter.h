@@ -3,7 +3,7 @@
 #include "rechenblock.h"
 #include "daten.h"
 #include <string>
-#include <list>
+#include <vector>
 #include "karte.h"
 class Karte;
 
@@ -22,7 +22,7 @@ public:
     std::list<std::string>* auswahlliste;
     float min;
     float max;
-    std::list<Daten*>* daten;
+    std::vector<Daten*>* daten;
     double get_data(uint32_t time) override;
     Parameter* copy() override;
     void delete_old();

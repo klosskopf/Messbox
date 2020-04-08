@@ -15,8 +15,10 @@
 #include <QString>
 #include "control.h"
 #include "kombinationsfeld.h"
+#include "graphersteller.h"
 class Parameterauswahl;
 class Kombinationsfeld;
+class Graphersteller;
 
 using namespace QtCharts;
 
@@ -29,8 +31,10 @@ public:
 private slots:
     void handlestartstopbutton();
     void handlemodebutton();
+    void handletimframe();
+    void handlesample();
 public slots:
-    void draw_graph();
+    void create_graph(QLineSeries* n_serie);
 public:
     QWidget* centralwidget;
     QMenuBar* menubar;
@@ -38,10 +42,14 @@ public:
     QPushButton* startstopbutton;
     QPushButton* modebutton;
     QLineEdit* timeframe;
+    QLineEdit* sample;
     QPushButton* savebutton;
     QChart* graph;
+    QLineSeries* serie;
     QChartView* graphview;
     Kombinationsfeld* kombinationsfeld;
+
+    Graphersteller* graphersteller;
 };
 
 #endif // MAINWINDOW_H

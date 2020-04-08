@@ -22,17 +22,37 @@ mainWindow::mainWindow()
     modebutton->setFont(QFont("Arial", 12));
     modebutton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+    QVBoxLayout* timeframelayout = new QVBoxLayout();
+    QLabel* timeframelabel = new QLabel("Timeframe [s]");
     timeframe = new QLineEdit;
+    connect(timeframe, SIGNAL (editingFinished()),this, SLOT (handletimframe()));
+    timeframe->setText(QString::number(Control::timeframe));
     timeframe->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    timeframelayout->addWidget(timeframelabel);
+    timeframelayout->addWidget(timeframe);
+
+    QVBoxLayout* samplelayout = new QVBoxLayout();
+    QLabel* samplelabel = new QLabel("Samplefreq. [Hz]");
+    sample = new QLineEdit;
+    connect(sample, SIGNAL (editingFinished()),this, SLOT (handlesample()));
+    sample->setToolTip("Sample Frequenz in Hz");
+    sample->setText(QString::number(Control::samplefreq));
+    sample->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    samplelayout->addWidget(samplelabel);
+    samplelayout->addWidget(sample);
 
     savebutton = new QPushButton("Save");
     savebutton->setFont(QFont("Arial", 12));
     savebutton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    graph = new QChart;
+    graph = new QChart();
     graph->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    graphview = new QChartView;
+    serie = new QLineSeries;
+    serie->setName("Daten!!!");
+    graph->addSeries(serie);
+
+    graphview = new QChartView();
     graphview->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     graphview->setChart(graph);
 
@@ -44,7 +64,8 @@ mainWindow::mainWindow()
     mainLayout->addWidget(parameterauswahl,0,0,10,3);
     mainLayout->addWidget(startstopbutton,0,3,1,1);
     mainLayout->addWidget(modebutton,1,3,1,1);
-    mainLayout->addWidget(timeframe,2,3,1,1);
+    mainLayout->addLayout(timeframelayout,2,3,1,1);
+    mainLayout->addLayout(samplelayout,3,3,1,1);
     mainLayout->addWidget(savebutton,5,3,1,1);
     mainLayout->addWidget(graphview,0,4,6,6);
     mainLayout->addWidget(kombinationsfeld,6,3,4,7);
@@ -66,6 +87,8 @@ mainWindow::mainWindow()
     setWindowTitle("Messbox2000");
     //setWindowState(Qt::WindowFullScreen);
 
+    graphersteller = new Graphersteller(this);
+    QObject::connect(graphersteller,&Graphersteller::create_graph,this,&mainWindow::create_graph);
 }
 
 void mainWindow::handlestartstopbutton()
@@ -98,20 +121,43 @@ void mainWindow::handlemodebutton()
     }
 }
 
-void mainWindow::draw_graph()
+void mainWindow::handletimframe()
 {
+    float n_timeframe = std::atof(timeframe->text().toUtf8());
+    if (n_timeframe)
+    {
+        Control::timeframe=n_timeframe;
+    }
+    else
+    {
+        timeframe->setText(QString::number(Control::timeframe));
+    }
+}
 
+void mainWindow::handlesample()
+{
+    float n_sample = std::atof(sample->text().toUtf8());
+    if (n_sample)
+    {
+        Control::samplefreq=n_sample;
+    }
+    else
+    {
+        sample->setText(QString::number(Control::samplefreq));
+    }
+}
+
+void mainWindow::create_graph(QLineSeries* n_serie)
+{
     for (QAbstractSeries * series : graph->series())
     {
         graph->removeSeries(series);
         delete series;
     }
-    QLineSeries *series = new QLineSeries();
-    for (Kennliniendaten* datum:Control::kennlinie)
-    {
-        series->append(datum->x,datum->y);
-    }
-    series->setName("Daten!!!");
-    graph->addSeries(series);
+    serie = n_serie;
+    graph->addSeries(serie);
+ //  delete serie;
 }
+
+
 

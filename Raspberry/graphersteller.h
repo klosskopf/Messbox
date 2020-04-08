@@ -1,17 +1,23 @@
 #ifndef GRAPHERSTELLER_H
 #define GRAPHERSTELLER_H
 
-#include <QObject>
 #include <QtCharts>
+#include <QObject>
+#include "mainwindow.h"
+class mainWindow;
 
 class Graphersteller : public QObject
 {
     Q_OBJECT
 public:
-    explicit Graphersteller(QObject *parent = nullptr);
-    void draw();
+    Graphersteller(mainWindow* n_gui):gui(n_gui){time=0;}
+    void graph_thread();
+private:
+    mainWindow* gui;
+    void draw_graph();
+    uint32_t time;
 signals:
-    void create_graph();
+    void create_graph(QLineSeries* n_serie);
 };
 
 #endif // GRAPHERSTELLER_H

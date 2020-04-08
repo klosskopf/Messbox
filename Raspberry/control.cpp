@@ -1,27 +1,22 @@
 #include "control.h"
 
-static Graphersteller graphersteller;
-
 void Control::control_thread(mainWindow* n_gui)
 {
     gui=n_gui;
-    QObject::connect(&graphersteller,&Graphersteller::create_graph,gui,&mainWindow::draw_graph);
     xAchse=new Time_Block();
-    yAchse=new Time_Block();
+    yAchse=NULL;
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
     while(1)
     {
         delete_bloecke();
         check_karten();
-        create_kennlinie();
-        graphersteller.draw();
         Post::send_get_daten(1,1);
         Post::send_get_status();
 
         if (findkarte(1))
         {
-            xAchse=findkarte(1)->find_parameter(1);
+            yAchse=findkarte(1)->find_parameter(1);
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
@@ -75,26 +70,6 @@ void Control::delete_bloecke()
     }
 }
 
-void Control::create_kennlinie()
-{
-    if(xAchse && yAchse)
-    {
-        uint32_t newestime=(xAchse->newest() > yAchse->newest()) ? yAchse->newest() :xAchse->newest();
-        uint32_t number = samplefreq * timeframe;
-        for (Kennliniendaten* datum : kennlinie)
-        {
-            delete datum;
-        }
-        kennlinie.clear();
-        for (uint32_t time=newestime; time>(newestime-number); time--)
-        {
-            double xvalue=xAchse->get_data(time);
-            double yvalue=yAchse->get_data(time);
-            kennlinie.push_back(new Kennliniendaten(xvalue, yvalue));
-        }
-    }
-}
-
 Karte* Control::findkarte(int karte)
 {
     for (Karte* moeglichekarte : Kartenset)
@@ -122,3 +97,4 @@ float Control::icharge = -1;
 float Control::vbat = -1;
 float Control::vlade = -1;
 float Control::vin = -1;
+QMutex Control::mutex;

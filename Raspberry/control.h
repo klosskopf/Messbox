@@ -43,10 +43,11 @@ public:
     static float vlade;
     static float vin;
 
-    static void create_kennlinie();
     static void check_karten();
     static void delete_bloecke();
     static Karte* findkarte(int Karte);
+
+    static QMutex mutex;
 };
 
 #endif // CONTROL_H

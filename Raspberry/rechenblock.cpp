@@ -4,7 +4,7 @@
 
 Rechenblock::Rechenblock()
 {
-
+    on_kombinationsfeld=false;
 }
 
 Rechenblock::~Rechenblock()
@@ -40,6 +40,6 @@ void Rechenblock::mousePressEvent(QMouseEvent *event)
     }
     else if (event->button() == Qt::RightButton)
     {
-        Control::delete_block.push_back(this);
+        if(on_kombinationsfeld) Control::delete_block.push_back(this);
     }
 }

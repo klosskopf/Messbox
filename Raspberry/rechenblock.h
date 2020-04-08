@@ -17,6 +17,7 @@ public:
     virtual double get_data(uint32_t time)=0;
     virtual Rechenblock* copy()=0;
     virtual uint32_t newest();
+    bool on_kombinationsfeld;
 
     QLabel* label;
 protected:

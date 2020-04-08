@@ -2,7 +2,7 @@
 #include "string.h"
 #include "paket.h"
 
-#define BLOCK
+#define NUMMER 0x400
 
 typedef struct{
     uint8_t befehl;
@@ -19,7 +19,7 @@ typedef struct{
     uint32_t nummer;
     uint32_t lenght;
     uint32_t startzeit;
-    float daten[0x400];
+    float daten[NUMMER];
 }get_daten;
 union {
     uint8_t bytes[sizeof(get_daten)];
@@ -42,13 +42,15 @@ union {
 
 void Spi::txrx(uint8_t * data, uint32_t laenge)
 {
+    static uint32_t time=0;
     get_parameter_daten.simple.lenght=strlen(get_parameter_daten.simple.daten);
-    for(int o=0;o<0x400;o++)
+    if (befehl==0x03 && laenge > 100)
+    for(uint32_t o=0;o<NUMMER;o++)
     {
-        getdatendaten.simple.daten[o]=((float)(o*o));
+        getdatendaten.simple.daten[o]=((float)sin(0.01*(double)time++));
     }
-    getdatendaten.simple.lenght=0x1000;
-    getdatendaten.simple.startzeit=0xffff0000;
+    getdatendaten.simple.lenght=NUMMER<<2;
+    getdatendaten.simple.startzeit=time-NUMMER;
     getstatusdaten.simple.v5v=5.01;
     getstatusdaten.simple.vin=14.12;
     getstatusdaten.simple.v33v=3.4;

@@ -47,9 +47,17 @@ void Feld::dropEvent(QGraphicsSceneDragDropEvent *event)
 {
     if (event->mimeData()->text()=="Rechenblock")
     {
-        Rechenblock* na = Control::clipboard->copy();
-        kombinationsfeld->feld->addWidget(na);
-        na->setGeometry(event->scenePos().x(), event->scenePos().y(), 100,50);
+        if (Control::clipboard->on_kombinationsfeld)
+        {
+            Control::clipboard->setGeometry(event->scenePos().x(), event->scenePos().y(), 100,50);
+        }
+        else
+        {
+            Rechenblock* na = Control::clipboard->copy();
+            kombinationsfeld->feld->addWidget(na);
+            na->on_kombinationsfeld=true;
+            na->setGeometry(event->scenePos().x(), event->scenePos().y(), 100,50);
+        }
         update();
     }
 }

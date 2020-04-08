@@ -8,6 +8,7 @@
 #include "parameter.h"
 #include "control.h"
 #include "decoder.h"
+#include "graphersteller.h"
 #include <thread>
 #include <list>
 
@@ -20,6 +21,7 @@ int main(int argc, char* argv[])
     std::thread postthread(Post::spi_thread);
     std::thread decoderthread(Decoder::decoder_thread);
     std::thread controlthread(Control::control_thread,&window);
+    std::thread graphthread(&Graphersteller::graph_thread, window.graphersteller);
 
     window.show();
     return app.exec();
