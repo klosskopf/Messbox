@@ -35,6 +35,7 @@ private slots:
     void handlesample();
 public slots:
     void create_graph(QLineSeries* n_serie);
+    void delete_Block(Rechenblock*);
 public:
     QWidget* centralwidget;
     QMenuBar* menubar;
@@ -45,7 +46,8 @@ public:
     QLineEdit* sample;
     QPushButton* savebutton;
     QChart* graph;
-    QLineSeries* serie;
+    QLineSeries* anzeigeserie;
+    QLineSeries* aenderserie;
     QChartView* graphview;
     Kombinationsfeld* kombinationsfeld;
 

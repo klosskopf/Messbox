@@ -36,3 +36,8 @@ HEADERS += \
 
 QT += widgets
 QT += charts
+
+DISTFILES +=
+
+RESOURCES += \
+    images.qrc

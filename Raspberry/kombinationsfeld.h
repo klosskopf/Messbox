@@ -25,7 +25,7 @@ class Kombinationsfeld : public QGroupBox
 {
     Q_OBJECT
 public:
-    explicit Kombinationsfeld(QWidget *parent = nullptr);
+    explicit Kombinationsfeld();
     Rechenblock* plus_block;
     Rechenblock* minus_block;
     Rechenblock* mal_block;

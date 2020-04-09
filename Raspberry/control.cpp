@@ -66,7 +66,8 @@ void Control::delete_bloecke()
     {
         Rechenblock* block = delete_block.front();
         delete_block.pop_front();
-        delete block;
+        emit block->delete_this(block);
+       // delete block;
     }
 }
 

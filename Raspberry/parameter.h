@@ -1,10 +1,10 @@
 #ifndef PARAMETER_H
 #define PARAMETER_H
-#include "rechenblock.h"
-#include "daten.h"
 #include <string>
 #include <vector>
+#include "rechenblock.h"
 #include "karte.h"
+#include "daten.h"
 class Karte;
 
 enum Parametrierbar { NEIN, FREI, LISTE };
@@ -13,7 +13,6 @@ class Parameter : public Rechenblock
 {
 public:
     Parameter(uint32_t n_nummer, bool n_f_nots, std::string n_name, Parametrierbar n_parametrierar, float n_min, float n_max);
-    virtual ~Parameter();
     Karte* karte;
     const uint32_t nummer;
     const bool f_nots;

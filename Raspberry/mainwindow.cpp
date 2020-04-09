@@ -48,9 +48,9 @@ mainWindow::mainWindow()
     graph = new QChart();
     graph->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    serie = new QLineSeries;
-    serie->setName("Daten!!!");
-    graph->addSeries(serie);
+    anzeigeserie = new QLineSeries;
+    aenderserie = new QLineSeries;
+    graph->addSeries(anzeigeserie);
 
     graphview = new QChartView();
     graphview->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -152,12 +152,16 @@ void mainWindow::create_graph(QLineSeries* n_serie)
     for (QAbstractSeries * series : graph->series())
     {
         graph->removeSeries(series);
-        delete series;
     }
-    serie = n_serie;
-    graph->addSeries(serie);
- //  delete serie;
+    QLineSeries* old_serie=anzeigeserie;
+    anzeigeserie = n_serie;
+    aenderserie=old_serie;
+    graph->addSeries(anzeigeserie);
 }
 
+void mainWindow::delete_Block(Rechenblock* block)
+{
+delete block;
+}
 
 

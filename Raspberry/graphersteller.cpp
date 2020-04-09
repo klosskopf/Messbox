@@ -24,14 +24,14 @@ void Graphersteller::draw_graph()
             delete datum;
         }
         Control::kennlinie.clear();
-        QLineSeries* n_serie = new QLineSeries;
+        gui->aenderserie->clear();
         for (uint32_t time=newestime; time>0 && time>(newestime-number); time--)
         {
             double xvalue=Control::xAchse->get_data(time);
             double yvalue=Control::yAchse->get_data(time);
             Control::kennlinie.push_back(new Kennliniendaten(xvalue, yvalue));
-            n_serie->append(xvalue,yvalue);
+            gui->aenderserie->append(xvalue,yvalue);
         }
-        emit create_graph(n_serie);
+        emit create_graph(gui->aenderserie);
     }
 }

@@ -99,5 +99,17 @@ uint32_t Constant_Block::newest()
     return -1;
 }
 
+void Constant_Block::set_constant()
+{
+    QLabel* label=new QLabel();
+    QPixmap map= QPixmap(":images/const.png").scaled(30, 30);
+    // map.fill(QColor("transparent"));
+    QPainter painter(&map);
+    painter.setPen(Qt::black);
+    painter.setFont(QFont("Arial", 10));
+    painter.drawText(4,23,QString::number(constant));
+    label->setPixmap(map);
+    setup_Rechenblock(label);
+}
 
 

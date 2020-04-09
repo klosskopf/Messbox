@@ -1,4 +1,11 @@
 #include "karte.h"
+#include "parameterauswahl.h"
+#include <QString>
+#include <QObject>
+#include <list>
+#include "parameter.h"
+#include "mainwindow.h"
+#include "karte_gui.h"
 
 Karte::Karte(mainWindow* n_gui, int n_index, std::string n_name, std::list<Parameter*> *n_parameter)
     : gui(n_gui), index(n_index), name(n_name), parameter(n_parameter)

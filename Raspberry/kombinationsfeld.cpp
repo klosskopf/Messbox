@@ -4,7 +4,7 @@
 #include <QDragEnterEvent>
 #include "control.h"
 
-Kombinationsfeld::Kombinationsfeld(QWidget *parent) : QGroupBox("Kennlinienbaukasten",parent)
+Kombinationsfeld::Kombinationsfeld() : QGroupBox("Kennlinienbaukasten")
 {
     setAlignment(Qt::AlignHCenter);
     plus_block = new Plus_Block();
@@ -15,6 +15,7 @@ Kombinationsfeld::Kombinationsfeld(QWidget *parent) : QGroupBox("Kennlinienbauka
     time_block = new Time_Block();
     integrate_block = new Integrate_Block();
     derivate_block = new Derivate_Block();
+
     feld = new Feld(this);
     feld_view = new QGraphicsView();
     feld_view->setScene(feld);
@@ -22,14 +23,14 @@ Kombinationsfeld::Kombinationsfeld(QWidget *parent) : QGroupBox("Kennlinienbauka
 
     QGridLayout *layout = new QGridLayout;
 
-    layout->addWidget(plus_block,0,0,1,1);
-    layout->addWidget(minus_block,0,1,1,1);
-    layout->addWidget(mal_block,0,2,1,1);
-    layout->addWidget(geteilt_block,0,3,1,1);
-    layout->addWidget(constant_block,0,4,1,1);
-    layout->addWidget(time_block,0,5,1,1);
-    layout->addWidget(integrate_block,0,6,1,1);
-    layout->addWidget(derivate_block,0,7,1,1);
+    layout->addWidget(plus_block,0,0,1,1,Qt::AlignCenter);
+    layout->addWidget(minus_block,0,1,1,1,Qt::AlignCenter);
+    layout->addWidget(mal_block,0,2,1,1,Qt::AlignCenter);
+    layout->addWidget(geteilt_block,0,3,1,1,Qt::AlignCenter);
+    layout->addWidget(constant_block,0,4,1,1,Qt::AlignCenter);
+    layout->addWidget(time_block,0,5,1,1,Qt::AlignCenter);
+    layout->addWidget(integrate_block,0,6,1,1,Qt::AlignCenter);
+    layout->addWidget(derivate_block,0,7,1,1,Qt::AlignCenter);
     layout->addWidget(feld_view,1,0,1,8);
 
     layout->setRowStretch(0,1);
@@ -49,14 +50,18 @@ void Feld::dropEvent(QGraphicsSceneDragDropEvent *event)
     {
         if (Control::clipboard->on_kombinationsfeld)
         {
-            Control::clipboard->setGeometry(event->scenePos().x(), event->scenePos().y(), 100,50);
+            Control::clipboard->setGeometry(event->scenePos().x(), event->scenePos().y(), 50,50);
         }
         else
         {
             Rechenblock* na = Control::clipboard->copy();
             kombinationsfeld->feld->addWidget(na);
             na->on_kombinationsfeld=true;
-            na->setGeometry(event->scenePos().x(), event->scenePos().y(), 100,50);
+            na->setGeometry(event->scenePos().x(), event->scenePos().y(), 50,50);
+            QPalette pal = palette();
+            pal.setColor(QPalette::Background, Qt::white);
+            na->setAutoFillBackground(true);
+            na->setPalette(pal);
         }
         update();
     }
