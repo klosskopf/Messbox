@@ -23,8 +23,6 @@ public:
     float max;
     std::vector<Daten*>* daten;
     double get_data(uint32_t time) override;
-    Parameter* copy() override;
-    void delete_old();
     bool is_plotbar() const;
     void add_datum(uint32_t time, float datum);
     void add_auswahl(std::string auswahl);

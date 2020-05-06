@@ -8,7 +8,6 @@ void Control::control_thread(mainWindow* n_gui)
 
     while(1)
     {
-        delete_bloecke();
         check_karten();
         Post::send_get_daten(1,1);
         Post::send_get_status();
@@ -59,17 +58,6 @@ void Control::check_karten()
     }
 }
 
-void Control::delete_bloecke()
-{
-    while(delete_block.size())
-    {
-        Rechenblock* block = delete_block.front();
-        delete_block.pop_front();
-        emit block->delete_this(block);
-       // delete block;
-    }
-}
-
 Karte* Control::findkarte(int karte)
 {
     for (Karte* moeglichekarte : Kartenset)
@@ -88,14 +76,10 @@ Rechenblock* Control::yAchse=NULL;
 float Control::samplefreq=1;
 float Control::timeframe=1000;
 std::list<Kennliniendaten*> Control::kennlinie;
-std::list<Rechenblock*> Control::delete_block;
 bool Control::newkarte=false;
-Rechenblock* Control::clipboard = NULL;
-Node* Control::nodeclipboard = NULL;
 float Control::vcc5V = -1;
 float Control::vcc33V = -1;
 float Control::icharge = -1;
 float Control::vbat = -1;
 float Control::vlade = -1;
 float Control::vin = -1;
-QMutex Control::mutex;

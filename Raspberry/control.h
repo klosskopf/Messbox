@@ -33,9 +33,6 @@ public:
     static Rechenblock* yAchse;
     static std::list<Kennliniendaten*> kennlinie;
     static bool newkarte;
-    static Rechenblock* clipboard;
-    static Node* nodeclipboard;
-    static std::list<Rechenblock*>delete_block;
 
     static float vcc5V;
     static float vcc33V;
@@ -45,10 +42,7 @@ public:
     static float vin;
 
     static void check_karten();
-    static void delete_bloecke();
     static Karte* findkarte(int Karte);
-
-    static QMutex mutex;
 };
 
 #endif // CONTROL_H

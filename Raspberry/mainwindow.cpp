@@ -56,8 +56,8 @@ mainWindow::mainWindow()
     graphview->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     graphview->setChart(graph);
 
-    kombinationsfeld = new Kombinationsfeld();
-    kombinationsfeld->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    rechenfeld = new Rechenfeld();
+    rechenfeld->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QGridLayout *mainLayout = new QGridLayout;
 
@@ -68,7 +68,7 @@ mainWindow::mainWindow()
     mainLayout->addLayout(samplelayout,3,3,1,1);
     mainLayout->addWidget(savebutton,5,3,1,1);
     mainLayout->addWidget(graphview,0,4,6,6);
-    mainLayout->addWidget(kombinationsfeld,6,3,4,7);
+    mainLayout->addWidget(rechenfeld,6,3,4,7);
     for (int i=0;i<10;i++)
     {
         mainLayout->setRowStretch(i,10);
@@ -158,10 +158,3 @@ void mainWindow::create_graph(QLineSeries* n_serie)
     aenderserie=old_serie;
     graph->addSeries(anzeigeserie);
 }
-
-void mainWindow::delete_Block(Rechenblock* block)
-{
-delete block;
-}
-
-

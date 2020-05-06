@@ -92,11 +92,10 @@ void Karte_GUI::mousePressEvent(QMouseEvent *event)
         Parameter* gefunden = karte->find_parameter(parameter->currentText().toUtf8().constData());
         if (gefunden && gefunden->f_nots)
         {
-            Control::clipboard=gefunden;
             QDrag *drag = new QDrag(this);
             QMimeData *mimeData = new QMimeData;
 
-            mimeData->setText("Rechenblock");
+            mimeData->setText(QString::number(karte->index).append(":").append(parameter->currentText()));
             drag->setMimeData(mimeData);
             //drag->setPixmap(iconPixmap);
 

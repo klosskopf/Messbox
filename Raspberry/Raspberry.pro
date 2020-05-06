@@ -5,7 +5,6 @@ SOURCES += \
     graphersteller.cpp \
     karte.cpp \
     karte_gui.cpp \
-    kombinationsfeld.cpp \
     main.cpp \
     mainwindow.cpp \
     paket.cpp \
@@ -14,6 +13,7 @@ SOURCES += \
     post.cpp \
     rechenblock.cpp \
     rechenbloecke.cpp \
+    rechenfeld.cpp \
     spi.cpp
 
 HEADERS += \
@@ -24,7 +24,6 @@ HEADERS += \
     graphersteller.h \
     karte.h \
     karte_gui.h \
-    kombinationsfeld.h \
     mainwindow.h \
     paket.h \
     parameter.h \
@@ -32,6 +31,7 @@ HEADERS += \
     post.h \
     rechenblock.h \
     rechenbloecke.h \
+    rechenfeld.h \
     spi.h
 
 QT += widgets
@@ -39,5 +39,4 @@ QT += charts
 
 DISTFILES +=
 
-RESOURCES += \
-    images.qrc
+RESOURCES +=
