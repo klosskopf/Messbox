@@ -4,7 +4,6 @@ void Control::control_thread(mainWindow* n_gui)
 {
     gui=n_gui;
     xAchse=new Time_Block();
-    yAchse=NULL;
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
     while(1)
@@ -92,6 +91,7 @@ std::list<Kennliniendaten*> Control::kennlinie;
 std::list<Rechenblock*> Control::delete_block;
 bool Control::newkarte=false;
 Rechenblock* Control::clipboard = NULL;
+Node* Control::nodeclipboard = NULL;
 float Control::vcc5V = -1;
 float Control::vcc33V = -1;
 float Control::icharge = -1;

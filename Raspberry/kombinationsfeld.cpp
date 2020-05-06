@@ -19,7 +19,6 @@ Kombinationsfeld::Kombinationsfeld() : QGroupBox("Kennlinienbaukasten")
     feld = new Feld(this);
     feld_view = new QGraphicsView();
     feld_view->setScene(feld);
-    feld_view->setAcceptDrops(true);
 
     QGridLayout *layout = new QGridLayout;
 
@@ -40,8 +39,23 @@ Kombinationsfeld::Kombinationsfeld() : QGroupBox("Kennlinienbaukasten")
         layout->setColumnStretch(i,1);
     }
     setLayout(layout);
-    setAcceptDrops(true);
     feld->setSceneRect(0,0,1000,300);
+
+    feld_view->centerOn(1000, 0);
+    feld_view->setAcceptDrops(true);
+
+    Node* xnode = new Node(NULL);
+    Node* ynode = new Node(NULL);
+    feld->addWidget(xnode);
+    feld->addWidget(ynode);
+    xnode->setGeometry(990,10,50,50);
+    ynode->setGeometry(990,100,50,50);
+    QPalette pal = palette();
+    pal.setColor(QPalette::Background, Qt::white);
+    xnode->setAutoFillBackground(true);
+    xnode->setPalette(pal);
+    ynode->setAutoFillBackground(true);
+    ynode->setPalette(pal);
 }
 
 void Feld::dropEvent(QGraphicsSceneDragDropEvent *event)

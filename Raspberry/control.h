@@ -34,6 +34,7 @@ public:
     static std::list<Kennliniendaten*> kennlinie;
     static bool newkarte;
     static Rechenblock* clipboard;
+    static Node* nodeclipboard;
     static std::list<Rechenblock*>delete_block;
 
     static float vcc5V;

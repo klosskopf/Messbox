@@ -73,3 +73,44 @@ void Rechenblock::mousePressEvent(QMouseEvent *event)
         if(on_kombinationsfeld) Control::delete_block.push_back(this);
     }
 }
+
+void Node::dropEvent(QDropEvent *event)
+{
+    if (event->mimeData()->text()=="Connection")
+    {
+
+    }
+}
+void Node::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->text()=="Connection")
+    {
+        event->acceptProposedAction();
+    }
+}
+void Node::dragMoveEvent(QDragMoveEvent *event)
+{
+    if (event->mimeData()->text()=="Connection")
+    {
+        event->acceptProposedAction();
+    }
+}
+void Node::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        Control::nodeclipboard=this;
+        QDrag *drag = new QDrag(this);
+        QMimeData *mimeData = new QMimeData;
+
+        mimeData->setText("Connection");
+        drag->setMimeData(mimeData);
+        //drag->setPixmap(iconPixmap);
+
+        Qt::DropAction dropAction = drag->exec();
+    }
+    else if (event->button() == Qt::RightButton)
+    {
+
+    }
+}

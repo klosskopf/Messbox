@@ -38,15 +38,20 @@ class Node : public QLabel
 public:
     Node(Rechenblock* n_parent):QLabel(), parent(n_parent)
     {
-        parent->nodes.push_back(this);
+        if(n_parent)parent->nodes.push_back(this);
         setPixmap(QPixmap(":images/node.png"));
         setAttribute(Qt::WA_DeleteOnClose);
+        setAcceptDrops(true);
         //setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     }
     virtual ~Node(){};
 private:
     Rechenblock* parent;
-
+protected:
+    void dropEvent(QDropEvent *event) override;
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dragMoveEvent(QDragMoveEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
 };
 
 #endif // RECHENBLOCK_H
