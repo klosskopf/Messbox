@@ -1,4 +1,5 @@
 #include "rechenfeld.h"
+#include "control.h"
 #include <QGridLayout>
 
 Rechenfeld::Rechenfeld(QWidget *parent) : QWidget(parent)
@@ -25,7 +26,33 @@ Rechenfeld::Rechenfeld(QWidget *parent) : QWidget(parent)
     layout->setRowStretch(3,10);
 
     layout->setColumnStretch(0,1);
-    layout->setColumnStretch(1,20);
+    layout->setColumnStretch(1,30);
 
     setLayout(layout);
+
+    connect(xfeld, SIGNAL (textChanged()),this, SLOT (handle_x_input()));
+    connect(yfeld, SIGNAL (textChanged()),this, SLOT (handle_y_input()));
+}
+
+void Rechenfeld::handle_x_input()
+{
+    while (xbloecke.size())
+    {
+        Rechenblock* block = xbloecke.front();
+        xbloecke.pop_front();
+        delete block;
+    }
+    activeblock=Control::xAchse;
+
+    activeblock->von_unten(new Time_Block());
+    activeblock->von_unten(new Plus_Block());
+    activeblock->von_unten(new Constant_Block());
+    activeblock->von_unten(new Mal_Block());
+    activeblock->von_unten(new Constant_Block());
+
+}
+
+void Rechenfeld::handle_y_input()
+{
+
 }

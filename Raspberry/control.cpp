@@ -3,7 +3,6 @@
 void Control::control_thread(mainWindow* n_gui)
 {
     gui=n_gui;
-    xAchse=new Time_Block();
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
     while(1)
@@ -12,10 +11,7 @@ void Control::control_thread(mainWindow* n_gui)
         Post::send_get_daten(1,1);
         Post::send_get_status();
 
-        if (findkarte(1))
-        {
-            yAchse=findkarte(1)->find_parameter(1);
-        }
+
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }
@@ -71,8 +67,8 @@ mainWindow* Control::gui;
 std::list<Karte*> Control::Kartenset;
 Modus Control::modus=STARTSTOP;
 Zustand Control::zustand=STOP;
-Rechenblock* Control::xAchse=NULL;
-Rechenblock* Control::yAchse=NULL;
+Rechenblock* Control::xAchse=new Axis_Block;
+Rechenblock* Control::yAchse=new Axis_Block;
 float Control::samplefreq=1;
 float Control::timeframe=1000;
 std::list<Kennliniendaten*> Control::kennlinie;

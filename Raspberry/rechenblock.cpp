@@ -2,7 +2,7 @@
 #include <QtWidgets>
 #include "control.h"
 
-Rechenblock::Rechenblock(int n_eingaengenr) : eingaengenr(n_eingaengenr)
+Rechenblock::Rechenblock(int n_eingaengenr, uint32_t n_priority) : eingaengenr(n_eingaengenr), priority(n_priority)
 {
 
 }
@@ -21,4 +21,14 @@ uint32_t Rechenblock::newest()
     }
     if (eingaenge.size()==0) newest=0;
     return newest;
+}
+
+void Rechenblock::von_oben(Rechenblock* neuerblock,uint32_t eingangsindex)
+{
+
+}
+
+void Rechenblock::von_unten(Rechenblock* neuerblock)
+{
+
 }

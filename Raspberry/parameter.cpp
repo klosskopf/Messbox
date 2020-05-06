@@ -1,6 +1,6 @@
 #include "parameter.h"
 Parameter::Parameter(uint32_t n_nummer,bool n_f_nots, std::string n_name, Parametrierbar n_parametrierar, float n_min, float n_max)
-    :Rechenblock(0), nummer(n_nummer), f_nots(n_f_nots), name(n_name), parametrierbar(n_parametrierar), min(n_min), max(n_max)
+    :Rechenblock(0,5), nummer(n_nummer), f_nots(n_f_nots), name(n_name), parametrierbar(n_parametrierar), min(n_min), max(n_max)
 {
     auswahlliste = new std::list<std::string>;
     daten = new std::vector<Daten*>;

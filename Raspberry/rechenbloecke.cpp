@@ -1,6 +1,18 @@
 #include "rechenbloecke.h"
 #include "control.h"
 
+double Axis_Block::get_data(uint32_t time)
+{
+    if(eingaenge.size()>0)
+    {
+        return eingaenge.front()->get_data(time);
+    }
+    else
+    {
+        return 0;
+    }
+}
+
 double Plus_Block::get_data(uint32_t time)
 {
     double ausgang=0;
