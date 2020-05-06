@@ -2,15 +2,10 @@
 #define RECHENBLOCK_H
 #include <list>
 #include <stdint.h>
-#include <QLabel>
-#include <QPushButton>
-#include <QGridLayout>
-#include <QString>
 class Node;
 
 class Rechenblock
 {
-    Q_OBJECT
 public:
     Rechenblock(int eingaengenr);
     virtual ~Rechenblock();
