@@ -2,7 +2,7 @@
 #include <QtWidgets>
 #include "control.h"
 
-Rechenblock::Rechenblock(int n_eingaengenr, uint32_t n_priority) : eingaengenr(n_eingaengenr), priority(n_priority)
+Rechenblock::Rechenblock(int n_eingaengenr, int n_priority) : eingaengenr(n_eingaengenr), ausgang(NULL), priority(n_priority)
 {
 
 }
@@ -23,12 +23,54 @@ uint32_t Rechenblock::newest()
     return newest;
 }
 
-void Rechenblock::von_oben(Rechenblock* neuerblock,uint32_t eingangsindex)
+int Rechenblock::von_oben(Rechenblock* neuerblock,Rechenblock* obererblock)
 {
-
+    if (neuerblock->priority==-1 && priority==1)
+    {
+        priority=5;
+        Rechenfeld::activeblock=this;
+        return(0);
+    }
+    else if(neuerblock->priority >= priority)
+    {
+        obererblock->ausgang=neuerblock;
+        neuerblock->eingaenge.push_back(obererblock);
+        neuerblock->ausgang=this;
+        std::replace (eingaenge.begin(), eingaenge.end(), obererblock, neuerblock);
+        Rechenfeld::activeblock=neuerblock;
+        return(0);
+    }
+    else if (ausgang)
+    {
+        return(ausgang->von_oben(neuerblock,this));
+    }
+    else
+    {
+        return(-1);
+    }
 }
 
-void Rechenblock::von_unten(Rechenblock* neuerblock)
+int Rechenblock::von_unten(Rechenblock* neuerblock)
 {
-
+    if (neuerblock->priority==-1 && priority==1)
+    {
+        priority=5;
+        Rechenfeld::activeblock=this;
+        return(0);
+    }
+    else if(neuerblock->priority >= priority || neuerblock->priority==1)
+    {
+        neuerblock->ausgang=this;
+        eingaenge.push_back(neuerblock);
+        Rechenfeld::activeblock=neuerblock;
+        return(0);
+    }
+    else if (ausgang)
+    {
+        return(ausgang->von_oben(neuerblock,this));
+    }
+    else
+    {
+        return(-1);
+    }
 }

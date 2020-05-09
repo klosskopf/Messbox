@@ -1,6 +1,6 @@
-#include "rechenfeld.h"
 #include "control.h"
 #include <QGridLayout>
+#include "rechenfeld.h"
 
 Rechenfeld::Rechenfeld(QWidget *parent) : QWidget(parent)
 {
@@ -34,25 +34,52 @@ Rechenfeld::Rechenfeld(QWidget *parent) : QWidget(parent)
     connect(yfeld, SIGNAL (textChanged()),this, SLOT (handle_y_input()));
 }
 
-void Rechenfeld::handle_x_input()
+
+int Rechenfeld::addblock(Rechenblock* block)
 {
-    while (xbloecke.size())
+    xbloecke.push_back(block);
+    return(Rechenfeld::activeblock->von_unten(block));
+}
+
+void Rechenfeld::handle_x_input()   //This needs a mutex
+{
+    while (Rechenfeld::xbloecke.size())
     {
-        Rechenblock* block = xbloecke.front();
-        xbloecke.pop_front();
+        Rechenblock* block = Rechenfeld::xbloecke.front();
+        Rechenfeld::xbloecke.pop_front();
         delete block;
     }
-    activeblock=Control::xAchse;
+    Control::xAchse->eingaenge.clear();
+    Rechenfeld::activeblock=Control::xAchse;
 
-    activeblock->von_unten(new Time_Block());
-    activeblock->von_unten(new Plus_Block());
-    activeblock->von_unten(new Constant_Block());
-    activeblock->von_unten(new Mal_Block());
-    activeblock->von_unten(new Constant_Block());
+    addblock(new Time_Block());
+    addblock(new Mal_Block());
+    addblock(new Klammerauf_Block());
+    addblock(new Time_Block());
+    addblock(new Plus_Block());
+    addblock(new Constant_Block());
+    addblock(new Klammerzu_Block());
+    addblock(new Plus_Block());
+    addblock(new Time_Block());
+    addblock(new Mal_Block());
+    addblock(new Integrate_Block());
+    addblock(new Klammerauf_Block());
+    addblock(new Klammerauf_Block());
+    addblock(new Constant_Block());
+    addblock(new Minus_Block());
+    addblock(new Time_Block());
+    addblock(new Klammerzu_Block());
+    addblock(new Mal_Block());
+    addblock(new Constant_Block());
+    addblock(new Klammerzu_Block());
 
+    xerror->setText(Control::xAchse->print());
 }
 
 void Rechenfeld::handle_y_input()
 {
 
 }
+
+Rechenblock* Rechenfeld::activeblock=NULL;
+std::list<Rechenblock*> Rechenfeld::xbloecke,ybloecke;

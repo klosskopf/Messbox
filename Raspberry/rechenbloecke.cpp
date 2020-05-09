@@ -101,6 +101,16 @@ double Derivate_Block::get_data(uint32_t time)
     return ausgabe;
 }
 
+double Klammerauf_Block::get_data(uint32_t time)
+{
+    return eingaenge.front()->get_data(time);
+}
+
+double Klammerzu_Block::get_data(uint32_t time)
+{
+    return 0;
+}
+
 uint32_t Time_Block::newest()
 {
     return -1;

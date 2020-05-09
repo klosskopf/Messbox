@@ -17,6 +17,7 @@ public:
 private:
     QLabel *xerror,*yerror,*xlabel,*ylabel;
     QTextEdit *xfeld,*yfeld;
+    int addblock(Rechenblock* block);
 private slots:
     void handle_y_input();
     void handle_x_input();
