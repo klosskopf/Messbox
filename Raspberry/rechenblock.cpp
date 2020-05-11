@@ -31,7 +31,7 @@ int Rechenblock::von_oben(Rechenblock* neuerblock,Rechenblock* obererblock)
         Rechenfeld::activeblock=this;
         return(0);
     }
-    else if(neuerblock->priority >= priority)
+    else if(neuerblock->priority > priority)                                                            //>= ehemals
     {
         obererblock->ausgang=neuerblock;
         neuerblock->eingaenge.push_back(obererblock);
@@ -58,7 +58,7 @@ int Rechenblock::von_unten(Rechenblock* neuerblock)
         Rechenfeld::activeblock=this;
         return(0);
     }
-    else if(neuerblock->priority >= priority || neuerblock->priority==1)
+    else if(neuerblock->priority > priority || neuerblock->priority==1)                                                 //>= ehemals
     {
         neuerblock->ausgang=this;
         eingaenge.push_back(neuerblock);

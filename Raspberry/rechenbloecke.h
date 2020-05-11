@@ -48,15 +48,12 @@ public:
 class Constant_Block : public Rechenblock
 {
 public:
-    Constant_Block():Rechenblock(0,5)
-    {
-        constant=1.000;
-    }
+    Constant_Block(double n_constant):Rechenblock(0,5),constant(n_constant){}
     double get_data(uint32_t time) override;
     uint32_t newest() override;
     QString print() override {return (QString::number(constant));}
 private:
-    double constant;
+    const double constant;
 };
 
 class Time_Block : public Rechenblock

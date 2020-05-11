@@ -18,6 +18,7 @@
 #include "graphersteller.h"
 class Parameterauswahl;
 class Graphersteller;
+class Rechenfeld;
 
 using namespace QtCharts;
 

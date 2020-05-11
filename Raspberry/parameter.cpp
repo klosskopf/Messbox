@@ -56,5 +56,5 @@ uint32_t ParameterViewer::newest()
 
 QString ParameterViewer::print()
 {
-    return("parameter->name");
+    return(QString::fromStdString(parameter->name));
 }

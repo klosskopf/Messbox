@@ -48,6 +48,7 @@ void Spi::txrx(uint8_t * data, uint32_t laenge)
     for(uint32_t o=0;o<NUMMER;o++)
     {
         getdatendaten.simple.daten[o]=((float)sin(0.01*(double)time++));
+       // getdatendaten.simple.daten[o]=((float)time++);
     }
     getdatendaten.simple.lenght=NUMMER<<2;
     getdatendaten.simple.startzeit=time-NUMMER;
