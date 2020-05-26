@@ -1,6 +1,8 @@
 #ifndef global
 #define global
 
+#define F_CPU 12000000UL
+
 #define CHARGE_EN PD2
 #define STATUS_CHARGE PD3
 #define STATUS_DONE PD4
@@ -17,6 +19,9 @@
 #define SET_PRE_64 (TCCR1B=0b00011011)
 #define SET_PRE_256 (TCCR1B=0b00011100)
 #define SET_PRE_1024 (TCCR1B=0b00011101)
+
+#define LONGTASTERTRIGGER 1500
+#define SHORTTASTERTRIGGER 100
 
 float samplefreq;
 
