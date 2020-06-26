@@ -1,7 +1,5 @@
 #include "karte_gui.h"
 
-//std::mutex mtx;
-
 Karte_GUI::Karte_GUI(Karte* karte)
 {
     this->karte=karte;

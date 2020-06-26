@@ -157,4 +157,6 @@ void mainWindow::create_graph(QLineSeries* n_serie)
     anzeigeserie = n_serie;
     aenderserie=old_serie;
     graph->addSeries(anzeigeserie);
+    graph->createDefaultAxes();
+
 }

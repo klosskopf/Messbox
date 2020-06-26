@@ -19,7 +19,7 @@ class Rechenfeld : public QWidget
 public:
     explicit Rechenfeld(QWidget *parent = nullptr);
     static Rechenblock* activeblock;
-    std::list<Rechenblock*> xbloecke,ybloecke;
+    std::list<Rechenblock*> bloecke;
 private:
     QLabel *xerror,*yerror,*xlabel,*ylabel;
     QTextEdit *xfeld,*yfeld;
@@ -40,8 +40,7 @@ private:
     DECODEERROR decode(QChar);
     ParameterViewer* get_parameter();
 private slots:
-    void handle_y_input();
-    void handle_x_input();
+    void handle_input();
 
 
 signals:

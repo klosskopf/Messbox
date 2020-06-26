@@ -12,6 +12,8 @@ void Graphersteller::graph_thread()
 
 void Graphersteller::draw_graph()
 {
+    Control::datenmutex.lock();
+    qDebug("drawgraph\n");
     if(Control::xAchse && Control::yAchse)
     {
         uint32_t newesty=Control::yAchse->newest();
@@ -34,4 +36,6 @@ void Graphersteller::draw_graph()
         }
         emit create_graph(gui->aenderserie);
     }
+    qDebug("drawgraph_en\n");
+    Control::datenmutex.unlock();
 }

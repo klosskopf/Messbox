@@ -4,6 +4,7 @@
 #include <QObject>
 #include <list>
 #include <string>
+#include <mutex>
 #include "rechenblock.h"
 #include "mainwindow.h"
 #include "karte.h"
@@ -40,6 +41,8 @@ public:
     static float vbat;
     static float vlade;
     static float vin;
+
+    static QMutex datenmutex;
 
     static void check_karten();
     static Karte* findkarte(int Karte);

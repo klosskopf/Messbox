@@ -79,3 +79,4 @@ float Control::icharge = -1;
 float Control::vbat = -1;
 float Control::vlade = -1;
 float Control::vin = -1;
+QMutex Control::datenmutex;

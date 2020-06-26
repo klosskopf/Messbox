@@ -30,14 +30,14 @@ Rechenfeld::Rechenfeld(QWidget *parent) : QWidget(parent)
 
     setLayout(layout);
 
-    connect(xfeld, SIGNAL (textChanged()),this, SLOT (handle_x_input()));
-    connect(yfeld, SIGNAL (textChanged()),this, SLOT (handle_y_input()));
+    connect(xfeld, SIGNAL (textChanged()),this, SLOT (handle_input()));
+    connect(yfeld, SIGNAL (textChanged()),this, SLOT (handle_input()));
 }
 
 
 int Rechenfeld::addblock(Rechenblock* block)
 {
-    xbloecke.push_back(block);
+    bloecke.push_back(block);
     return(Rechenfeld::activeblock->von_unten(block));
 }
 
@@ -60,19 +60,21 @@ DECODEERROR Rechenfeld::decode(QChar c)
     return error;
 }
 
-void Rechenfeld::handle_x_input()   //This needs a mutex
+void Rechenfeld::handle_input()   //This needs a mutex
 {
     DECODEERROR error=NODECODEERROR;
     QString progress="";
     int klammerzaehler=0;
     zahlstring="";
     parameterstring="";
-
+    Control::datenmutex.lock();
+    qDebug("handleinput");
     Control::xAchse->eingaenge.clear();
-    while (xbloecke.size())
+    Control::yAchse->eingaenge.clear();
+    while (bloecke.size())
     {
-        Rechenblock* block = xbloecke.front();
-        xbloecke.pop_front();
+        Rechenblock* block = bloecke.front();
+        bloecke.pop_front();
         delete block;
     }
     Rechenfeld::activeblock=Control::xAchse;
@@ -108,26 +110,15 @@ void Rechenfeld::handle_x_input()   //This needs a mutex
     {
         Control::xAchse->eingaenge.clear();
     }
-}
 
-void Rechenfeld::handle_y_input()
-{
-    DECODEERROR error=NODECODEERROR;
-    QString progress="";
-    int klammerzaehler=0;
+
+    error=NODECODEERROR;
+    progress="";
+    klammerzaehler=0;
     zahlstring="";
     parameterstring="";
-
-    Control::yAchse->eingaenge.clear();
-    while (ybloecke.size())
-    {
-        Rechenblock* block = ybloecke.front();
-        ybloecke.pop_front();
-        delete block;
-    }
     Rechenfeld::activeblock=Control::yAchse;
-
-    QString text=yfeld->toPlainText().append('\0');
+    text=yfeld->toPlainText().append('\0');
     for(QChar c : text)
     {
         if (c=='(') klammerzaehler++;
@@ -158,6 +149,9 @@ void Rechenfeld::handle_y_input()
     {
         Control::yAchse->eingaenge.clear();
     }
+
+    qDebug("input_end\n");
+    Control::datenmutex.unlock();
 }
 
 DECODEERROR Rechenfeld::start(QChar c)

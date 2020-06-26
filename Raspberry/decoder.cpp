@@ -150,11 +150,15 @@ void Decoder::decode_get_daten(Paket* paket)
         {
             starttime=(paket->daten[3]<<24) + (paket->daten[2]<<16) + (paket->daten[1]<<8) + paket->daten[0];
             paket->ausgewaertet=4;
+            Control::datenmutex.lock();
+            qDebug("newdata");
             while(paket->ausgewaertet < paket->laenge+4)
             {
                 parameter->add_datum(starttime,get_next_float(paket));
                 starttime+=1;
             }
+            qDebug("newdata_end");
+            Control::datenmutex.unlock();
         }
     }
 }
