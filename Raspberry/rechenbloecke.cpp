@@ -95,7 +95,7 @@ double Integrate_Block::get_data(uint32_t time)
 double Derivate_Block::get_data(uint32_t time)
 {
     double eingang=eingaenge.front()->get_data(time);
-    uint32_t ausgabe=(eingang - lasteingang) / (time - lasttime) * Control::samplefreq;
+    double ausgabe=(eingang - lasteingang) * Control::samplefreq / (time - lasttime);
     lasttime=time;
     lasteingang=eingang;
     return ausgabe;
