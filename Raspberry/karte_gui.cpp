@@ -47,6 +47,13 @@ void Karte_GUI::parameter_activated(const QString& name)
 void Karte_GUI::wert_activated(const QString& name)
 {
 
+    int index=karte->index;
+    std::string param= parameter->currentText().toUtf8().constData();
+    uint32_t nummer= karte->find_parameter(param)->nummer;
+    std::string newwert= wert->currentText().toUtf8().constData();
+
+    Post::send_set_parameter(index,nummer,newwert);
+
 }
 
 void Karte_GUI::set_wert_to_parameter(std::string name)

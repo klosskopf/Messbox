@@ -5,6 +5,7 @@ std::list<Paket*> Post::Briefkasten;
 void Post::spi_thread()
 {
     Paket* currentpaket;
+    Spi::init_spi();
     while(1)
     {
         if (Briefkasten.size())
@@ -18,8 +19,15 @@ void Post::spi_thread()
                 Gpio::enable_slave(currentpaket->empfaengerindex);
                 Spi::txrx(ask_for, 5);
                 currentpaket->laenge = ((uint32_t)ask_for[1]) + ((uint32_t)ask_for[2]<<8) +((uint32_t)ask_for[3]<<16) + ((uint32_t)ask_for[4]<<24);
-                currentpaket->daten = new uint8_t[currentpaket->laenge];
-                Spi::txrx(currentpaket->daten, currentpaket->laenge);
+                if (currentpaket->laenge < 20000 && currentpaket->laenge!=0)
+                {
+                    currentpaket->daten = new uint8_t[currentpaket->laenge];
+                    Spi::txrx(currentpaket->daten, currentpaket->laenge);
+                }
+                else
+                {
+                    currentpaket->laenge=0;
+                }
                 Gpio::disable_slave(currentpaket->empfaengerindex);
                 break;
             }
@@ -109,7 +117,7 @@ void Post::spi_thread()
             Post::Briefkasten.pop_front();
             Decoder::add_paket(currentpaket);
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 }
 void Post::send_get_parameter(int index)
@@ -182,7 +190,7 @@ void Post::send_get_status()
 {
     Paket* getstatuspaket = new Paket();
     getstatuspaket->befehl=GET_STATUS;
-    getstatuspaket->empfaengerindex=-1;
+    getstatuspaket->empfaengerindex=0;
     getstatuspaket->daten=new uint8_t[24];
     Briefkasten.push_back(getstatuspaket);
 }

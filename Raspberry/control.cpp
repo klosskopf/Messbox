@@ -1,5 +1,5 @@
 #include "control.h"
-
+#include <QDebug>
 void Control::control_thread(mainWindow* n_gui)
 {
     gui=n_gui;
@@ -8,8 +8,8 @@ void Control::control_thread(mainWindow* n_gui)
     while(1)
     {
         check_karten();
-        Post::send_get_daten(1,1);
-        Post::send_get_status();
+     //   Post::send_get_daten(1,1);
+      //  Post::send_get_status();
 
 
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -35,6 +35,7 @@ void Control::check_karten()
         }
         if (!found)
         {
+            qDebug("Ausgesteckt:%d",(*karte)->index);
             delete *karte;
             karte=Kartenset.erase(karte);
         }
@@ -48,6 +49,7 @@ void Control::check_karten()
     {
         if(!Control::newkarte)
         {
+            qDebug("Eingesteckt:%d",index);
             Post::send_get_parameter(index);
             Control::newkarte=true;
         }

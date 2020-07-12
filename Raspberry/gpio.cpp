@@ -1,21 +1,97 @@
 #include "gpio.h"
+#include <wiringPi.h>
 void Gpio::init()
 {
+    Gpio::gpiomutex.lock();
+    wiringPiSetupGpio();
 
+    for (int i =0; i<11;i++) pinMode (slave_to_gpio(i), INPUT);
+    for (int i =0; i<11;i++) pullUpDnControl(slave_to_gpio(i), PUD_DOWN);
+
+    pinMode (2, OUTPUT);//Red Led
+    pinMode (3, OUTPUT);//Green Led
+    pinMode (4, OUTPUT);//Blue Led
+    Gpio::set_led(LED_STOP);
+    Gpio::gpiomutex.unlock();
 }
 std::list<int> Gpio::get_new_karten()
 {
+    Gpio::gpiomutex.lock();
     std::list<int> n_Karten;
-    n_Karten.push_back(1);
-    n_Karten.push_back(2);
+
+    for(int i=1; i<11;i++)
+    {
+        if(digitalRead(slave_to_gpio(i)))
+        {
+            n_Karten.push_back(i);
+        }
+    }
+
+    Gpio::gpiomutex.unlock();
     return n_Karten;
 }
-void Gpio::enable_slave(uint8_t index)
+void Gpio::enable_slave(int index)
 {
-    Spi::i=0;
+    Gpio::gpiomutex.lock();
+    if (index==-1)
+    {
+        for (int i=0; i<11;i++)
+        {
+            digitalWrite(Gpio::slave_to_gpio(i),0);
+            pinMode(slave_to_gpio(i),OUTPUT);
+        }
+    }
+    else
+    {
+    digitalWrite(Gpio::slave_to_gpio(index),0);
+    pinMode(slave_to_gpio(index),OUTPUT);
+    }
 }
 
-void Gpio::disable_slave(uint8_t index)
+void Gpio::disable_slave(int index)
 {
-
+    if (index==-1)
+    {
+        for (int i=0; i<11;i++)
+        {
+            digitalWrite(Gpio::slave_to_gpio(i),1);
+            pinMode(slave_to_gpio(i),INPUT);
+        }
+    }
+    else
+    {
+        digitalWrite(Gpio::slave_to_gpio(index),1);
+        pinMode(slave_to_gpio(index),INPUT);
+    }
+    Gpio::gpiomutex.unlock();
 }
+
+int Gpio::slave_to_gpio(int slave)
+{
+    const int lookup[11]={5,24,23,22,27,18,26,16,19,13,12};
+    return(lookup[slave]);
+}
+
+void Gpio::set_led(led_state_t state)
+{
+    switch (state)
+    {
+    case LED_STOP:
+        digitalWrite(2,0);
+        digitalWrite(3,0);
+        digitalWrite(4,1);
+        break;
+    case LED_RUN:
+        digitalWrite(2,0);
+        digitalWrite(3,1);
+        digitalWrite(4,0);
+        break;
+    case LED_ERROR:
+        digitalWrite(2,1);
+        digitalWrite(3,0);
+        digitalWrite(4,0);
+        break;
+    }
+}
+
+QMutex Gpio::gpiomutex;

@@ -1,4 +1,15 @@
 #include "spi.h"
+#include <wiringPiSPI.h>
+void Spi::init_spi()
+{
+    wiringPiSPISetup (0, 1000); //Channel 0; 1MHz baud
+}
+void Spi::txrx(uint8_t * data, uint32_t size)
+{
+    wiringPiSPIDataRW (0, data, size) ;
+}
+
+/*
 #include "string.h"
 #include "paket.h"
 
@@ -87,6 +98,6 @@ void Spi::txrx(uint8_t * data, uint32_t laenge)
         i++;
     }
 }
-
 uint32_t Spi::i=0;
 uint8_t Spi::befehl;
+*/

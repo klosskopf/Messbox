@@ -40,7 +40,7 @@ void Decoder::decoder_thread()
             Sammelzentrum.pop_front();
             delete currentpaket;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(40));
     }
 
 }
@@ -130,9 +130,11 @@ void Decoder::decode_get_parameter(Paket* paket)
             break;
         }
     }
-    Karte* karte = new Karte(Control::gui, paket->empfaengerindex, *kartenname, parameterliste);
-    Control::Kartenset.push_back(karte);
-
+    if (kartenname)
+    {
+        Karte* karte = new Karte(Control::gui, paket->empfaengerindex, *kartenname, parameterliste);
+        Control::Kartenset.push_back(karte);
+    }
     if (wort != NULL)delete wort;
     if (kartenname != NULL)delete kartenname;
     if (parametername != NULL)delete parametername;
@@ -151,13 +153,13 @@ void Decoder::decode_get_daten(Paket* paket)
             starttime=(paket->daten[3]<<24) + (paket->daten[2]<<16) + (paket->daten[1]<<8) + paket->daten[0];
             paket->ausgewaertet=4;
             Control::datenmutex.lock();
-            qDebug("newdata");
+        //    qDebug("newdata");
             while(paket->ausgewaertet < paket->laenge+4)
             {
                 parameter->add_datum(starttime,get_next_float(paket));
                 starttime+=1;
             }
-            qDebug("newdata_end");
+        //    qDebug("newdata_end");
             Control::datenmutex.unlock();
         }
     }

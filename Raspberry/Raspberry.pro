@@ -40,3 +40,5 @@ QT += charts
 DISTFILES +=
 
 RESOURCES +=
+
+LIBS += -lwiringPi

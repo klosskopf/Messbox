@@ -11,7 +11,7 @@ class Paket
 public:
     Paket();
     virtual ~Paket();
-    uint8_t empfaengerindex;
+    int empfaengerindex;
     Befehl befehl;
     uint32_t laenge;
     uint32_t ausgewaertet;

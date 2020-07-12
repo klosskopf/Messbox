@@ -1,7 +1,10 @@
 #include "mainwindow.h"
+#include "gpio.h"
 
 mainWindow::mainWindow()
 {
+    Gpio::init();
+
     setGeometry(0,0,1280,720);
 
     centralwidget = new QWidget(this);
@@ -96,12 +99,18 @@ void mainWindow::handlestartstopbutton()
     if(Control::zustand == MESS)
     {
         Control::zustand = STOP;
+        Gpio::set_led(LED_STOP);
         startstopbutton->setText("Stop");
         startstopbutton->setStyleSheet("background-color: rgb(0, 255, 0); color: rgb(0, 0, 0)");
     }
     else
     {
         Control::zustand = MESS;
+        Gpio::set_led(LED_RUN);
+        if (Control::modus)
+            Post::send_start_kont();
+        else
+            Post::send_start_startstop();
         startstopbutton->setText("misst...");
         startstopbutton->setStyleSheet("background-color: rgb(255, 0, 0); color: rgb(0, 0, 0)");
     }
@@ -118,6 +127,13 @@ void mainWindow::handlemodebutton()
     {
         Control::modus = STARTSTOP;
         modebutton->setText("Start/Stop");
+    }
+    if(Control::zustand==MESS)
+    {
+        if (Control::modus)
+            Post::send_start_kont();
+        else
+            Post::send_start_startstop();
     }
 }
 
@@ -145,6 +161,7 @@ void mainWindow::handlesample()
     {
         sample->setText(QString::number(Control::samplefreq));
     }
+    Post::send_set_sample_freq(n_sample);
 }
 
 void mainWindow::create_graph(QLineSeries* n_serie)
