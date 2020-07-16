@@ -5,125 +5,212 @@
  *      Author: klosskopf
  */
 #include "comhandler.h"
+#include "parameter.h"
+#include "string.h"
+#include "gpio.h"
 
-SPI_TypeDef * comhandlerspi;
-
-void decoder();
 void get_parameter_decoder(uint32_t position, uint8_t datum);
 void set_parameter_decoder(uint32_t position, uint8_t datum);
 void get_daten_decoder(uint32_t position, uint8_t datum);
 void start_kont_decoder(uint32_t position, uint8_t datum);
 void start_startstop_decoder(uint32_t position, uint8_t datum);
+void send_com_char(uint8_t character);
+void send_com_block(void* data, uint32_t size);
+uint8_t read_com();
 
-void init_comhandler(SPI_TypeDef * spi)
+const GPIO_PIN SS1PIN ={GPIOB, 0};
+const GPIO_PIN CLK1PIN ={GPIOA, 5};
+const GPIO_PIN MISO1PIN ={GPIOA, 6};
+const GPIO_PIN MOSI1PIN ={GPIOA, 7};
+
+void init_comhandler()
 {
-	comhandlerspi=spi;
+//Init decoder
 	decoderbytenr=0;
-	init_spi(spi, SLAVE, decoder);
-	befehllut[0].befehl=GET_PARAMETER; befehllut[0].handler=&get_parameter_decoder;
-	befehllut[1].befehl=SET_PARAMETER; befehllut[1].handler=&set_parameter_decoder;
-	befehllut[2].befehl=GET_DATEN; befehllut[2].handler=&get_daten_decoder;
-	befehllut[3].befehl=START_KONT; befehllut[3].handler=&start_kont_decoder;
-	befehllut[4].befehl=START_STARTSTOP; befehllut[4].handler=&start_startstop_decoder;
+	//befehllut[0]=&nofault;
+	befehllut[GET_PARAMETER]=&get_parameter_decoder;
+	befehllut[SET_PARAMETER]=&set_parameter_decoder;
+	befehllut[GET_DATEN]=&get_daten_decoder;
+	befehllut[START_KONT]=&start_kont_decoder;
+	befehllut[START_STARTSTOP]=&start_startstop_decoder;
+//Init pins Interface
+	init_gpio(SS1PIN, IN, PUSH_PULL, PULL_UP, VERY_HIGH);
+	init_gpio(CLK1PIN, AF5, PUSH_PULL, OPEN, VERY_HIGH);
+	init_gpio(MISO1PIN, AF5, PUSH_PULL, OPEN, VERY_HIGH);
+	init_gpio(MOSI1PIN, AF5, PUSH_PULL, OPEN, VERY_HIGH);
+//Init SS
+	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
+	SYSCFG->EXTICR[0] |= (1<<SYSCFG_EXTICR1_EXTI0_Pos);	//Set PB0 to EXTI0
+	EXTI->IMR1 |= EXTI_IMR1_IM0;	//Mask the EXTI0 to generate a interrupt
+	EXTI->FTSR1 |= EXTI_FTSR1_FT0; 	//generate trigger on falling edge (A button press)
+	EXTI->RTSR1 |= EXTI_RTSR1_RT0; 	//and rising edge (A button release)
+	EXTI->PR1 = EXTI_PR1_PIF0;		//clear the pending flags
+	NVIC_SetPriority(EXTI0_IRQn,8);									//Set the priority
+	NVIC_EnableIRQ(EXTI0_IRQn);		//Enable the EXTI0 interrupt if required
+//Init SPI
+	RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
+	NVIC_SetPriority(SPI1_IRQn, 15);        // set lowest prio
+	NVIC_ClearPendingIRQ(SPI1_IRQn);        // clear potentially pending bits
+	NVIC_EnableIRQ(SPI1_IRQn);              // enable interrupt in NVIC
+	SPI1->CR1=SPI_CR1_SSM;					//configure SPI as software slave
+	SPI1->CR1 |= SPI_CR1_SSI;
+	SPI1->CR2 = 0x1700;						//8bit format
+	SPI1->CR2 |= SPI_CR2_RXNEIE;
+//Init DMA
+	RCC->AHB1ENR |= RCC_AHB1ENR_DMA1EN;
+	DMA1_Channel3->CCR |= (3<<DMA_CCR_PL_Pos) | DMA_CCR_MINC | DMA_CCR_DIR | DMA_CCR_TCIE;	//set the CH3 to high prio; framesize to 8bit; read from mem;
+	DMA1_Channel3->CPAR = (uint32_t)&SPI1->DR;								//send data to the SPI->DR (please, please be a 8bit operation)
+	DMA1_CSELR->CSELR |= (1<<DMA_CSELR_C3S_Pos);	//Set Channel 2 and 3 of DMA1 to SPIRX and SPITX
+
+	NVIC_SetPriority(DMA1_Channel3_IRQn,0);		//enable ISR for receiving DMA. write and read use both dma.
+	NVIC_ClearPendingIRQ(DMA1_Channel3_IRQn);	//the receiving always triggers after the sending dma
+	NVIC_EnableIRQ(DMA1_Channel3_IRQn);
+
+	SPI1->CR1 |= SPI_CR1_SPE;	//start SPI
 }
 
-void decoder()
+void EXTI0_IRQHandler(void)
+{
+	if (read_gpio(SS1PIN))
+	{
+		SPI1->CR1 |= SPI_CR1_SSI;
+		decoderbytenr=0;
+	}
+	else
+	{
+		SPI1->CR1 &= ~SPI_CR1_SSI;
+	}
+	EXTI->PR1 = EXTI_PR1_PIF0;
+}
+
+void SPI1_IRQHandler()
 {
 	static BEFEHL befehl;
-	uint8_t character=read_spi(comhandlerspi);
+	uint8_t character=read_com();
 	if (decoderbytenr==0)
 	{
 		befehl=(BEFEHL)character;
 	}
-	int i;
-	for(i=0;i<BEFEHLNR-1;i++)
-	{
-		if (befehl==befehllut[i].befehl)
-		{
-			uint32_t dummy = decoderbytenr++;
-			befehllut[i].handler(dummy, character);
-			break;
-		}
-	}
-	if (i==BEFEHLNR-1)decoderbytenr=0;
+	if ((befehl>=BEFEHLNR) || (befehl==0))decoderbytenr=0;
+	else befehllut[befehl](++decoderbytenr, character);
 }
 
+struct get_parameter_t {
+	const uint32_t paket_size;
+	const char parameter[200];
+}get_parameter_data = {200,"Spannungsmesser,1,Spannung,f,n,0,5,2,Messbereich,s,l,0,0{pA,nA,mA,A}3,Strom,f,n,0,0,10,LED Test,s,l,0,0{LED AN,LED AUS}"};
 void get_parameter_decoder(uint32_t position, uint8_t datum)
 {
-	const char* parameter = "Spannungsmesser,1,Spannung,f,n,0,5,2,Messbereich,s,l,0,0{pA,nA,mA,A}3,Strom,f,n,0,0,20,Ich liebe Julia,s,l,0,0{Beer,Lukas}";
-	const uint32_t size = strlen(parameter);
-	if (position==size+5) decoderbytenr=0;
-	else if (position==0) send_spi(comhandlerspi,size);
-	else if (position==1) send_spi(comhandlerspi,size>>8);
-	else if (position==2) send_spi(comhandlerspi,size>>16);
-	else if (position==3) send_spi(comhandlerspi,size>>24);
-	else send_spi(comhandlerspi,parameter[position-4]);
+	send_com_block(&get_parameter_data,get_parameter_data.paket_size+4);
+	decoderbytenr=0;
 }
+
 void set_parameter_decoder(uint32_t position, uint8_t datum)
 {
 	static uint32_t size;
+	static uint32_t nummer;
 	static char buffer[50];
-	if (position==0) {size=0; memset(buffer,0,sizeof(buffer));}
-	else if (position==1) size |= (uint32_t)datum << 24;
-	else if (position==2) size |= (uint32_t)datum << 16;
+	if (position==1) {size=0;nummer=0;}
+	else if (position==2) size |= (uint32_t)datum;
 	else if (position==3) size |= (uint32_t)datum << 8;
-	else if (position==4) size |= (uint32_t)datum;
+	else if (position==4) size |= (uint32_t)datum << 16;
+	else if (position==5) size |= (uint32_t)datum << 24;
+	else if (position==6) nummer |= (uint32_t)datum;
+	else if (position==7) nummer |= (uint32_t)datum<<8;
+	else if (position==8) nummer |= (uint32_t)datum<<16;
+	else if (position==9) nummer |= (uint32_t)datum<<24;
 	else
 	{
-		if (position-5 > sizeof(buffer)-1)	//A hard fault here would ruin your day
+		if (position > sizeof(buffer))	//A hard fault here would ruin your day
 		{
 			decoderbytenr=0;
 			return;
 		}
-		buffer[position-5]=datum;
-		if (position==size+4)
+		buffer[position-10]=datum;
+		if (position==size+5)
 		{
+			buffer[position-9]=0;
 			decoderbytenr=0;
-			set_parameter(buffer);
+			set_parameter(nummer, buffer);
 		}
 	}
 }
+
+
 void get_daten_decoder(uint32_t position, uint8_t datum)
 {
-	static uint32_t nummer;
-	static uint32_t packetsize;
-	static Datenblock* block;
-	static uint32_t transmitbyte;
-	if (position == 0) nummer=0;
-	else if (position == 1) nummer |= datum<<24;
-	else if (position == 2) nummer |= datum<<16;
+	volatile static uint32_t nummer;
+	volatile static get_daten_t* block;
+	if (position == 1) nummer=0;
+	else if (position == 2) nummer |= datum;
 	else if (position == 3) nummer |= datum<<8;
-	else if (position == 4)
+	else if (position == 4) nummer |= datum<<16;
+	else if (position == 5)
 	{
-		nummer |= datum;
-		packetsize=database_size(nummer);
-		send_spi(comhandlerspi, packetsize>>24);
-	}
-	else if (position == 5){send_spi(comhandlerspi, packetsize>>16); block = get_datenblock(nummer);}
-	else if (position == 6) send_spi(comhandlerspi, packetsize>>8);
-	else if (position == 7) send_spi(comhandlerspi, packetsize);
-	else if (position == 8) send_spi(comhandlerspi, block->starttime>>24);
-	else if (position == 9){ send_spi(comhandlerspi, block->starttime>>16); transmitbyte=0;}
-	else if (position == 10) send_spi(comhandlerspi, block->starttime>>8);
-	else if (position == 11) send_spi(comhandlerspi, block->starttime);
-	else if (position == packetsize + 12)
-		decoderbytenr=0;
-	else
-	{
-		send_spi(comhandlerspi, block->Data.binary[transmitbyte++]);
-		if(transmitbyte==0x1000)
-		{
-			block = get_datenblock(nummer);
-			transmitbyte=0;
-		}
-	}
+		nummer |= datum<<24;
+		block = get_datenblock(nummer);
 
+		send_com_block(block,block->paket_size+8);
+		decoderbytenr=0;
+	}
 }
+
 void start_kont_decoder(uint32_t position, uint8_t datum)
 {
-
+	reset_data();
 }
+
 void start_startstop_decoder(uint32_t position, uint8_t datum)
 {
-
+	reset_data();
 }
+
+void send_com_char(uint8_t character)
+{
+	*(uint8_t *)&SPI1->DR = character;
+}
+
+void send_com_block(void* data, uint32_t size)
+{
+	SPI1->CR1 &= ~SPI_CR1_SPE;						//Stop The SPI module
+
+	NVIC_DisableIRQ(SPI1_IRQn);						//When we send via dma, we don't want SPI Interrupts
+
+	DMA1_Channel3->CMAR = (uint32_t)data;			//Enable DMA streams for Tx and Rx in DMA registers, if the streams are used.
+	DMA1_Channel3->CNDTR=size;
+	DMA1_Channel3->CCR |= DMA_CCR_EN;
+
+	SPI1->CR2 |= SPI_CR2_TXDMAEN;					//Enable DMA Tx buffer in the TXDMAEN bit in the SPI_CR2 register, if DMA Tx is used.
+
+	SPI1->CR1 |= SPI_CR1_SPE;						//Enable the SPI by setting the SPE bit.
+	GPIOA->ODR = 1;
+}
+
+void DMA1_Channel3_IRQHandler()
+{
+	uint32_t dummy=0;
+	DMA1_Channel3->CCR &= ~DMA_CCR_EN;				//Disable DMA streams for Tx and Rx in the DMA registers, if the streams are used.
+
+	while (SPI1->SR & SPI_SR_FTLVL);				//Disable the SPI by following the SPI disable procedure.
+	while(SPI1->SR & SPI_SR_BSY);
+	SPI1->CR1 &= ~SPI_CR1_SPE;
+	while(SPI1->SR & SPI_SR_FRLVL)dummy=SPI1->DR;
+//	for(int i=0;i<1000;i++);
+
+	GPIOA->ODR = 0;
+
+	SPI1->CR2 &= ~SPI_CR2_TXDMAEN;					//Disable DMA Tx and Rx buffers by clearing the TXDMAEN and RXDMAEN bits in the
+													//SPI_CR2 register, if DMA Tx and/or DMA Rx are used.
+
+	NVIC_ClearPendingIRQ(SPI1_IRQn);				//restart the SPI interrupts
+	NVIC_EnableIRQ(SPI1_IRQn);
+	SPI1->CR1 |= SPI_CR1_SPE;
+
+	DMA1->IFCR = DMA_IFCR_CGIF3;					//clear the int. pending flag
+}
+
+uint8_t read_com()
+{
+	return(SPI1->DR);
+}
+

@@ -8,12 +8,9 @@
 #ifndef COMHANDLER_H_
 #define COMHANDLER_H_
 
-#include "spi.h"
 #include "stm32l4xx.h"
-#include "parameter.h"
-#include "string.h"
 
-uint32_t decoderbytenr;
+volatile uint32_t decoderbytenr;
 
 typedef enum
 {
@@ -22,17 +19,11 @@ typedef enum
 	GET_DATEN		=0x03,
 	START_KONT		=0x04,
 	START_STARTSTOP	=0x05,
-	BEFEHLNR
+	BEFEHLNR        =0x06
 }BEFEHL;
 
-typedef struct
-{
-	BEFEHL befehl;
-	void (*handler)(uint32_t position, uint8_t datum);
-}BEFEHLHANDLER;
+void (*befehllut[BEFEHLNR])(uint32_t position, uint8_t datum);
 
-BEFEHLHANDLER befehllut[BEFEHLNR-1];
-
-void init_comhandler(SPI_TypeDef *);
+void init_comhandler();
 
 #endif /* COMHANDLER_H_ */

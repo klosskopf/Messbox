@@ -10,21 +10,17 @@
 
 #include "stdint.h"
 
-typedef union
-{
-	uint8_t binary[0x1000];//4KB block
-	float floating[0x400];
-}DATENUNION;
+typedef struct{
+	volatile uint32_t paket_size;
+	volatile uint32_t startzeit;
+	volatile float daten[0x100];
+}get_daten_t;
 
-typedef struct
-{
-	uint32_t starttime;
-	DATENUNION Data;
-}Datenblock;
 
 void init_parameter();
-uint32_t database_size(uint32_t);
-Datenblock* get_datenblock(uint32_t);
-void set_parameter(const char*);
+void new_data(float data);
+void reset_data();
+get_daten_t* get_datenblock(uint32_t);
+void set_parameter(uint32_t nummer, const char* wert);
 
 #endif /* PARAMETER_H_ */
