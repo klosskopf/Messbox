@@ -71,6 +71,7 @@ void Rechenfeld::handle_input()   //This needs a mutex
     qDebug("handleinput");
     Control::xAchse->eingaenge.clear();
     Control::yAchse->eingaenge.clear();
+    activeparameter.clear();
     while (bloecke.size())
     {
         Rechenblock* block = bloecke.front();
@@ -315,6 +316,8 @@ ParameterViewer* Rechenfeld::get_parameter()
         parameter=karte->find_parameter(parameterstring.toStdString().c_str());
         if (parameter)
         {
+            activeparameter.push_back(parameter);
+            activeparameter.unique();
             parameterviewer=new ParameterViewer(parameter);
         }
     }

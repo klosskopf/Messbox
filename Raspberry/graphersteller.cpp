@@ -27,7 +27,8 @@ void Graphersteller::draw_graph()
         }
         Control::kennlinie.clear();
         gui->aenderserie->clear();
-        for (uint32_t time=newestime; time>0 && time>(newestime-number); time--)
+        uint32_t starttime=newestime<number ? 0 : newestime-number;
+        for (uint32_t time=starttime; time<=newestime ; time++)
         {
             double xvalue=Control::xAchse->get_data(time);
             double yvalue=Control::yAchse->get_data(time);

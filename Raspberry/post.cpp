@@ -59,13 +59,20 @@ void Post::spi_thread()
                 Spi::txrx(ask_for, 9);
                 currentpaket->laenge = ((uint32_t)ask_for[5]) + ((uint32_t)ask_for[6]<<8) +((uint32_t)ask_for[7]<<16) + ((uint32_t)ask_for[8]<<24);
                 delete [] currentpaket->daten;
-                currentpaket->daten = new uint8_t[currentpaket->laenge + 8];
-                Spi::txrx(currentpaket->daten, currentpaket->laenge + 4);
+                if (currentpaket->laenge < 1000000)
+                {
+                    currentpaket->daten = new uint8_t[currentpaket->laenge + 8];
+                    Spi::txrx(currentpaket->daten, currentpaket->laenge + 4);
+                    currentpaket->daten[currentpaket->laenge+4]=nummer[0];
+                    currentpaket->daten[currentpaket->laenge+5]=nummer[1];
+                    currentpaket->daten[currentpaket->laenge+6]=nummer[2];
+                    currentpaket->daten[currentpaket->laenge+7]=nummer[3];
+                }
+                else {
+                    currentpaket->laenge=0;
+                    currentpaket->daten=NULL;
+                }
                 Gpio::disable_slave(currentpaket->empfaengerindex);
-                currentpaket->daten[currentpaket->laenge+4]=nummer[0];
-                currentpaket->daten[currentpaket->laenge+5]=nummer[1];
-                currentpaket->daten[currentpaket->laenge+6]=nummer[2];
-                currentpaket->daten[currentpaket->laenge+7]=nummer[3];
                 break;
             }
             case START_KONT:

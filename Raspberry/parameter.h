@@ -1,5 +1,4 @@
-#ifndef PARAMETER_H
-#define PARAMETER_H
+#pragma once
 #include <string>
 #include <vector>
 #include "rechenblock.h"
@@ -24,6 +23,7 @@ public:
     std::vector<Daten*>* daten;
     bool is_plotbar() const;
     void add_datum(uint32_t time, float datum);
+    void delete_daten();
     void add_auswahl(std::string auswahl);
 };
 
@@ -36,5 +36,3 @@ public:
     uint32_t newest() override;
     QString print() override;
 };
-
-#endif // PARAMETER_H

@@ -40,7 +40,7 @@ void Decoder::decoder_thread()
             Sammelzentrum.pop_front();
             delete currentpaket;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(40));
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
 
 }
@@ -142,25 +142,28 @@ void Decoder::decode_get_parameter(Paket* paket)
 }
 void Decoder::decode_get_daten(Paket* paket)
 {
-    uint32_t nummer = (paket->daten[paket->laenge+7]<<24) + (paket->daten[paket->laenge+6]<<16) + (paket->daten[paket->laenge+5]<<8) + paket->daten[paket->laenge+4];
-    uint32_t starttime;
-    Karte* karte = Control::findkarte(paket->empfaengerindex);
-    if (karte)
+    if (paket->laenge)
     {
-        Parameter* parameter = karte->find_parameter(nummer);
-        if (parameter)
+        uint32_t nummer = (paket->daten[paket->laenge+7]<<24) + (paket->daten[paket->laenge+6]<<16) + (paket->daten[paket->laenge+5]<<8) + paket->daten[paket->laenge+4];
+        uint32_t starttime;
+        Karte* karte = Control::findkarte(paket->empfaengerindex);
+        if (karte)
         {
-            starttime=(paket->daten[3]<<24) + (paket->daten[2]<<16) + (paket->daten[1]<<8) + paket->daten[0];
-            paket->ausgewaertet=4;
-            Control::datenmutex.lock();
-        //    qDebug("newdata");
-            while(paket->ausgewaertet < paket->laenge+4)
+            Parameter* parameter = karte->find_parameter(nummer);
+            if (parameter)
             {
-                parameter->add_datum(starttime,get_next_float(paket));
-                starttime+=1;
+                starttime=(paket->daten[3]<<24) + (paket->daten[2]<<16) + (paket->daten[1]<<8) + paket->daten[0];
+                paket->ausgewaertet=4;
+                Control::datenmutex.lock();
+        //      qDebug("newdata");
+                while(paket->ausgewaertet < paket->laenge+4)
+                {
+                    parameter->add_datum(starttime,get_next_float(paket));
+                    starttime+=1;
+                }
+            //    qDebug("newdata_end");
+                Control::datenmutex.unlock();
             }
-        //    qDebug("newdata_end");
-            Control::datenmutex.unlock();
         }
     }
 }

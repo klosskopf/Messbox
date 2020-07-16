@@ -16,29 +16,36 @@ void Parameter::add_auswahl(std::string auswahl)
 void Parameter::add_datum(uint32_t time, float datum)
 {
     daten->push_back(new Daten(time,datum));
+    if (datum<=0.1)
+    {
+        int null =0;
+    }
+}
+
+void Parameter::delete_daten()
+{
+   while (daten->size())
+   {
+       Daten* datum=daten->back();
+       daten->pop_back();
+       delete datum;
+   }
+
 }
 
 double ParameterViewer::get_data(uint32_t time)
-{   if(parameter->daten->size())
+{
+    double wert=0;
+    Daten* datum;
+    int i=parameter->daten->size()-1;
+    while(i>=0)
     {
-
-        //float lasttime = daten->front()->zeitpunkt;
-       // float lastwert = daten->front()->messwert;
-
-       /* for (Daten* datum : *daten)
-        {
-            if (datum->zeitpunkt > time)
-            {
-               // return (lastwert*(lasttime-time) + datum->messwert * (time - datum->zeitpunkt) )/(double)(datum->zeitpunkt - lasttime);
-                return (double)datum->messwert;
-            }
-            lasttime=datum->zeitpunkt;
-            lastwert=datum->messwert;
-        }
-        return (double)lastwert;*/
-        return (double)(parameter->daten->at(time)->messwert);
+        datum=parameter->daten->at(i);
+        wert=(double)(datum->messwert);
+        i--;
+        if (datum->zeitpunkt<=time)break;
     }
-    return 0;
+    return(wert);
 }
 
 uint32_t ParameterViewer::newest()

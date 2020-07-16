@@ -1,5 +1,4 @@
-#ifndef KARTE_H
-#define KARTE_H
+#pragma once
 #include <QString>
 #include <QObject>
 #include <list>
@@ -29,5 +28,3 @@ signals:
     void let_create_karte_gui(Karte* karte);
     void let_delete_karte_gui(Karte_GUI* karte_gui);
 };
-
-#endif // KARTE_H

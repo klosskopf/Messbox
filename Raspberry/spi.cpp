@@ -2,7 +2,7 @@
 #include <wiringPiSPI.h>
 void Spi::init_spi()
 {
-    wiringPiSPISetup (0, 1000); //Channel 0; 1MHz baud
+    wiringPiSPISetup (0, 1000000); //Channel 0; 1MHz baud
 }
 void Spi::txrx(uint8_t * data, uint32_t size)
 {

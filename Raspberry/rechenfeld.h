@@ -1,5 +1,4 @@
-#ifndef RECHENFELD_H
-#define RECHENFELD_H
+#pragma once
 
 #include <QWidget>
 #include <QTextEdit>
@@ -9,6 +8,7 @@
 #include <list>
 
 class ParameterViewer;
+class Parameter;
 
 typedef enum {START,KLAMMERAUF,KLAMMERZU,TIME,INTEGRATE,DERIVATE,ZAHL,PUNKT,PARAMETER}DECODESTATE;
 typedef enum {NODECODEERROR,ZUVIELEKLAMMERN,ZUWENIGKLAMMERN,UNGUELTIG,MISSINGPARAMETER, MISSINGSTATE}DECODEERROR;
@@ -20,6 +20,7 @@ public:
     explicit Rechenfeld(QWidget *parent = nullptr);
     static Rechenblock* activeblock;
     std::list<Rechenblock*> bloecke;
+    std::list<Parameter*> activeparameter;
 private:
     QLabel *xerror,*yerror,*xlabel,*ylabel;
     QTextEdit *xfeld,*yfeld;
@@ -46,5 +47,3 @@ private slots:
 signals:
 
 };
-
-#endif // RECHENFELD_H

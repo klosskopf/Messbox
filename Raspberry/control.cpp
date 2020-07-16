@@ -8,11 +8,21 @@ void Control::control_thread(mainWindow* n_gui)
     while(1)
     {
         check_karten();
-     //   Post::send_get_daten(1,1);
       //  Post::send_get_status();
+        if (zustand==MESS && Post::Briefkasten.size() < 10)
+        {
+            datenmutex.lock();
+            if (gui->rechenfeld->activeparameter.size())
+            {
+                Parameter* parameter=gui->rechenfeld->activeparameter.front();
+               // gui->rechenfeld->activeparameter.pop_front();
+                Post::send_get_daten(parameter->karte->index,parameter->nummer);
+              //gui->rechenfeld->activeparameter.push_back(parameter);
+            }
+            datenmutex.unlock();
+        }
 
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
 

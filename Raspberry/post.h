@@ -9,9 +9,9 @@ class Paket;
 
 class Post
 {
-private:
-    static std::list<Paket*> Briefkasten;
 public:
+    static std::list<Paket*> Briefkasten;
+
     static void spi_thread();
     static void send_get_parameter(int index);
     static void send_set_parameter(int index, uint32_t nummer, std::string wert);

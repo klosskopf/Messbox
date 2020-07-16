@@ -106,8 +106,17 @@ void mainWindow::handlestartstopbutton()
     else
     {
         Control::zustand = MESS;
+        Control::datenmutex.lock();
+        for (Karte* karte : Control::Kartenset)
+        {
+            for (Parameter* param : *(karte->parameter))
+            {
+                param->delete_daten();
+            }
+        }
+        Control::datenmutex.unlock();
         Gpio::set_led(LED_RUN);
-        if (Control::modus)
+        if (Control::modus==CONT)
             Post::send_start_kont();
         else
             Post::send_start_startstop();
@@ -130,7 +139,7 @@ void mainWindow::handlemodebutton()
     }
     if(Control::zustand==MESS)
     {
-        if (Control::modus)
+        if (Control::modus==CONT)
             Post::send_start_kont();
         else
             Post::send_start_startstop();
