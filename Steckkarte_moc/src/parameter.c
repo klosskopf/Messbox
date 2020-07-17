@@ -23,7 +23,7 @@ void init_parameter()
 
 void new_data(volatile float data)
 {
-	if (activated_buffer->paket_size >= 0x100)
+	if (activated_buffer->paket_size >= 0x400)
 	{
 		set_gpio(LED,1);
 	}
@@ -63,13 +63,13 @@ get_daten_t* get_datenblock(uint32_t nummer)
 	returnbuffer=activated_buffer;
 	if (activated_buffer==&ausgabe_buffer1)
 	{
-		ausgabe_buffer2.startzeit=activated_buffer->startzeit+activated_buffer->paket_size;
+		ausgabe_buffer2.startzeit=activated_buffer->startzeit+(activated_buffer->paket_size>>2);
 		ausgabe_buffer2.paket_size=0;
 		activated_buffer=&ausgabe_buffer2;
 	}
 	else
 	{
-		ausgabe_buffer1.startzeit=activated_buffer->startzeit+activated_buffer->paket_size;
+		ausgabe_buffer1.startzeit=activated_buffer->startzeit+(activated_buffer->paket_size>>2);
 		ausgabe_buffer1.paket_size=0;
 		activated_buffer=&ausgabe_buffer1;
 	}

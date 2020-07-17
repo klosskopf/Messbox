@@ -14,6 +14,9 @@ void set_parameter_decoder(uint32_t position, uint8_t datum);
 void get_daten_decoder(uint32_t position, uint8_t datum);
 void start_kont_decoder(uint32_t position, uint8_t datum);
 void start_startstop_decoder(uint32_t position, uint8_t datum);
+void stop_decoder(uint32_t position, uint8_t datum);
+void set_sample_freq_decoder(uint32_t position, uint8_t datum);
+
 void send_com_char(uint8_t character);
 void send_com_block(void* data, uint32_t size);
 uint8_t read_com();
@@ -33,6 +36,9 @@ void init_comhandler()
 	befehllut[GET_DATEN]=&get_daten_decoder;
 	befehllut[START_KONT]=&start_kont_decoder;
 	befehllut[START_STARTSTOP]=&start_startstop_decoder;
+	befehllut[STOP]=&stop_decoder;
+	befehllut[SET_SAMPLE_FREQ]=&set_sample_freq_decoder;
+
 //Init pins Interface
 	init_gpio(SS1PIN, IN, PUSH_PULL, PULL_UP, VERY_HIGH);
 	init_gpio(CLK1PIN, AF5, PUSH_PULL, OPEN, VERY_HIGH);
@@ -163,6 +169,16 @@ void start_kont_decoder(uint32_t position, uint8_t datum)
 void start_startstop_decoder(uint32_t position, uint8_t datum)
 {
 	reset_data();
+}
+
+void stop_decoder(uint32_t position, uint8_t datum)
+{
+
+}
+
+void set_sample_freq_decoder(uint32_t position, uint8_t datum)
+{
+
 }
 
 void send_com_char(uint8_t character)
