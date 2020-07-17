@@ -29,9 +29,10 @@ int main(void)
 	while(1)
 	{
 		//new_data(1);
-		n+=0.001;
+		//new_data(2);
+		n+=0.01;
 		new_data((float)sin(n));
-		for(uint64_t i=0; i<100000;i++);
+		for(uint64_t i=0; i<1000;i++);
 	}
 }
 

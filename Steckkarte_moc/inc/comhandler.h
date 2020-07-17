@@ -19,7 +19,9 @@ typedef enum
 	GET_DATEN		=0x03,
 	START_KONT		=0x04,
 	START_STARTSTOP	=0x05,
-	BEFEHLNR        =0x06
+	STOP			=0x06,
+	SET_SAMPLE_FREQ	=0x07,
+	BEFEHLNR        =0x08
 }BEFEHL;
 
 void (*befehllut[BEFEHLNR])(uint32_t position, uint8_t datum);
