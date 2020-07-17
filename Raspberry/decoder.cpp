@@ -16,23 +16,25 @@ void Decoder::decoder_thread()
             Paket* currentpaket=Sammelzentrum.front();
             switch(currentpaket->befehl)
             {
-            case GET_PARAMETER:
+            case COM_GET_PARAMETER:
                 decode_get_parameter(currentpaket);
                 break;
-            case SET_PARAMETER:
+            case COM_SET_PARAMETER:
                 break;
-            case GET_DATEN:
+            case COM_GET_DATEN:
                 decode_get_daten(currentpaket);
                 break;
-            case START_KONT:
+            case COM_START_KONT:
                 decode_start_cont();
                 break;
-            case START_STARTSTOP:
+            case COM_START_STARTSTOP:
                 decode_start_startstop();
                 break;
-            case SET_SAMPLE_FREQ:
+            case COM_STOP:
                 break;
-            case GET_STATUS:
+            case COM_SET_SAMPLE_FREQ:
+                break;
+            case COM_GET_STATUS:
                 decode_get_status(currentpaket);
                 break;
             }
@@ -40,7 +42,7 @@ void Decoder::decoder_thread()
             Sammelzentrum.pop_front();
             delete currentpaket;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
 }
