@@ -5,7 +5,7 @@ std::list<Paket*> Post::Briefkasten;
 void Post::spi_thread()
 {
     Paket* currentpaket;
-    Spi::init_spi();
+    Spi::init_spi(1000000);
     while(1)
     {
         if (Briefkasten.size())

@@ -149,7 +149,7 @@ void mainWindow::handlemodebutton()
 
 void mainWindow::handletimframe()
 {
-    float n_timeframe = std::atof(timeframe->text().toUtf8());
+    float n_timeframe = std::stof(timeframe->text().toStdString());
     if (n_timeframe)
     {
         Control::timeframe=n_timeframe;
@@ -162,16 +162,24 @@ void mainWindow::handletimframe()
 
 void mainWindow::handlesample()
 {
-    float n_sample = std::atof(sample->text().toUtf8());
+    float n_sample = sample->text().toFloat();
     if (n_sample)
     {
-        Control::samplefreq=n_sample;
+        if (n_sample < 0.09)
+            Control::samplefreq=0.1;
+        else if (n_sample > 10000)
+            Control::samplefreq=1000;
+        else
+            Control::samplefreq=n_sample;
     }
-    else
-    {
-        sample->setText(QString::number(Control::samplefreq));
-    }
+    sample->setText(QString::number(Control::samplefreq));
+
     Post::send_set_sample_freq(n_sample);
+    if(Control::zustand==MESS)
+    {
+       if (Control::modus==STARTSTOP)Post::send_start_startstop();
+       else Post::send_start_kont();
+    }
 }
 
 void mainWindow::create_graph(QLineSeries* n_serie)

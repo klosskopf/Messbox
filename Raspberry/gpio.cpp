@@ -1,5 +1,6 @@
 #include "gpio.h"
 #include <wiringPi.h>
+#include "spi.h"
 void Gpio::init()
 {
     Gpio::gpiomutex.lock();
@@ -35,6 +36,7 @@ void Gpio::enable_slave(int index)
     Gpio::gpiomutex.lock();
     if (index==-1)
     {
+        Spi::init_spi(1000);
         for (int i=0; i<11;i++)
         {
             digitalWrite(Gpio::slave_to_gpio(i),0);
@@ -52,6 +54,7 @@ void Gpio::disable_slave(int index)
 {
     if (index==-1)
     {
+        Spi::init_spi(1000000);
         for (int i=0; i<11;i++)
         {
             digitalWrite(Gpio::slave_to_gpio(i),1);
