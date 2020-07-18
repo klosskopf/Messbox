@@ -99,6 +99,7 @@ void mainWindow::handlestartstopbutton()
     if(Control::zustand == MESS)
     {
         Control::zustand = STOP;
+        Post::send_stop();
         Gpio::set_led(LED_STOP);
         startstopbutton->setText("Stop");
         startstopbutton->setStyleSheet("background-color: rgb(0, 255, 0); color: rgb(0, 0, 0)");

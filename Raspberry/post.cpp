@@ -13,9 +13,9 @@ void Post::spi_thread()
             currentpaket=Briefkasten.front();
             switch(currentpaket->befehl)
             {
-            case GET_PARAMETER:
+            case COM_GET_PARAMETER:
             {
-                uint8_t ask_for[5]={(uint8_t)GET_PARAMETER,0,0,0,0};
+                uint8_t ask_for[5]={(uint8_t)COM_GET_PARAMETER,0,0,0,0};
                 Gpio::enable_slave(currentpaket->empfaengerindex);
                 Spi::txrx(ask_for, 5);
                 currentpaket->laenge = ((uint32_t)ask_for[1]) + ((uint32_t)ask_for[2]<<8) +((uint32_t)ask_for[3]<<16) + ((uint32_t)ask_for[4]<<24);
@@ -31,10 +31,10 @@ void Post::spi_thread()
                 Gpio::disable_slave(currentpaket->empfaengerindex);
                 break;
             }
-            case SET_PARAMETER:
+            case COM_SET_PARAMETER:
             {
                 uint8_t ask_for[5];
-                ask_for[0]=(uint8_t)SET_PARAMETER;
+                ask_for[0]=(uint8_t)COM_SET_PARAMETER;
                 ask_for[4]=(currentpaket->laenge)>>24;
                 ask_for[3]=(currentpaket->laenge)>>16;
                 ask_for[2]=(currentpaket->laenge)>>8;
@@ -45,12 +45,12 @@ void Post::spi_thread()
                 Gpio::disable_slave(currentpaket->empfaengerindex);
                 break;
             }
-            case GET_DATEN:
+            case COM_GET_DATEN:
             {
                 uint8_t nummer[4];
                 memcpy(nummer,currentpaket->daten,4);
                 uint8_t ask_for[9];
-                ask_for[0]=(uint8_t)GET_DATEN;
+                ask_for[0]=(uint8_t)COM_GET_DATEN;
                 ask_for[1]=currentpaket->daten[0];
                 ask_for[2]=currentpaket->daten[1];
                 ask_for[3]=currentpaket->daten[2];
@@ -75,28 +75,37 @@ void Post::spi_thread()
                 Gpio::disable_slave(currentpaket->empfaengerindex);
                 break;
             }
-            case START_KONT:
+            case COM_START_KONT:
             {
                 uint8_t ask_for[1];
-                ask_for[0]=(uint8_t)START_KONT;
+                ask_for[0]=(uint8_t)COM_START_KONT;
                 Gpio::enable_slave(currentpaket->empfaengerindex);
                 Spi::txrx(ask_for, 1);
                 Gpio::disable_slave(currentpaket->empfaengerindex);
                 break;
             }
-            case START_STARTSTOP:
+            case COM_START_STARTSTOP:
             {
                 uint8_t ask_for[1];
-                ask_for[0]=(uint8_t)START_STARTSTOP;
+                ask_for[0]=(uint8_t)COM_START_STARTSTOP;
                 Gpio::enable_slave(currentpaket->empfaengerindex);
                 Spi::txrx(ask_for, 1);
                 Gpio::disable_slave(currentpaket->empfaengerindex);
                 break;
             }
-            case SET_SAMPLE_FREQ:
+            case COM_STOP:
+            {
+                uint8_t ask_for[1];
+                ask_for[0]=(uint8_t)COM_STOP;
+                Gpio::enable_slave(currentpaket->empfaengerindex);
+                Spi::txrx(ask_for, 1);
+                Gpio::disable_slave(currentpaket->empfaengerindex);
+                break;
+            }
+            case COM_SET_SAMPLE_FREQ:
             {
                 uint8_t ask_for[5];
-                ask_for[0]=(uint8_t)SET_SAMPLE_FREQ;
+                ask_for[0]=(uint8_t)COM_SET_SAMPLE_FREQ;
                 ask_for[1]=currentpaket->daten[0];
                 ask_for[2]=currentpaket->daten[1];
                 ask_for[3]=currentpaket->daten[2];
@@ -106,9 +115,9 @@ void Post::spi_thread()
                 Gpio::disable_slave(currentpaket->empfaengerindex);
                 break;
             }
-            case GET_STATUS:
+            case COM_GET_STATUS:
             {
-                uint8_t ask_for[1]={GET_STATUS};
+                uint8_t ask_for[1]={COM_GET_STATUS};
                 Gpio::enable_slave(currentpaket->empfaengerindex);
                 Spi::txrx(ask_for, 1);
                 Spi::txrx(currentpaket->daten,24);
@@ -124,13 +133,13 @@ void Post::spi_thread()
             Post::Briefkasten.pop_front();
             Decoder::add_paket(currentpaket);
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(2));
     }
 }
 void Post::send_get_parameter(int index)
 {
     Paket* getparameterpaket = new Paket();
-    getparameterpaket->befehl=GET_PARAMETER;
+    getparameterpaket->befehl=COM_GET_PARAMETER;
     getparameterpaket->empfaengerindex=index;
     Briefkasten.push_back(getparameterpaket);
 }
@@ -138,7 +147,7 @@ void Post::send_set_parameter(int index, uint32_t nummer, std::string wert)
 {
     Paket* setparameterpaket = new Paket();
     setparameterpaket->laenge = 4 + wert.length();
-    setparameterpaket->befehl=SET_PARAMETER;
+    setparameterpaket->befehl=COM_SET_PARAMETER;
     setparameterpaket->daten=new uint8_t[setparameterpaket->laenge];
     setparameterpaket->daten[3]= nummer>>24;
     setparameterpaket->daten[2]= nummer>>16;
@@ -152,7 +161,7 @@ void Post::send_get_daten(int index, uint32_t nummer)
 {
     Paket* getdatenpaket = new Paket();
     getdatenpaket->daten = new uint8_t[4];
-    getdatenpaket->befehl=GET_DATEN;
+    getdatenpaket->befehl=COM_GET_DATEN;
     getdatenpaket->daten[3]= nummer>>24;
     getdatenpaket->daten[2]= nummer>>16;
     getdatenpaket->daten[1]= nummer>>8;
@@ -163,16 +172,23 @@ void Post::send_get_daten(int index, uint32_t nummer)
 void Post::send_start_kont()
 {
     Paket* startkontpaket = new Paket();
-    startkontpaket->befehl=START_KONT;
+    startkontpaket->befehl=COM_START_KONT;
     startkontpaket->empfaengerindex=-1;
     Briefkasten.push_back(startkontpaket);
 }
 void Post::send_start_startstop()
 {
     Paket* startstartstoppaket = new Paket();
-    startstartstoppaket->befehl=START_STARTSTOP;
+    startstartstoppaket->befehl=COM_START_STARTSTOP;
     startstartstoppaket->empfaengerindex=-1;
     Briefkasten.push_back(startstartstoppaket);
+}
+void Post::send_stop()
+{
+    Paket* stoppaket = new Paket();
+    stoppaket->befehl=COM_STOP;
+    stoppaket->empfaengerindex=-1;
+    Briefkasten.push_back(stoppaket);
 }
 void Post::send_set_sample_freq(float freq)
 {
@@ -185,7 +201,7 @@ void Post::send_set_sample_freq(float freq)
 
     Paket* setsamplefreqpaket = new Paket();
     setsamplefreqpaket->daten = new uint8_t[4];
-    setsamplefreqpaket->befehl=SET_SAMPLE_FREQ;
+    setsamplefreqpaket->befehl=COM_SET_SAMPLE_FREQ;
     setsamplefreqpaket->daten[0]=frequency.asbytes[0];
     setsamplefreqpaket->daten[1]=frequency.asbytes[1];
     setsamplefreqpaket->daten[2]=frequency.asbytes[2];
@@ -196,7 +212,7 @@ void Post::send_set_sample_freq(float freq)
 void Post::send_get_status()
 {
     Paket* getstatuspaket = new Paket();
-    getstatuspaket->befehl=GET_STATUS;
+    getstatuspaket->befehl=COM_GET_STATUS;
     getstatuspaket->empfaengerindex=0;
     getstatuspaket->daten=new uint8_t[24];
     Briefkasten.push_back(getstatuspaket);

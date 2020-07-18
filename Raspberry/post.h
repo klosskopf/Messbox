@@ -1,5 +1,4 @@
-#ifndef POST_H
-#define POST_H
+#pragma once
 
 #include <list>
 #include "paket.h"
@@ -18,8 +17,7 @@ public:
     static void send_get_daten(int index, uint32_t nummer);
     static void send_start_kont();
     static void send_start_startstop();
+    static void send_stop();
     static void send_set_sample_freq(float freq);
     static void send_get_status();
 };
-
-#endif // POST_H
