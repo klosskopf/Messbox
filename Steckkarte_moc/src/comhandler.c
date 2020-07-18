@@ -18,7 +18,7 @@ void stop_decoder(uint32_t position, uint8_t datum);
 void set_sample_freq_decoder(uint32_t position, uint8_t datum);
 
 void send_com_char(uint8_t character);
-void send_com_block(void* data, uint32_t size);
+void send_com_block(volatile void* data,volatile uint32_t size);
 uint8_t read_com();
 
 const GPIO_PIN SS1PIN ={GPIOB, 0};
@@ -51,11 +51,11 @@ void init_comhandler()
 	EXTI->FTSR1 |= EXTI_FTSR1_FT0; 	//generate trigger on falling edge (A button press)
 	EXTI->RTSR1 |= EXTI_RTSR1_RT0; 	//and rising edge (A button release)
 	EXTI->PR1 = EXTI_PR1_PIF0;		//clear the pending flags
-	NVIC_SetPriority(EXTI0_IRQn,8);									//Set the priority
+	NVIC_SetPriority(EXTI0_IRQn,0);									//Set the priority
 	NVIC_EnableIRQ(EXTI0_IRQn);		//Enable the EXTI0 interrupt if required
 //Init SPI
 	RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
-	NVIC_SetPriority(SPI1_IRQn, 15);        // set lowest prio
+	NVIC_SetPriority(SPI1_IRQn, 0);        // set lowest prio
 	NVIC_ClearPendingIRQ(SPI1_IRQn);        // clear potentially pending bits
 	NVIC_EnableIRQ(SPI1_IRQn);              // enable interrupt in NVIC
 	SPI1->CR1=SPI_CR1_SSM;					//configure SPI as software slave
@@ -68,7 +68,7 @@ void init_comhandler()
 	DMA1_Channel3->CPAR = (uint32_t)&SPI1->DR;								//send data to the SPI->DR (please, please be a 8bit operation)
 	DMA1_CSELR->CSELR |= (1<<DMA_CSELR_C3S_Pos);	//Set Channel 2 and 3 of DMA1 to SPIRX and SPITX
 
-	NVIC_SetPriority(DMA1_Channel3_IRQn,0);		//enable ISR for receiving DMA. write and read use both dma.
+	NVIC_SetPriority(DMA1_Channel3_IRQn,2);		//enable ISR for receiving DMA. write and read use both dma.
 	NVIC_ClearPendingIRQ(DMA1_Channel3_IRQn);	//the receiving always triggers after the sending dma
 	NVIC_EnableIRQ(DMA1_Channel3_IRQn);
 
@@ -171,22 +171,22 @@ void start_startstop_decoder(uint32_t position, uint8_t datum)
 	reset_data();
 }
 
-void stop_decoder(uint32_t position, uint8_t datum)
+void stop_decoder(uint32_t position,volatile uint8_t datum)
 {
 
 }
 
-void set_sample_freq_decoder(uint32_t position, uint8_t datum)
+void set_sample_freq_decoder(volatile uint32_t position,volatile uint8_t datum)
 {
 
 }
 
-void send_com_char(uint8_t character)
+void send_com_char(volatile uint8_t character)
 {
 	*(uint8_t *)&SPI1->DR = character;
 }
 
-void send_com_block(void* data, uint32_t size)
+void send_com_block(volatile void* data,volatile uint32_t size)
 {
 	SPI1->CR1 &= ~SPI_CR1_SPE;						//Stop The SPI module
 
@@ -199,7 +199,6 @@ void send_com_block(void* data, uint32_t size)
 	SPI1->CR2 |= SPI_CR2_TXDMAEN;					//Enable DMA Tx buffer in the TXDMAEN bit in the SPI_CR2 register, if DMA Tx is used.
 
 	SPI1->CR1 |= SPI_CR1_SPE;						//Enable the SPI by setting the SPE bit.
-	GPIOA->ODR = 1;
 }
 
 void DMA1_Channel3_IRQHandler()
@@ -212,8 +211,6 @@ void DMA1_Channel3_IRQHandler()
 	SPI1->CR1 &= ~SPI_CR1_SPE;
 	while(SPI1->SR & SPI_SR_FRLVL)dummy=SPI1->DR;
 //	for(int i=0;i<1000;i++);
-
-	GPIOA->ODR = 0;
 
 	SPI1->CR2 &= ~SPI_CR2_TXDMAEN;					//Disable DMA Tx and Rx buffers by clearing the TXDMAEN and RXDMAEN bits in the
 													//SPI_CR2 register, if DMA Tx and/or DMA Rx are used.

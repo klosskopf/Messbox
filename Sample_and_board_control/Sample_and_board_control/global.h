@@ -23,6 +23,6 @@
 #define LONGTASTERTRIGGER 1500
 #define SHORTTASTERTRIGGER 100
 
-float samplefreq;
+volatile float samplefreq;
 
 #endif
