@@ -23,7 +23,7 @@ void init_parameter()
 
 void new_data(volatile float data)
 {
-	if (activated_buffer->paket_size >= 0x400)
+	if (activated_buffer->paket_size >= 0x2000)
 	{
 		set_gpio(LED,1);
 	}

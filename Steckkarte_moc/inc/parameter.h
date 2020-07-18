@@ -13,7 +13,7 @@
 typedef struct{
 	volatile uint32_t paket_size;
 	volatile uint32_t startzeit;
-	volatile float daten[0x100];
+	volatile float daten[0x500];
 }get_daten_t;
 
 

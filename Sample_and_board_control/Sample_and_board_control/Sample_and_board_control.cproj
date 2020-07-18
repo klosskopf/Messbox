@@ -47,15 +47,15 @@
     <avrtoolinterfaceclock>125000</avrtoolinterfaceclock>
     <AsfFrameworkConfig>
       <framework-data xmlns="">
-  <options />
-  <configurations />
-  <files />
-  <documentation help="" />
-  <offline-documentation help="" />
-  <dependencies>
-    <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.40.0" />
-  </dependencies>
-</framework-data>
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.40.0" />
+        </dependencies>
+      </framework-data>
     </AsfFrameworkConfig>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -137,6 +137,18 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="com_handler.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="com_handler.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="freq_gen.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="freq_gen.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="global.h">
       <SubType>compile</SubType>
     </Compile>
