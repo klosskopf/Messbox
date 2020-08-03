@@ -1,19 +1,32 @@
 #include "decoder.h"
+#include <QWaitCondition>
+#include <QMutex>
 
 std::list<Paket*> Decoder::Sammelzentrum;
+static QWaitCondition decode_cond;
+static QMutex decode_mutex;
 
 void Decoder::add_paket(Paket* paket)
 {
+    decode_mutex.lock();
     Sammelzentrum.push_back(paket);
+    decode_cond.wakeAll();
+    decode_mutex.unlock();
 }
 
 void Decoder::decoder_thread()
 {
     while(1)
     {
+        decode_mutex.lock();
+        if (Sammelzentrum.size() == 0)decode_cond.wait(&decode_mutex);
+
+
         if (Sammelzentrum.size())
         {
             Paket* currentpaket=Sammelzentrum.front();
+            Sammelzentrum.pop_front();
+            decode_mutex.unlock();
             switch(currentpaket->befehl)
             {
             case COM_GET_PARAMETER:
@@ -39,10 +52,10 @@ void Decoder::decoder_thread()
                 break;
             }
 
-            Sammelzentrum.pop_front();
             delete currentpaket;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        else decode_mutex.unlock();
+        //std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
 }

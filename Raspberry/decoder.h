@@ -1,5 +1,4 @@
-#ifndef DECODER_H
-#define DECODER_H
+#pragma once
 
 #include "paket.h"
 #include <list>
@@ -17,10 +16,6 @@ private:
     static char get_next_word(Paket*, std::string*);
     static float get_next_float(Paket* paket);
 public:
-    static void add_paket(Paket*);
+    static void add_paket(Paket* paket);
     static void decoder_thread();
 };
-
-
-
-#endif // DECODER_H

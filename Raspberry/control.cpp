@@ -11,18 +11,18 @@ void Control::control_thread(mainWindow* n_gui)
       //  Post::send_get_status();
         if (zustand==MESS && Post::Briefkasten.size() < 10)
         {
-            datenmutex.lock();
+            //datenmutex.lock();
             if (gui->rechenfeld->activeparameter.size())
             {
                 Parameter* parameter=gui->rechenfeld->activeparameter.front();
-               // gui->rechenfeld->activeparameter.pop_front();
+                gui->rechenfeld->activeparameter.pop_front();
                 Post::send_get_daten(parameter->karte->index,parameter->nummer);
-              //gui->rechenfeld->activeparameter.push_back(parameter);
+                gui->rechenfeld->activeparameter.push_back(parameter);
             }
-            datenmutex.unlock();
+            //datenmutex.unlock();
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(30));
+        std::this_thread::sleep_for(std::chrono::microseconds(1));
     }
 }
 

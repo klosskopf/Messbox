@@ -5,7 +5,7 @@ std::list<Paket*> Post::Briefkasten;
 void Post::spi_thread()
 {
     Paket* currentpaket;
-    Spi::init_spi(1000000);
+    Spi::init_spi(DATA_BAUD);
     while(1)
     {
         if (Briefkasten.size())
@@ -133,7 +133,7 @@ void Post::spi_thread()
             Post::Briefkasten.pop_front();
             Decoder::add_paket(currentpaket);
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(2));
+        std::this_thread::sleep_for(std::chrono::microseconds(10));
     }
 }
 void Post::send_get_parameter(int index)

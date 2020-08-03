@@ -20,8 +20,8 @@ int main(int argc, char* argv[])
     mainWindow window;
 
     std::thread postthread(Post::spi_thread);
-    std::thread decoderthread(Decoder::decoder_thread);
     std::thread controlthread(Control::control_thread,&window);
+    std::thread decoderthread(Decoder::decoder_thread);
     std::thread graphthread(&Graphersteller::graph_thread, window.graphersteller);
 
     window.show();

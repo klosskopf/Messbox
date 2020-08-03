@@ -6,8 +6,11 @@ void Gpio::init()
     Gpio::gpiomutex.lock();
     wiringPiSetupGpio();
 
-    for (int i =0; i<11;i++) pinMode (slave_to_gpio(i), INPUT);
-    for (int i =0; i<11;i++) pullUpDnControl(slave_to_gpio(i), PUD_DOWN);
+    for (int i =1; i<11;i++) pinMode (slave_to_gpio(i), INPUT);
+    for (int i =1; i<11;i++) pullUpDnControl(slave_to_gpio(i), PUD_DOWN);
+
+    pinMode(slave_to_gpio(0), OUTPUT);
+    digitalWrite(slave_to_gpio(0),1);
 
     pinMode (2, OUTPUT);//Red Led
     pinMode (3, OUTPUT);//Green Led
@@ -36,12 +39,13 @@ void Gpio::enable_slave(int index)
     Gpio::gpiomutex.lock();
     if (index==-1)
     {
-        Spi::init_spi(1000);
-        for (int i=0; i<11;i++)
+        Spi::init_spi(CONTROL_BAUD);
+        for (int i=1; i<11;i++)
         {
             digitalWrite(Gpio::slave_to_gpio(i),0);
             pinMode(slave_to_gpio(i),OUTPUT);
         }
+        digitalWrite(Gpio::slave_to_gpio(0),0);
     }
     else
     {
@@ -54,12 +58,13 @@ void Gpio::disable_slave(int index)
 {
     if (index==-1)
     {
-        Spi::init_spi(1000000);
-        for (int i=0; i<11;i++)
+        Spi::init_spi(DATA_BAUD);
+        for (int i=1; i<11;i++)
         {
             digitalWrite(Gpio::slave_to_gpio(i),1);
             pinMode(slave_to_gpio(i),INPUT);
         }
+        digitalWrite(Gpio::slave_to_gpio(0),1);
     }
     else
     {

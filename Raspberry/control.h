@@ -1,5 +1,4 @@
-#ifndef CONTROL_H
-#define CONTROL_H
+#pragma once
 
 #include <QObject>
 #include <list>
@@ -47,5 +46,3 @@ public:
     static void check_karten();
     static Karte* findkarte(int Karte);
 };
-
-#endif // CONTROL_H
