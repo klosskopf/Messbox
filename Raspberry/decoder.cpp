@@ -1,16 +1,13 @@
 #include "decoder.h"
-#include <QWaitCondition>
-#include <QMutex>
-
-std::list<Paket*> Decoder::Sammelzentrum;
-static QWaitCondition decode_cond;
-static QMutex decode_mutex;
+#include <QtDebug>
 
 void Decoder::add_paket(Paket* paket)
 {
     decode_mutex.lock();
+ //   qDebug()<<"addpaket nimmt decode";
     Sammelzentrum.push_back(paket);
     decode_cond.wakeAll();
+  //  qDebug()<<"addpaket gibt decode";
     decode_mutex.unlock();
 }
 
@@ -19,6 +16,7 @@ void Decoder::decoder_thread()
     while(1)
     {
         decode_mutex.lock();
+//        qDebug()<<"decodethread nimmt decode";
         if (Sammelzentrum.size() == 0)decode_cond.wait(&decode_mutex);
 
 
@@ -26,6 +24,7 @@ void Decoder::decoder_thread()
         {
             Paket* currentpaket=Sammelzentrum.front();
             Sammelzentrum.pop_front();
+//            qDebug()<<"decodethread gibt decode";
             decode_mutex.unlock();
             switch(currentpaket->befehl)
             {
@@ -54,7 +53,6 @@ void Decoder::decoder_thread()
 
             delete currentpaket;
         }
-        else decode_mutex.unlock();
         //std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
@@ -148,7 +146,12 @@ void Decoder::decode_get_parameter(Paket* paket)
     if (kartenname)
     {
         Karte* karte = new Karte(Control::gui, paket->empfaengerindex, *kartenname, parameterliste);
+        Control::kartenset_mutex.lock();
+//        qDebug()<<"decoder nimmt kartenset";
         Control::Kartenset.push_back(karte);
+//        qDebug()<<"decoder gibt kartenset";
+        Control::kartenset_mutex.unlock();
+        Control::gui->rechenfeld->update();
     }
     if (wort != NULL)delete wort;
     if (kartenname != NULL)delete kartenname;
@@ -169,7 +172,6 @@ void Decoder::decode_get_daten(Paket* paket)
             {
                 starttime=(paket->daten[3]<<24) + (paket->daten[2]<<16) + (paket->daten[1]<<8) + paket->daten[0];
                 paket->ausgewaertet=4;
-                Control::datenmutex.lock();
         //      qDebug("newdata");
                 while(paket->ausgewaertet < paket->laenge+4)
                 {
@@ -177,7 +179,6 @@ void Decoder::decode_get_daten(Paket* paket)
                     starttime+=1;
                 }
             //    qDebug("newdata_end");
-                Control::datenmutex.unlock();
             }
         }
     }
@@ -227,3 +228,7 @@ float Decoder::get_next_float(Paket* paket)
     paket->ausgewaertet+=4;
     return convert.asfloat;
 }
+
+std::list<Paket*> Decoder::Sammelzentrum;
+QWaitCondition Decoder::decode_cond;
+QMutex Decoder::decode_mutex;

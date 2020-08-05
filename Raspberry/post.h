@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include <QMutex>
 #include "paket.h"
 #include "spi.h"
 #include "decoder.h"
@@ -20,4 +21,5 @@ public:
     static void send_stop();
     static void send_set_sample_freq(float freq);
     static void send_get_status();
+    static QMutex briefkasten_mutex;
 };

@@ -3,7 +3,7 @@
 #include <QObject>
 #include <list>
 #include <string>
-#include <mutex>
+#include <QMutex>
 #include "rechenblock.h"
 #include "mainwindow.h"
 #include "karte.h"
@@ -23,15 +23,17 @@ class Control
 {
 public:
     static void control_thread(mainWindow* n_gui);
+    static void start();
+    static void stop();
     static mainWindow* gui;
     static std::list<Karte*> Kartenset;
+    static QMutex kartenset_mutex;
     static Modus modus;
     static Zustand zustand;
     static float timeframe;
     static float samplefreq;
     static Rechenblock* xAchse;
     static Rechenblock* yAchse;
-    static std::list<Kennliniendaten*> kennlinie;
     static bool newkarte;
 
     static float vcc5V;
@@ -40,8 +42,6 @@ public:
     static float vbat;
     static float vlade;
     static float vin;
-
-    static QMutex datenmutex;
 
     static void check_karten();
     static Karte* findkarte(int Karte);

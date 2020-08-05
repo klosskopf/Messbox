@@ -3,6 +3,7 @@
 #include <QWidget>
 #include <QTextEdit>
 #include <QLabel>
+#include <QMutex>
 #include "rechenblock.h"
 #include "parameter.h"
 #include <list>
@@ -10,7 +11,7 @@
 class ParameterViewer;
 class Parameter;
 
-typedef enum {START,KLAMMERAUF,KLAMMERZU,TIME,INTEGRATE,DERIVATE,ZAHL,PUNKT,PARAMETER}DECODESTATE;
+typedef enum {START,KLAMMERAUF,KLAMMERZU,TIME,INTEGRATE,DERIVATE,ZAHL,PUNKT,PARAMETER,MINUS}DECODESTATE;
 typedef enum {NODECODEERROR,ZUVIELEKLAMMERN,ZUWENIGKLAMMERN,UNGUELTIG,MISSINGPARAMETER, MISSINGSTATE}DECODEERROR;
 
 class Rechenfeld : public QWidget
@@ -21,6 +22,8 @@ public:
     static Rechenblock* activeblock;
     std::list<Rechenblock*> bloecke;
     std::list<Parameter*> activeparameter;
+    QMutex rechenfeld_mutex;
+    void update();
 private:
     QLabel *xerror,*yerror,*xlabel,*ylabel;
     QTextEdit *xfeld,*yfeld;
@@ -36,6 +39,7 @@ private:
     DECODEERROR zahl(QChar);
     DECODEERROR punkt(QChar);
     DECODEERROR parameter(QChar);
+    DECODEERROR minus(QChar);
 
     int addblock(Rechenblock* block);
     DECODEERROR decode(QChar);
