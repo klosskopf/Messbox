@@ -17,7 +17,6 @@ SOURCES += \
     spi.cpp
 
 HEADERS += \
-    control.h \
     daten.h \
     decoder.h \
     gpio.h \
@@ -32,7 +31,8 @@ HEADERS += \
     rechenblock.h \
     rechenbloecke.h \
     rechenfeld.h \
-    spi.h
+    spi.h \
+    control.h
 
 QT += widgets
 QT += charts

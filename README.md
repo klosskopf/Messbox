@@ -6,6 +6,8 @@ Im Ordner Basisplatine findet sich der Schaltplan und Layout für die Basisplati
 
 Im Ordner Steckkarte befindet sich der C Code für die STM32 uC
 
+Im Ordner Steckkarte_moc befindet sich ein Mockup code, der zum Entwickeln des SPI-Decoder der Basisplatine genutzt wurde.
+
 Im Ordner Sample_and_board_control befindet sich der C Code für den atmega88 zur erzeugung der sample frequenz und allgemeines
 
 Im Ordner doc finden sich alle Schemata, die das System beschreiben

@@ -13,11 +13,12 @@ Rechenblock::~Rechenblock()
 
 uint32_t Rechenblock::newest()
 {
-    uint32_t newest=-1;
+    uint32_t newest=-2;
     for (Rechenblock* block : eingaenge)
     {
-        if (block->newest() < newest)
-            newest=block->newest();
+        uint32_t time=block->newest();
+        if (time < newest)
+            newest=time;
     }
     if (eingaenge.size()==0) newest=0;
     return newest;

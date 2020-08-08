@@ -1,5 +1,6 @@
 #include "control.h"
 #include <QGridLayout>
+#include <QtDebug>
 #include "rechenfeld.h"
 
 Rechenfeld::Rechenfeld(QWidget *parent) : QWidget(parent)
@@ -55,6 +56,7 @@ DECODEERROR Rechenfeld::decode(QChar c)
     case ZAHL: error=zahl(c);break;
     case PUNKT: error=punkt(c);break;
     case PARAMETER: error=parameter(c);break;
+    case MINUS: error=minus(c);break;
     default: error=MISSINGSTATE;
     }
     return error;
@@ -62,13 +64,18 @@ DECODEERROR Rechenfeld::decode(QChar c)
 
 void Rechenfeld::handle_input()   //This needs a mutex
 {
+    update();
+}
+
+void Rechenfeld::update()
+{
+    rechenfeld_mutex.lock();
+//    qDebug()<<"rechenfeld nimmt rechenfeld";
     DECODEERROR error=NODECODEERROR;
     QString progress="";
     int klammerzaehler=0;
     zahlstring="";
     parameterstring="";
-    Control::datenmutex.lock();
-    qDebug("handleinput");
     Control::xAchse->eingaenge.clear();
     Control::yAchse->eingaenge.clear();
     activeparameter.clear();
@@ -150,9 +157,9 @@ void Rechenfeld::handle_input()   //This needs a mutex
     {
         Control::yAchse->eingaenge.clear();
     }
-
-    qDebug("input_end\n");
-    Control::datenmutex.unlock();
+//    qDebug()<<"rechenfeld gibt rechenfeld";
+    rechenfeld_mutex.unlock();
+    Control::gui->graphersteller->clear_graph();
 }
 
 DECODEERROR Rechenfeld::start(QChar c)
@@ -163,7 +170,22 @@ DECODEERROR Rechenfeld::start(QChar c)
     else if(c=='S' || c=='s')   {addblock(new Integrate_Block());state=INTEGRATE;}
     else if(c=='D' || c=='d')   {addblock(new Derivate_Block());state=DERIVATE;}
     else if(c>='0' && c<='9')   {zahlstring=c;state=ZAHL;}
+    else if(c=='-')             {state=MINUS;}
     else if(c=='.')             {zahlstring="0.";state=PUNKT;}
+    else                        {error=UNGUELTIG;}
+    return(error);
+}
+
+DECODEERROR Rechenfeld::minus(QChar c)
+{
+    DECODEERROR error=NODECODEERROR;
+    if (c=='(')                 {addblock(new Constant_Block(0));addblock(new Minus_Block());addblock(new Klammerauf_Block());state=KLAMMERAUF;}
+    else if(c=='T' || c=='t')   {addblock(new Constant_Block(0));addblock(new Minus_Block());addblock(new Time_Block());state=TIME;}
+    else if(c=='S' || c=='s')   {addblock(new Constant_Block(0));addblock(new Minus_Block());addblock(new Integrate_Block());state=INTEGRATE;}
+    else if(c=='D' || c=='d')   {addblock(new Constant_Block(0));addblock(new Minus_Block());addblock(new Derivate_Block());state=DERIVATE;}
+    else if(c>='0' && c<='9')   {zahlstring=QString("-").append(c);state=ZAHL;}
+    else if(c=='.')             {zahlstring="-0.";state=PUNKT;}
+    else if(c=='\0')            {error=UNGUELTIG;}
     else                        {error=UNGUELTIG;}
     return(error);
 }
@@ -171,10 +193,7 @@ DECODEERROR Rechenfeld::start(QChar c)
 DECODEERROR Rechenfeld::klammerauf(QChar c)
 {
     DECODEERROR error=NODECODEERROR;
-    if (c=='+')                 {addblock(new Plus_Block());state=START;}
-    else if (c=='-')            {addblock(new Minus_Block());state=START;}
-    else if (c=='*')            {addblock(new Mal_Block());state=START;}
-    else if (c=='/')            {addblock(new Geteilt_Block());state=START;}
+    if (c=='-')            {state=MINUS;}
     else if (c=='(')            {addblock(new Klammerauf_Block());state=KLAMMERAUF;}
     else if(c=='T' || c=='t')   {addblock(new Time_Block());state=TIME;}
     else if(c=='S' || c=='s')   {addblock(new Integrate_Block());state=INTEGRATE;}
@@ -228,9 +247,8 @@ DECODEERROR Rechenfeld::integrate(QChar c)
 {
     DECODEERROR error=NODECODEERROR;
     if (c=='(')                 {addblock(new Klammerauf_Block());state=KLAMMERAUF;}
+    else if(c=='-')             {state=MINUS;}
     else if(c=='T' || c=='t')   {addblock(new Time_Block());state=TIME;}
-    else if(c=='S' || c=='s')   {addblock(new Integrate_Block());state=INTEGRATE;}
-    else if(c=='D' || c=='d')   {addblock(new Derivate_Block());state=DERIVATE;}
     else if(c>='0' && c<='9')   {zahlstring=c;state=ZAHL;}
     else if(c=='.')             {zahlstring="0.";state=PUNKT;}
     else if(c=='\0')            {error=UNGUELTIG;}
@@ -242,9 +260,8 @@ DECODEERROR Rechenfeld::derivate(QChar c)
 {
     DECODEERROR error=NODECODEERROR;
     if (c=='(')                 {addblock(new Klammerauf_Block());state=KLAMMERAUF;}
+    else if(c=='-')             {state=MINUS;}
     else if(c=='T' || c=='t')   {addblock(new Time_Block());state=TIME;}
-    else if(c=='S' || c=='s')   {addblock(new Integrate_Block());state=INTEGRATE;}
-    else if(c=='D' || c=='d')   {addblock(new Derivate_Block());state=DERIVATE;}
     else if(c>='0' && c<='9')   {zahlstring=c;state=ZAHL;}
     else if(c=='.')             {zahlstring="0.";state=PUNKT;}
     else if(c=='\0')            {error=UNGUELTIG;}
@@ -255,19 +272,19 @@ DECODEERROR Rechenfeld::derivate(QChar c)
 DECODEERROR Rechenfeld::zahl(QChar c)
 {
     DECODEERROR error=NODECODEERROR;
-    if (c=='+')                 {addblock(new Constant_Block(zahlstring.toInt()));addblock(new Plus_Block());state=START;}
-    else if (c=='-')            {addblock(new Constant_Block(zahlstring.toInt()));addblock(new Minus_Block());state=START;}
-    else if (c=='*')            {addblock(new Constant_Block(zahlstring.toInt()));addblock(new Mal_Block());state=START;}
-    else if (c=='/')            {addblock(new Constant_Block(zahlstring.toInt()));addblock(new Geteilt_Block());state=START;}
-    else if (c=='(')            {addblock(new Constant_Block(zahlstring.toInt()));addblock(new Mal_Block());addblock(new Klammerauf_Block());state=KLAMMERAUF;}
-    else if (c==')')            {addblock(new Constant_Block(zahlstring.toInt()));addblock(new Klammerzu_Block());state=KLAMMERZU;}
-    else if(c=='T' || c=='t')   {addblock(new Constant_Block(zahlstring.toInt()));addblock(new Mal_Block());addblock(new Time_Block());state=TIME;}
-    else if(c=='S' || c=='s')   {addblock(new Constant_Block(zahlstring.toInt()));addblock(new Mal_Block());addblock(new Integrate_Block());state=INTEGRATE;}
-    else if(c=='D' || c=='d')   {addblock(new Constant_Block(zahlstring.toInt()));addblock(new Mal_Block());addblock(new Derivate_Block());state=DERIVATE;}
+    if (c=='+')                 {addblock(new Constant_Block(zahlstring.toFloat()));addblock(new Plus_Block());state=START;}
+    else if (c=='-')            {addblock(new Constant_Block(zahlstring.toFloat()));addblock(new Minus_Block());state=START;}
+    else if (c=='*')            {addblock(new Constant_Block(zahlstring.toFloat()));addblock(new Mal_Block());state=START;}
+    else if (c=='/')            {addblock(new Constant_Block(zahlstring.toFloat()));addblock(new Geteilt_Block());state=START;}
+    else if (c=='(')            {addblock(new Constant_Block(zahlstring.toFloat()));addblock(new Mal_Block());addblock(new Klammerauf_Block());state=KLAMMERAUF;}
+    else if (c==')')            {addblock(new Constant_Block(zahlstring.toFloat()));addblock(new Klammerzu_Block());state=KLAMMERZU;}
+    else if(c=='T' || c=='t')   {addblock(new Constant_Block(zahlstring.toFloat()));addblock(new Mal_Block());addblock(new Time_Block());state=TIME;}
+    else if(c=='S' || c=='s')   {addblock(new Constant_Block(zahlstring.toFloat()));addblock(new Mal_Block());addblock(new Integrate_Block());state=INTEGRATE;}
+    else if(c=='D' || c=='d')   {addblock(new Constant_Block(zahlstring.toFloat()));addblock(new Mal_Block());addblock(new Derivate_Block());state=DERIVATE;}
     else if(c>='0' && c<='9')   {zahlstring.append(c);state=ZAHL;}
     else if(c=='.')             {zahlstring.append(c);state=PUNKT;}
     else if(c==':')             {parameterstring="";state=PARAMETER;}
-    else if(c=='\0')            {addblock(new Constant_Block(zahlstring.toInt()));state=ZAHL;}
+    else if(c=='\0')            {addblock(new Constant_Block(zahlstring.toFloat()));state=ZAHL;}
     else                        {error=UNGUELTIG;}
     return(error);
 }

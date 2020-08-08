@@ -14,5 +14,5 @@ public:
     Befehl befehl;
     uint32_t laenge;
     uint32_t ausgewaertet;
-    uint8_t * daten;
+    uint8_t * daten=NULL;
 };

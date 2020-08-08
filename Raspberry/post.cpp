@@ -1,16 +1,20 @@
 #include "post.h"
-
-std::list<Paket*> Post::Briefkasten;
+#include <QtDebug>
 
 void Post::spi_thread()
 {
     Paket* currentpaket;
-    Spi::init_spi(1000000);
+    Spi::init_spi(DATA_BAUD);
     while(1)
     {
+        briefkasten_mutex.lock();
+//        qDebug()<<"post nimmt briefkasten";
         if (Briefkasten.size())
         {
             currentpaket=Briefkasten.front();
+            Briefkasten.pop_front();
+//            qDebug()<<"post gibt briefkasten";
+            briefkasten_mutex.unlock();
             switch(currentpaket->befehl)
             {
             case COM_GET_PARAMETER:
@@ -59,7 +63,7 @@ void Post::spi_thread()
                 Spi::txrx(ask_for, 9);
                 currentpaket->laenge = ((uint32_t)ask_for[5]) + ((uint32_t)ask_for[6]<<8) +((uint32_t)ask_for[7]<<16) + ((uint32_t)ask_for[8]<<24);
                 delete [] currentpaket->daten;
-                if (currentpaket->laenge < 1000000)
+                if (currentpaket->laenge < 5000)
                 {
                     currentpaket->daten = new uint8_t[currentpaket->laenge + 8];
                     Spi::txrx(currentpaket->daten, currentpaket->laenge + 4);
@@ -129,11 +133,14 @@ void Post::spi_thread()
                 break;
             }
             }
-
-            Post::Briefkasten.pop_front();
             Decoder::add_paket(currentpaket);
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(2));
+        else
+        {
+//            qDebug()<<"post gibt briefkasten";
+            briefkasten_mutex.unlock();
+        }
+        std::this_thread::sleep_for(std::chrono::microseconds(10));
     }
 }
 void Post::send_get_parameter(int index)
@@ -217,3 +224,6 @@ void Post::send_get_status()
     getstatuspaket->daten=new uint8_t[24];
     Briefkasten.push_back(getstatuspaket);
 }
+
+std::list<Paket*> Post::Briefkasten;
+QMutex Post::briefkasten_mutex;

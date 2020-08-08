@@ -1,8 +1,8 @@
-#ifndef GRAPHERSTELLER_H
-#define GRAPHERSTELLER_H
+#pragma once
 
 #include <QtCharts>
 #include <QObject>
+#include <QVector>
 #include "mainwindow.h"
 class mainWindow;
 
@@ -10,14 +10,18 @@ class Graphersteller : public QObject
 {
     Q_OBJECT
 public:
-    Graphersteller(mainWindow* n_gui):gui(n_gui){time=0;}
+    Graphersteller(mainWindow* n_gui);
     void graph_thread();
+    void clear_graph();
+
 private:
     mainWindow* gui;
-    void draw_graph();
-    uint32_t time;
+    QVector<QPointF> buffer;
+    uint32_t firsttimepoint;
+    uint32_t nexttimepoint;
+    double maxx,maxy,minx,miny;
+public slots:
+    void create_graph_rec();
 signals:
-    void create_graph(QLineSeries* n_serie);
+    void create_graph_send();
 };
-
-#endif // GRAPHERSTELLER_H

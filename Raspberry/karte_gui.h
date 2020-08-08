@@ -1,5 +1,5 @@
-#ifndef KARTE_GUI_H
-#define KARTE_GUI_H
+#pragma once
+
 #include <QGroupBox>
 #include <QLabel>
 #include <QComboBox>
@@ -44,5 +44,3 @@ private:
         return data(3)<item2.data(3);
     }
 };
-
-#endif // KARTE_GUI_H

@@ -113,12 +113,12 @@ double Klammerzu_Block::get_data(uint32_t time)
 
 uint32_t Time_Block::newest()
 {
-    return -1;
+    return -2;
 }
 
 uint32_t Constant_Block::newest()
 {
-    return -1;
+    return -2;
 }
 
 

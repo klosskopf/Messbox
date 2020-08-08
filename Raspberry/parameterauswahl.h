@@ -1,5 +1,4 @@
-#ifndef PARAMETERAUSWAHL_H
-#define PARAMETERAUSWAHL_H
+#pragma once
 
 #include <QWidget>
 #include <QScrollArea>
@@ -21,5 +20,3 @@ public slots:
     void delete_karte(Karte_GUI* karte_gui);
 
 };
-
-#endif // PARAMETERAUSWAHL_H

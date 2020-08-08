@@ -52,12 +52,24 @@ mainWindow::mainWindow()
     graph->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     anzeigeserie = new QLineSeries;
-    aenderserie = new QLineSeries;
     graph->addSeries(anzeigeserie);
 
     graphview = new QChartView();
     graphview->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     graphview->setChart(graph);
+
+    axisx = new QValueAxis;
+    axisx->setRange(1,-1);
+    axisx->setTickCount(0.2);
+    axisx->setLabelFormat("%.3f");
+
+    axisy = new QValueAxis;
+    axisy->setRange(1,-1);
+    axisy->setTickCount(0.2);
+    axisy->setLabelFormat("%.3f");
+
+    graph->setAxisX(axisx,anzeigeserie);
+    graph->setAxisY(axisy,anzeigeserie);
 
     rechenfeld = new Rechenfeld();
     rechenfeld->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -91,38 +103,17 @@ mainWindow::mainWindow()
     //setWindowState(Qt::WindowFullScreen);
 
     graphersteller = new Graphersteller(this);
-    QObject::connect(graphersteller,&Graphersteller::create_graph,this,&mainWindow::create_graph);
 }
 
 void mainWindow::handlestartstopbutton()
 {
     if(Control::zustand == MESS)
     {
-        Control::zustand = STOP;
-        Post::send_stop();
-        Gpio::set_led(LED_STOP);
-        startstopbutton->setText("Stop");
-        startstopbutton->setStyleSheet("background-color: rgb(0, 255, 0); color: rgb(0, 0, 0)");
+        Control::stop();
     }
     else
     {
-        Control::zustand = MESS;
-        Control::datenmutex.lock();
-        for (Karte* karte : Control::Kartenset)
-        {
-            for (Parameter* param : *(karte->parameter))
-            {
-                param->delete_daten();
-            }
-        }
-        Control::datenmutex.unlock();
-        Gpio::set_led(LED_RUN);
-        if (Control::modus==CONT)
-            Post::send_start_kont();
-        else
-            Post::send_start_startstop();
-        startstopbutton->setText("misst...");
-        startstopbutton->setStyleSheet("background-color: rgb(255, 0, 0); color: rgb(0, 0, 0)");
+        Control::start();
     }
 }
 
@@ -140,10 +131,7 @@ void mainWindow::handlemodebutton()
     }
     if(Control::zustand==MESS)
     {
-        if (Control::modus==CONT)
-            Post::send_start_kont();
-        else
-            Post::send_start_startstop();
+        Control::start();
     }
 }
 
@@ -152,7 +140,10 @@ void mainWindow::handletimframe()
     float n_timeframe = std::stof(timeframe->text().toStdString());
     if (n_timeframe)
     {
+        rechenfeld->rechenfeld_mutex.lock();
         Control::timeframe=n_timeframe;
+        rechenfeld->rechenfeld_mutex.unlock();
+        graphersteller->clear_graph();
     }
     else
     {
@@ -165,33 +156,21 @@ void mainWindow::handlesample()
     float n_sample = sample->text().toFloat();
     if (n_sample)
     {
+        rechenfeld->rechenfeld_mutex.lock();
         if (n_sample < 0.09)
             Control::samplefreq=0.1;
         else if (n_sample > 10000)
             Control::samplefreq=1000;
         else
             Control::samplefreq=n_sample;
+        rechenfeld->rechenfeld_mutex.unlock();
+        graphersteller->clear_graph();
     }
     sample->setText(QString::number(Control::samplefreq));
 
     Post::send_set_sample_freq(n_sample);
     if(Control::zustand==MESS)
     {
-       if (Control::modus==STARTSTOP)Post::send_start_startstop();
-       else Post::send_start_kont();
+       Control::start();
     }
-}
-
-void mainWindow::create_graph(QLineSeries* n_serie)
-{
-    for (QAbstractSeries * series : graph->series())
-    {
-        graph->removeSeries(series);
-    }
-    QLineSeries* old_serie=anzeigeserie;
-    anzeigeserie = n_serie;
-    aenderserie=old_serie;
-    graph->addSeries(anzeigeserie);
-    graph->createDefaultAxes();
-
 }

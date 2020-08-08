@@ -1,5 +1,4 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QWidget>
 #include <QPushButton>
@@ -33,8 +32,6 @@ private slots:
     void handlemodebutton();
     void handletimframe();
     void handlesample();
-public slots:
-    void create_graph(QLineSeries* n_serie);
 public:
     QWidget* centralwidget;
     QMenuBar* menubar;
@@ -44,13 +41,14 @@ public:
     QLineEdit* timeframe;
     QLineEdit* sample;
     QPushButton* savebutton;
+
     QChart* graph;
     QLineSeries* anzeigeserie;
-    QLineSeries* aenderserie;
     QChartView* graphview;
+    QValueAxis* axisx;
+    QValueAxis* axisy;
+
     Rechenfeld* rechenfeld;
 
     Graphersteller* graphersteller;
 };
-
-#endif // MAINWINDOW_H

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <QMutex>
 #include "rechenblock.h"
 #include "karte.h"
 #include "daten.h"
@@ -21,6 +22,7 @@ public:
     float min;
     float max;
     std::vector<Daten*>* daten;
+    QMutex daten_mutex;
     bool is_plotbar() const;
     void add_datum(uint32_t time, float datum);
     void delete_daten();
@@ -30,9 +32,10 @@ public:
 class ParameterViewer : public Rechenblock
 {
 public:
-    ParameterViewer(Parameter* n_parameter):Rechenblock(0,5), parameter(n_parameter){}
+    ParameterViewer(Parameter* n_parameter):Rechenblock(0,5), parameter(n_parameter){index=0;}
     Parameter* parameter;
     double get_data(uint32_t time) override;
+    uint32_t index;
     uint32_t newest() override;
     QString print() override;
 };
