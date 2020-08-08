@@ -20,6 +20,7 @@ void set_sample_freq_decoder(uint32_t position, uint8_t datum);
 void send_com_char(uint8_t character);
 void send_com_block(volatile void* data,volatile uint32_t size);
 uint8_t read_com();
+void stop_transfere();
 
 const GPIO_PIN SS1PIN ={GPIOB, 0};
 const GPIO_PIN CLK1PIN ={GPIOA, 5};
@@ -80,6 +81,7 @@ void EXTI0_IRQHandler(void)
 	if (read_gpio(SS1PIN))
 	{
 		SPI1->CR1 |= SPI_CR1_SSI;
+		stop_transfere();
 		decoderbytenr=0;
 	}
 	else
@@ -104,7 +106,7 @@ void SPI1_IRQHandler()
 struct get_parameter_t {
 	const uint32_t paket_size;
 	const char parameter[200];
-}get_parameter_data = {200,"Spannungsmesser,1,Spannung,f,n,0,5,2,Messbereich,s,l,0,0{pA,nA,mA,A}3,Strom,f,n,0,0,10,LED Test,s,l,0,0{LED AN,LED AUS}"};
+}get_parameter_data = {200,"Strommesser,1,Strom,f,n,0,5,2,Messbereich,s,l,0,0{pA,nA,mA,A}3,Spannung,f,n,0,0,10,LED Test,s,l,0,0{LED AN,LED AUS}"};
 void get_parameter_decoder(uint32_t position, uint8_t datum)
 {
 	send_com_block(&get_parameter_data,get_parameter_data.paket_size+4);
@@ -215,6 +217,23 @@ void DMA1_Channel3_IRQHandler()
 	SPI1->CR2 &= ~SPI_CR2_TXDMAEN;					//Disable DMA Tx and Rx buffers by clearing the TXDMAEN and RXDMAEN bits in the
 													//SPI_CR2 register, if DMA Tx and/or DMA Rx are used.
 
+	NVIC_ClearPendingIRQ(SPI1_IRQn);				//restart the SPI interrupts
+	NVIC_EnableIRQ(SPI1_IRQn);
+	SPI1->CR1 |= SPI_CR1_SPE;
+
+	DMA1->IFCR = DMA_IFCR_CGIF3;					//clear the int. pending flag
+}
+
+void stop_transfere()
+{
+	uint32_t dummy=0;
+	DMA1_Channel3->CCR &= ~DMA_CCR_EN;				//Disable DMA streams for Tx and Rx in the DMA registers, if the streams are used.
+
+	SPI1->CR1 &= ~SPI_CR1_SPE;
+	while(SPI1->SR & SPI_SR_FRLVL)dummy=SPI1->DR;
+
+	SPI1->CR2 &= ~SPI_CR2_TXDMAEN;					//Disable DMA Tx and Rx buffers by clearing the TXDMAEN and RXDMAEN bits in the
+														//SPI_CR2 register, if DMA Tx and/or DMA Rx are used.
 	NVIC_ClearPendingIRQ(SPI1_IRQn);				//restart the SPI interrupts
 	NVIC_EnableIRQ(SPI1_IRQn);
 	SPI1->CR1 |= SPI_CR1_SPE;
