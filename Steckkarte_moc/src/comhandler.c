@@ -106,7 +106,7 @@ void SPI1_IRQHandler()
 struct get_parameter_t {
 	const uint32_t paket_size;
 	const char parameter[200];
-}get_parameter_data = {200,"Strommesser,1,Strom,f,n,0,5,2,Messbereich,s,l,0,0{pA,nA,mA,A}3,Spannung,f,n,0,0,10,LED Test,s,l,0,0{LED AN,LED AUS}"};
+}get_parameter_data = {200,"Testmodul,1,Spannnung_in,f,n,0,3.3,2,Spannung_out,f,f,0,3.3{0,1,2,3,3.3}3,LED Test,s,l,0,0{LED AN,LED AUS}"};
 void get_parameter_decoder(uint32_t position, uint8_t datum)
 {
 	send_com_block(&get_parameter_data,get_parameter_data.paket_size+4);
@@ -203,7 +203,7 @@ void send_com_block(volatile void* data,volatile uint32_t size)
 	SPI1->CR1 |= SPI_CR1_SPE;						//Enable the SPI by setting the SPE bit.
 }
 
-void DMA1_Channel3_IRQHandler()
+void DMA1_CH3_IRQHandler()
 {
 	uint32_t dummy=0;
 	DMA1_Channel3->CCR &= ~DMA_CCR_EN;				//Disable DMA streams for Tx and Rx in the DMA registers, if the streams are used.

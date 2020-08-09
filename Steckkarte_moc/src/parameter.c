@@ -5,8 +5,10 @@
  *      Author: klosskopf
  */
 #include "parameter.h"
+#include "dac.h"
 #include "string.h"
 #include "gpio.h"
+#include <stdlib.h>
 
 extern const GPIO_PIN LED;
 volatile get_daten_t ausgabe_buffer1;
@@ -44,7 +46,15 @@ void reset_data()
 
 void set_parameter(uint32_t nummer, const char* anweisung)
 {
-	if(nummer==10)
+	switch(nummer)
+	{
+	case 2:
+	{
+		float voltage=atof(anweisung);
+		set_dac(voltage);
+		break;
+	}
+	case 3:
 	{
 		if (strcmp(anweisung,"LED AN")==0)
 		{
@@ -54,7 +64,10 @@ void set_parameter(uint32_t nummer, const char* anweisung)
 		{
 			set_gpio(LED,0);
 		}
+		break;
 	}
+	}
+
 }
 
 get_daten_t* get_datenblock(uint32_t nummer)
