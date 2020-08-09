@@ -12,7 +12,10 @@
 #include "main.h"
 #include "comhandler.h"
 #include "parameter.h"
+#include "adc.h"
+#include "dac.h"
 #include "math.h"
+#include "stm32l4xx.h"
 
 void L412_80MHz_MSI(void);
 void init_sample();
@@ -24,13 +27,14 @@ int main(void)
 	init_parameter();
 	init_comhandler();
 	init_sample();
+	init_adc();
+	init_dac();
 
 	init_gpio(LED, OUT, PUSH_PULL, OPEN, VERY_HIGH);
 	init_gpio(SAMPLE, IN, PUSH_PULL, OPEN, VERY_HIGH);//Probably not needed. I think EXTI samples the pin, not the input
 	__enable_irq();
 	while(1)
 	{
-
 	}
 }
 
@@ -48,10 +52,7 @@ void init_sample()
 
 void EXTI2_IRQHandler(void)
 {
-	static volatile float n=0;
-	n+=0.1;
-	float datum = sin(n/10);
-	new_data(datum);
+	start_conv();
 	EXTI->PR1 = EXTI_PR1_PIF2;
 }
 
