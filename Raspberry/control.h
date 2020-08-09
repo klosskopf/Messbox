@@ -4,6 +4,7 @@
 #include <list>
 #include <string>
 #include <QMutex>
+#include <QTimer>
 #include "rechenblock.h"
 #include "mainwindow.h"
 #include "karte.h"
@@ -30,6 +31,7 @@ public:
     static QMutex kartenset_mutex;
     static Modus modus;
     static Zustand zustand;
+    static QTimer timeouttimer;
     static float timeframe;
     static float samplefreq;
     static Rechenblock* xAchse;

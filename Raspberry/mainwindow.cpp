@@ -60,12 +60,12 @@ mainWindow::mainWindow()
 
     axisx = new QValueAxis;
     axisx->setRange(1,-1);
-    axisx->setTickCount(0.2);
+ //   axisx->setTickCount(13);
     axisx->setLabelFormat("%.3f");
 
     axisy = new QValueAxis;
     axisy->setRange(1,-1);
-    axisy->setTickCount(0.2);
+  //  axisy->setTickCount(6);
     axisy->setLabelFormat("%.3f");
 
     graph->setAxisX(axisx,anzeigeserie);

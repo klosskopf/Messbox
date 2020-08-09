@@ -3,6 +3,7 @@
 void Control::control_thread(mainWindow* n_gui)
 {
     gui=n_gui;
+
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
     while(1)
@@ -11,7 +12,7 @@ void Control::control_thread(mainWindow* n_gui)
       //  Post::send_get_status();
         Post::briefkasten_mutex.lock();
 //        qDebug()<<"Controlthread nimmt briefkasten";
-        if (zustand==MESS && Post::Briefkasten.size() < 10)
+        if (Post::Briefkasten.size() < 10)
         {
             gui->rechenfeld->rechenfeld_mutex.lock();
 //            qDebug()<<"Controllthread nimmt rechenfeld";
@@ -47,13 +48,18 @@ void Control::start()
     if (modus==CONT)
         Post::send_start_kont();
     else
+    {
         Post::send_start_startstop();
+        timeouttimer.singleShot(timeframe*1000,stop);
+        //timeouttimer.start(Control::timeframe*1000);
+    }
     gui->startstopbutton->setText("misst...");
     gui->startstopbutton->setStyleSheet("background-color: rgb(255, 0, 0); color: rgb(0, 0, 0)");
 }
 
 void Control::stop()
 {
+    //timeouttimer.stop();
     zustand = STOP;
     Post::send_stop();
     Gpio::set_led(LED_STOP);

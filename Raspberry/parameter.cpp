@@ -52,7 +52,6 @@ double ParameterViewer::get_data(uint32_t time)
         index=0;
     if (data_size==0)
     {
-        qDebug()<<"getdaten gibt daten";
         parameter->daten_mutex.unlock();
         return 0;
     }
