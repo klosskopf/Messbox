@@ -40,8 +40,6 @@ int main(void)
 	init_gpio(SAMPLE, IN, PUSH_PULL, OPEN, VERY_HIGH);//Probably not needed. I think EXTI samples the pin, not the input
 	__enable_irq();
 
-	write_block(0,daten);
-
 	while(1)
 	{
 

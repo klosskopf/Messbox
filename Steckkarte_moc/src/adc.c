@@ -61,7 +61,7 @@ void ADC1_IRQHandler()
 {
 	uint32_t result=ADC1->DR;				//fetch conversion; clears the EOC flag
 	float voltage= (float)result*3.3/0xFFF0;
-	new_data((float)voltage);				//store conversion
+	new_data(SPANNUNG_IN,(float)voltage);				//store conversion
 }
 
 void calibrate_adc()
