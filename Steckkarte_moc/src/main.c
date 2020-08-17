@@ -26,23 +26,47 @@ volatile uint8_t daten[0xFFF];
 int main(void)
 {
 
-	for (int i=0; i<0xFFF; i++)daten[i]=i;
+	for (int i=0; i<0x1000; i++)daten[i]=i;
 
     __disable_irq();
 	L412_80MHz_MSI();
-	init_parameter();
-	init_comhandler();
-	init_sample();
-	init_adc();
-	init_dac();
+	//init_parameter();
+	//init_comhandler();
+	//init_sample();
+	//init_adc();
+	//init_dac();
 	init_flash();
 	init_gpio(LED, OUT, PUSH_PULL, OPEN, VERY_HIGH);
 	init_gpio(SAMPLE, IN, PUSH_PULL, OPEN, VERY_HIGH);//Probably not needed. I think EXTI samples the pin, not the input
 	__enable_irq();
 
+<<<<<<< HEAD
+	while(1)
+=======
+	//erase_device();
+	erase_block(0x1000);
+	write_block(0x1000,daten);
+	while(get_flash_state() != IDLE);
+	for (int i=0; i<0x1000; i++)daten[i]=0;
+	read_block(0x1000,daten);
+	while(get_flash_state() != IDLE);
+
+	uint32_t all_ok=1;
+	for (int i=0; i<0x1000; i++)
+>>>>>>> 64cc07e74864ac9b9d1180ae2d5bd8014e3532ea
+	{
+		if (daten[i] != (uint8_t)i)
+		{
+			all_ok=0;
+		}
+	}
+
+	erase_device();
+
 	while(1)
 	{
-
+		if(get_flash_state()!=IDLE) set_gpio(LED,1);
+		else set_gpio(LED,0);
 	}
 }
 
@@ -66,8 +90,8 @@ void EXTI2_IRQHandler(void)
 
 void L412_80MHz_MSI(void)
 {
-	FLASH->ACR = (2<<FLASH_ACR_LATENCY_Pos) | FLASH_ACR_PRFTEN;					// Set Flash latency to 2 wait cycles
-	while ((FLASH->ACR & FLASH_ACR_LATENCY) != (2<<FLASH_ACR_LATENCY_Pos)); 		// Wait till done
+	FLASH->ACR = (1<<FLASH_ACR_LATENCY_Pos) | FLASH_ACR_PRFTEN;					// Set Flash latency to 2 wait cycles
+	while ((FLASH->ACR & FLASH_ACR_LATENCY) != (1<<FLASH_ACR_LATENCY_Pos)); 		// Wait till done
 
 	RCC->CR &= (uint32_t)(~RCC_CR_PLLON);				// Disable PLL. After reset default: RCC->CR &= ~(1<<24)
 	while((RCC->CR & RCC_CR_PLLRDY) != 0);				// Wait until PLLRDY is cleared
