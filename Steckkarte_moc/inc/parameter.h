@@ -44,7 +44,7 @@ typedef struct{
 void init_parameter();
 void new_data(PARAMETER parameter, float data);
 void reset_data();
-get_daten_t* get_datenblock(PARAMETER parameter);
+volatile get_daten_t* get_datenblock(PARAMETER parameter);
 void set_parameter(uint32_t nummer, const char* wert);
 
 #endif /* PARAMETER_H_ */

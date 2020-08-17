@@ -30,43 +30,21 @@ int main(void)
 
     __disable_irq();
 	L412_80MHz_MSI();
-	//init_parameter();
-	//init_comhandler();
-	//init_sample();
-	//init_adc();
-	//init_dac();
+	init_parameter();
+	init_comhandler();
+	init_sample();
+	init_adc();
+	init_dac();
 	init_flash();
 	init_gpio(LED, OUT, PUSH_PULL, OPEN, VERY_HIGH);
 	init_gpio(SAMPLE, IN, PUSH_PULL, OPEN, VERY_HIGH);//Probably not needed. I think EXTI samples the pin, not the input
 	__enable_irq();
 
-<<<<<<< HEAD
-	while(1)
-=======
-	//erase_device();
-	erase_block(0x1000);
-	write_block(0x1000,daten);
-	while(get_flash_state() != IDLE);
-	for (int i=0; i<0x1000; i++)daten[i]=0;
-	read_block(0x1000,daten);
-	while(get_flash_state() != IDLE);
-
-	uint32_t all_ok=1;
-	for (int i=0; i<0x1000; i++)
->>>>>>> 64cc07e74864ac9b9d1180ae2d5bd8014e3532ea
-	{
-		if (daten[i] != (uint8_t)i)
-		{
-			all_ok=0;
-		}
-	}
-
 	erase_device();
 
 	while(1)
 	{
-		if(get_flash_state()!=IDLE) set_gpio(LED,1);
-		else set_gpio(LED,0);
+
 	}
 }
 

@@ -122,7 +122,7 @@ void set_parameter(uint32_t nummer, const char* anweisung)
 
 }
 
-get_daten_t* get_datenblock(PARAMETER parameter)
+volatile get_daten_t* get_datenblock(PARAMETER parameter)
 {
 	volatile get_daten_t* returnbuffer;
 	Datenblock_t* gefunden=NULL;
