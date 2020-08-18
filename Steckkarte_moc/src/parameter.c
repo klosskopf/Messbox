@@ -10,6 +10,7 @@
 #include "gpio.h"
 #include "flash.h"
 #include <stdlib.h>
+#include <stdbool.h>
 
 extern const GPIO_PIN LED;
 
@@ -20,6 +21,7 @@ typedef struct {
 
 Datenblock_t flash_meta[FLASHPAGECOUNT]={0};
 parameter_t parameterliste[MAXPARAMETER];								//Ja index 0 ist ungenutzt ;)
+bool full;
 
 void init_parameter()
 {
@@ -37,7 +39,7 @@ void init_parameter()
 	parameterliste[SPANNUNG_OUT].min=0;
 	parameterliste[SPANNUNG_OUT].max=3.3;
 	parameterliste[SPANNUNG_OUT].wahlnr=4;
-	char* vout_wahl[5]={"0","1","2","3","3.3"};
+	static char* vout_wahl[5]={"0","1","2","3","3.3"};
 	parameterliste[SPANNUNG_OUT].wahl=vout_wahl;
 
 	parameterliste[LED_TEST].name="LED test";
@@ -46,7 +48,7 @@ void init_parameter()
 	parameterliste[LED_TEST].min=0;
 	parameterliste[LED_TEST].max=0;
 	parameterliste[LED_TEST].wahlnr=2;
-	char* ledtest_wahl[2]={"LED AN","LED AUS"};
+	static char* ledtest_wahl[2]={"LED AN","LED AUS"};
 	parameterliste[LED_TEST].wahl=ledtest_wahl;
 
 	for (uint32_t i=0; i<MAXPARAMETER; i++)
@@ -54,12 +56,16 @@ void init_parameter()
 		parameterliste[i].eingangsbuffer.paket_size=0;
 		parameterliste[i].ausgangsbuffer.startzeit=0;
 	}
+	full=false;
 }
 
 void new_data(PARAMETER parameter, volatile float data)
 {
-	parameterliste[parameter].eingangsbuffer.daten[(parameterliste[parameter].eingangsbuffer.paket_size)>>2]=data;
-	parameterliste[parameter].eingangsbuffer.paket_size+=4;
+	if(!full)
+	{
+		parameterliste[parameter].eingangsbuffer.daten[(parameterliste[parameter].eingangsbuffer.paket_size)>>2]=data;
+		parameterliste[parameter].eingangsbuffer.paket_size+=4;
+	}
 
 	if (parameterliste[parameter].eingangsbuffer.paket_size == FLASHPAGESIZE)
 	{
@@ -72,10 +78,14 @@ void new_data(PARAMETER parameter, volatile float data)
 		{
 
 			set_gpio(LED,1);
+			full=true;
 		}
 		else
 		{
+			full=false;
 			flash_meta[index].startzeit=parameterliste[parameter].eingangsbuffer.startzeit;
+			(parameterliste[parameter].eingangsbuffer.startzeit)+=(FLASHPAGESIZE>>2);
+			parameterliste[parameter].eingangsbuffer.paket_size=0;
 			write_block(index*PAGESIZE,(uint8_t*)(parameterliste[parameter].eingangsbuffer.daten));
 			flash_meta[index].parameternummer=parameter;
 		}
@@ -94,6 +104,7 @@ void reset_data()
 	{
 		flash_meta[i].parameternummer=NOPARAM;
 	}
+	full=false;
 }
 
 void set_parameter(uint32_t nummer, const char* anweisung)

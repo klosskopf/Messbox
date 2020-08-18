@@ -11,7 +11,8 @@
 #include <stdint.h>
 
 #define FLASHPAGESIZE 0x1000
-#define FLASHPAGECOUNT 800
+//#define FLASHPAGECOUNT 2048
+#define FLASHPAGECOUNT 1000
 
 typedef struct{
 	volatile uint32_t paket_size;

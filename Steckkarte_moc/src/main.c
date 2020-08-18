@@ -40,8 +40,11 @@ int main(void)
 	init_gpio(SAMPLE, IN, PUSH_PULL, OPEN, VERY_HIGH);//Probably not needed. I think EXTI samples the pin, not the input
 	__enable_irq();
 
-	erase_device();
 
+	erase_device();
+	set_gpio(LED,1);
+	while(get_flash_state()!=IDLE);
+	set_gpio(LED,0);
 	while(1)
 	{
 
