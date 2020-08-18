@@ -21,10 +21,6 @@ void Parameter::add_datum(uint32_t time, float datum)
     daten->push_back(new Daten(time,datum));
 //    qDebug()<<"adddatum gibt daten";
     daten_mutex.unlock();
-    if (datum<=0.1)
-    {
-        int null =0;
-    }
 }
 
 void Parameter::delete_daten()

@@ -61,12 +61,12 @@ mainWindow::mainWindow()
     axisx = new QValueAxis;
     axisx->setRange(1,-1);
  //   axisx->setTickCount(13);
-    axisx->setLabelFormat("%.3f");
+    axisx->setLabelFormat("%.5f");
 
     axisy = new QValueAxis;
     axisy->setRange(1,-1);
   //  axisy->setTickCount(6);
-    axisy->setLabelFormat("%.3f");
+    axisy->setLabelFormat("%.5f");
 
     graph->setAxisX(axisx,anzeigeserie);
     graph->setAxisY(axisy,anzeigeserie);
@@ -137,7 +137,7 @@ void mainWindow::handlemodebutton()
 
 void mainWindow::handletimframe()
 {
-    float n_timeframe = std::stof(timeframe->text().toStdString());
+    float n_timeframe = timeframe->text().toFloat();
     if (n_timeframe)
     {
         rechenfeld->rechenfeld_mutex.lock();

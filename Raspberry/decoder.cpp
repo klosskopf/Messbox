@@ -162,7 +162,7 @@ void Decoder::decode_get_daten(Paket* paket)
 {
     if (paket->laenge)
     {
-        uint32_t nummer = (paket->daten[paket->laenge+7]<<24) + (paket->daten[paket->laenge+6]<<16) + (paket->daten[paket->laenge+5]<<8) + paket->daten[paket->laenge+4];
+        uint32_t nummer = (paket->daten[3]<<24) + (paket->daten[2]<<16) + (paket->daten[1]<<8) + paket->daten[0];
         uint32_t starttime;
         Karte* karte = Control::findkarte(paket->empfaengerindex);
         if (karte)
@@ -170,10 +170,10 @@ void Decoder::decode_get_daten(Paket* paket)
             Parameter* parameter = karte->find_parameter(nummer);
             if (parameter)
             {
-                starttime=(paket->daten[3]<<24) + (paket->daten[2]<<16) + (paket->daten[1]<<8) + paket->daten[0];
-                paket->ausgewaertet=4;
+                starttime=(paket->daten[7]<<24) + (paket->daten[6]<<16) + (paket->daten[5]<<8) + paket->daten[4];
+                paket->ausgewaertet=8;
         //      qDebug("newdata");
-                while(paket->ausgewaertet < paket->laenge+4)
+                while(paket->ausgewaertet < (paket->laenge+8))
                 {
                     parameter->add_datum(starttime,get_next_float(paket));
                     starttime+=1;

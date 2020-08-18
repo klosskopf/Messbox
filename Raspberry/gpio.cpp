@@ -1,6 +1,6 @@
 #include "gpio.h"
 #include <wiringPi.h>
-#include "spi.h"
+#include <wiringPiSPI.h>
 #include <QtDebug>
 void Gpio::init()
 {
@@ -43,7 +43,7 @@ void Gpio::enable_slave(int index)
   //  qDebug()<<"post nimmt interface";
     if (index==-1)
     {
-        Spi::init_spi(CONTROL_BAUD);
+        wiringPiSPISetup (0, CONTROL_BAUD);
         for (int i=1; i<11;i++)
         {
             digitalWrite(Gpio::slave_to_gpio(i),0);
@@ -62,7 +62,7 @@ void Gpio::disable_slave(int index)
 {
     if (index==-1)
     {
-        Spi::init_spi(DATA_BAUD);
+        wiringPiSPISetup (0, DATA_BAUD);
         for (int i=1; i<11;i++)
         {
             digitalWrite(Gpio::slave_to_gpio(i),1);

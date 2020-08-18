@@ -13,8 +13,7 @@ SOURCES += \
     post.cpp \
     rechenblock.cpp \
     rechenbloecke.cpp \
-    rechenfeld.cpp \
-    spi.cpp
+    rechenfeld.cpp
 
 HEADERS += \
     daten.h \
@@ -31,7 +30,6 @@ HEADERS += \
     rechenblock.h \
     rechenbloecke.h \
     rechenfeld.h \
-    spi.h \
     control.h
 
 QT += widgets

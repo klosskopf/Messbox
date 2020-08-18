@@ -5,7 +5,6 @@ void Control::control_thread(mainWindow* n_gui)
     gui=n_gui;
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
-
     while(1)
     {
         check_karten();
@@ -59,7 +58,8 @@ void Control::start()
 
 void Control::stop()
 {
-    //timeouttimer.stop();
+    //if(Control::timeouttimer.isActive())
+        //timeouttimer.stop();
     zustand = STOP;
     Post::send_stop();
     Gpio::set_led(LED_STOP);

@@ -24,8 +24,6 @@ class Control
 {
 public:
     static void control_thread(mainWindow* n_gui);
-    static void start();
-    static void stop();
     static mainWindow* gui;
     static std::list<Karte*> Kartenset;
     static QMutex kartenset_mutex;
@@ -45,6 +43,8 @@ public:
     static float vlade;
     static float vin;
 
+    static void start();
+    static void stop();
     static void check_karten();
     static Karte* findkarte(int Karte);
 };
