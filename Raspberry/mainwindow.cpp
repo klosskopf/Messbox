@@ -34,6 +34,16 @@ mainWindow::mainWindow()
     timeframelayout->addWidget(timeframelabel);
     timeframelayout->addWidget(timeframe);
 
+    QGridLayout* minmaxlayout = new QGridLayout();
+    maxxlabel=new QLabel("xmax:0");
+    minxlabel=new QLabel("xmin:0");
+    maxylabel=new QLabel("ymax:0");
+    minylabel=new QLabel("ymin:0");
+    minmaxlayout->addWidget(maxxlabel,0,0,1,1);
+    minmaxlayout->addWidget(minxlabel,0,1,1,1);
+    minmaxlayout->addWidget(maxylabel,1,0,1,1);
+    minmaxlayout->addWidget(minylabel,1,1,1,1);
+
     QVBoxLayout* samplelayout = new QVBoxLayout();
     QLabel* samplelabel = new QLabel("Samplefreq. [Hz]");
     sample = new QLineEdit;
@@ -81,6 +91,7 @@ mainWindow::mainWindow()
     mainLayout->addWidget(modebutton,1,3,1,1);
     mainLayout->addLayout(timeframelayout,2,3,1,1);
     mainLayout->addLayout(samplelayout,3,3,1,1);
+    mainLayout->addLayout(minmaxlayout,4,3,1,1);
     mainLayout->addWidget(savebutton,5,3,1,1);
     mainLayout->addWidget(graphview,0,4,6,6);
     mainLayout->addWidget(rechenfeld,6,3,4,7);

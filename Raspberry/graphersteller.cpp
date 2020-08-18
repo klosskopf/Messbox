@@ -28,6 +28,10 @@ void Graphersteller::clear_graph()
     maxx=maxy=minx=miny=0;
     firsttimepoint=0;
     nexttimepoint=0;
+    gui->maxxlabel->setText("xmax:0");
+    gui->minxlabel->setText("xmin:0");
+    gui->maxylabel->setText("ymax:0");
+    gui->minylabel->setText("ymin:0");
     gui->rechenfeld->rechenfeld_mutex.unlock();
 }
 
@@ -77,6 +81,16 @@ void Graphersteller::create_graph_rec()
                 if (point.x() < minx) minx=point.x();
                 if (point.y() < miny) miny=point.y();
             }
+
+            QString maxx_s=QString(QString::number(maxx));
+            QString minx_s=QString(QString::number(minx));
+            QString maxy_s=QString(QString::number(maxy));
+            QString miny_s=QString(QString::number(miny));
+            Control::gui->maxxlabel->setText(QString("xmax:").append(maxx_s));
+            Control::gui->minxlabel->setText(QString("xmin:").append(minx_s));
+            Control::gui->maxylabel->setText(QString("ymax:").append(maxy_s));
+            Control::gui->minylabel->setText(QString("ymin:").append(miny_s));
+
             double deltax=0.1*(maxx-minx)+0.000001;
             double deltay=0.1*(maxy-miny)+0.000001;
 
@@ -100,6 +114,20 @@ void Graphersteller::create_graph_rec()
                     if (yvalue < miny) miny=yvalue;
                 }
             }
+
+            QString maxx_s=QString(QString::number(maxx));
+            QString minx_s=QString(QString::number(minx));
+            QString maxy_s=QString(QString::number(maxy));
+            QString miny_s=QString(QString::number(miny));
+            maxx_s.resize(5);
+            minx_s.resize(5);
+            maxy_s.resize(5);
+            miny_s.resize(5);
+            Control::gui->maxxlabel->setText(QString("xmax:").append(maxx_s));
+            Control::gui->minxlabel->setText(QString("xmin:").append(minx_s));
+            Control::gui->maxylabel->setText(QString("ymax:").append(maxy_s));
+            Control::gui->minylabel->setText(QString("ymin:").append(miny_s));
+
             double deltax=0.1*(maxx-minx)+0.000001;
             double deltay=0.1*(maxy-miny)+0.000001;
 

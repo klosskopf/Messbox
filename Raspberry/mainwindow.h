@@ -40,6 +40,10 @@ public:
     QPushButton* modebutton;
     QLineEdit* timeframe;
     QLineEdit* sample;
+    QLabel* maxxlabel;
+    QLabel* minxlabel;
+    QLabel* maxylabel;
+    QLabel* minylabel;
     QPushButton* savebutton;
 
     QChart* graph;
