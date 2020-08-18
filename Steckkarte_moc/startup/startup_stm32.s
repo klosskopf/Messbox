@@ -225,7 +225,7 @@ g_pfnVectors:
 *******************************************************************************/
 
   	.weak	NMI_Handler
-	.thumb_set NMI_Handler,Default_Handler
+	.thumb_set NMI_Handler,LoopForever
 
   	.weak	HardFault_Handler
 	.thumb_set HardFault_Handler,Default_Handler
