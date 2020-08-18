@@ -11,62 +11,25 @@
 
 #include "main.h"
 #include "comhandler.h"
-#include "parameter.h"
-#include "adc.h"
-#include "dac.h"
 #include "math.h"
-#include "flash.h"
 #include "stm32l4xx.h"
 
 void L412_80MHz_MSI(void);
-void init_sample();
-
-volatile uint8_t daten[0xFFF];
 
 int main(void)
 {
 
-	for (int i=0; i<0x1000; i++)daten[i]=i;
-
     __disable_irq();
 	L412_80MHz_MSI();
-	init_parameter();
 	init_comhandler();
-	init_sample();
-	init_adc();
-	init_dac();
-	init_flash();
 	init_gpio(LED, OUT, PUSH_PULL, OPEN, VERY_HIGH);
 	init_gpio(SAMPLE, IN, PUSH_PULL, OPEN, VERY_HIGH);//Probably not needed. I think EXTI samples the pin, not the input
 	__enable_irq();
 
-
-	erase_device();
-	set_gpio(LED,1);
-	while(get_flash_state()!=IDLE);
-	set_gpio(LED,0);
 	while(1)
 	{
 
 	}
-}
-
-void init_sample()
-{
-	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
-	SYSCFG->EXTICR[0] |= (0<<SYSCFG_EXTICR1_EXTI2_Pos);	//Set PB0 to EXTI0
-	EXTI->IMR1 |= EXTI_IMR1_IM2;	//Mask the EXTI0 to generate a interrupt
-	EXTI->RTSR1 |= EXTI_RTSR1_RT2; 	//and rising edge (A button release)
-	EXTI->PR1 = EXTI_PR1_PIF2;		//clear the pending flags
-	NVIC_ClearPendingIRQ(EXTI2_IRQn);
-	NVIC_SetPriority(EXTI2_IRQn,8);									//Set the priority
-	NVIC_EnableIRQ(EXTI2_IRQn);		//Enable the EXTI0 interrupt if required
-}
-
-void EXTI2_IRQHandler(void)
-{
-	start_conv();
-	EXTI->PR1 = EXTI_PR1_PIF2;
 }
 
 void L412_80MHz_MSI(void)

@@ -5,7 +5,6 @@
  *      Author: klosskopf
  */
 #include "comhandler.h"
-#include "parameter.h"
 #include "string.h"
 #include "gpio.h"
 
@@ -139,11 +138,16 @@ void set_parameter_decoder(uint32_t position, uint8_t datum)
 		{
 			buffer[position-9]=0;
 			decoderbytenr=0;
-			set_parameter(nummer, buffer);
+			//set_parameter(nummer, buffer);
 		}
 	}
 }
 
+typedef struct {
+	volatile uint32_t paket_size;
+	volatile uint32_t startzeit;
+	volatile float daten[0x400];
+}get_daten_t;
 
 void get_daten_decoder(uint32_t position, uint8_t datum)
 {
@@ -156,7 +160,9 @@ void get_daten_decoder(uint32_t position, uint8_t datum)
 	else if (position == 5)
 	{
 		nummer |= datum<<24;
-		block = get_datenblock(nummer);
+		//block = get_datenblock(nummer);
+		static get_daten_t daten_moc={0,0,{0}};
+		block=&daten_moc;
 
 		send_com_block(block,block->paket_size+8);
 		decoderbytenr=0;
@@ -165,12 +171,12 @@ void get_daten_decoder(uint32_t position, uint8_t datum)
 
 void start_kont_decoder(uint32_t position, uint8_t datum)
 {
-	reset_data();
+	//reset_data();
 }
 
 void start_startstop_decoder(uint32_t position, uint8_t datum)
 {
-	reset_data();
+	//reset_data();
 }
 
 void stop_decoder(uint32_t position,volatile uint8_t datum)
