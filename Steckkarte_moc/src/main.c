@@ -66,6 +66,7 @@ void init_sample()
 void EXTI2_IRQHandler(void)
 {
 	start_conv();
+	//new_data(SPANNUNG_IN,1);
 	EXTI->PR1 = EXTI_PR1_PIF2;
 }
 

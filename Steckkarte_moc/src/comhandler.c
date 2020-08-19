@@ -144,7 +144,6 @@ void set_parameter_decoder(uint32_t position, uint8_t datum)
 	}
 }
 
-
 void get_daten_decoder(uint32_t position, uint8_t datum)
 {
 	volatile static uint32_t nummer;

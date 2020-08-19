@@ -22,9 +22,13 @@ typedef struct {
 Datenblock_t flash_meta[FLASHPAGECOUNT]={0};
 parameter_t parameterliste[MAXPARAMETER];								//Ja index 0 ist ungenutzt ;)
 bool full;
+volatile int nextindexwritten,nextreadindex;
+const get_daten_t fehlerpaket={0,0,{0}};
 
 void init_parameter()
 {
+	nextindexwritten=0;
+	nextreadindex=0;
 	parameterliste[SPANNUNG_IN].name="Voltage in";
 	parameterliste[SPANNUNG_IN].string_not_float=FLOAT;
 	parameterliste[SPANNUNG_IN].parametrierbar=NICHT;
@@ -54,6 +58,7 @@ void init_parameter()
 	for (uint32_t i=0; i<MAXPARAMETER; i++)
 	{
 		parameterliste[i].eingangsbuffer.paket_size=0;
+		parameterliste[i].eingangsbuffersize=0;
 		parameterliste[i].ausgangsbuffer.startzeit=0;
 	}
 	full=false;
@@ -63,42 +68,58 @@ void new_data(PARAMETER parameter, volatile float data)
 {
 	if(!full)
 	{
-		parameterliste[parameter].eingangsbuffer.daten[(parameterliste[parameter].eingangsbuffer.paket_size)>>2]=data;
-		parameterliste[parameter].eingangsbuffer.paket_size+=4;
+		parameterliste[parameter].eingangsbuffer.daten[(parameterliste[parameter].eingangsbuffersize)>>2]=data;
+		parameterliste[parameter].eingangsbuffersize+=4;
 	}
 
-	if (parameterliste[parameter].eingangsbuffer.paket_size == FLASHPAGESIZE)
+	if (parameterliste[parameter].eingangsbuffersize == FLASHPAGESIZE)
 	{
-		uint32_t index;
-		for (index = 0; index<FLASHPAGECOUNT; index++)
-		{
-			if(flash_meta[index].parameternummer == NOPARAM) break;
-		}
-		if ((index==FLASHPAGECOUNT) && (flash_meta[FLASHPAGECOUNT-1].parameternummer != NOPARAM))
-		{
+		Datenblock_t* gefunden=NULL;
+		int index;
 
+		index=nextindexwritten;
+		do
+		{
+			if(flash_meta[index].parameternummer == NOPARAM)
+			{
+				nextindexwritten=index;
+				gefunden=&flash_meta[index];
+				break;
+			}
+			index++;
+			if(index==FLASHPAGECOUNT)index=0;
+
+		}while(nextindexwritten!=index);
+
+		if (!gefunden)
+		{
 			set_gpio(LED,1);
 			full=true;
 		}
 		else
 		{
 			full=false;
-			flash_meta[index].startzeit=parameterliste[parameter].eingangsbuffer.startzeit;
+			gefunden->startzeit=parameterliste[parameter].eingangsbuffer.startzeit;
 			(parameterliste[parameter].eingangsbuffer.startzeit)+=(FLASHPAGESIZE>>2);
-			parameterliste[parameter].eingangsbuffer.paket_size=0;
+			parameterliste[parameter].eingangsbuffersize=0;
 			write_block(index*PAGESIZE,(uint8_t*)(parameterliste[parameter].eingangsbuffer.daten));
-			flash_meta[index].parameternummer=parameter;
+			gefunden->parameternummer=parameter;
 		}
 	}
 }
 
 void reset_data()
 {
+	nextindexwritten=0;
+	nextreadindex=0;
 	set_gpio(LED,0);
 	for (uint32_t i=0; i<MAXPARAMETER; i++)
 	{
 		parameterliste[i].eingangsbuffer.paket_size=0;
+		parameterliste[i].ausgangsbuffer.paket_size=0;
+		parameterliste[i].eingangsbuffer.startzeit=0;
 		parameterliste[i].ausgangsbuffer.startzeit=0;
+		parameterliste[i].eingangsbuffersize=0;
 	}
 	for (uint32_t i=0; i<FLASHPAGECOUNT; i++)
 	{
@@ -118,7 +139,6 @@ void set_parameter(uint32_t nummer, const char* anweisung)
 		break;
 	}
 	case 3:
-	{
 		if (strcmp(anweisung,"LED AN")==0)
 		{
 			set_gpio(LED,1);
@@ -129,8 +149,6 @@ void set_parameter(uint32_t nummer, const char* anweisung)
 		}
 		break;
 	}
-	}
-
 }
 
 volatile get_daten_t* get_datenblock(PARAMETER parameter)
@@ -139,34 +157,44 @@ volatile get_daten_t* get_datenblock(PARAMETER parameter)
 	Datenblock_t* gefunden=NULL;
 	uint32_t index;
 
-	for(index=0; index<FLASHPAGECOUNT; index++)
+	index=nextreadindex;
+	do
 	{
-		if (flash_meta[index].parameternummer==parameter)
+		if(flash_meta[index].parameternummer == parameter)
 		{
-			if (gefunden==NULL)
-			{
-				gefunden=&flash_meta[index];
-			}
-			else if(gefunden->startzeit > flash_meta[index].startzeit)
-			{
-				gefunden=&flash_meta[index];
-			}
+			nextreadindex=index;
+			gefunden=&flash_meta[index];
+			break;
 		}
-	}
+		index++;
+		if(index==FLASHPAGECOUNT)index=0;
+
+	}while(nextreadindex!=index);
 
 	if (gefunden)
 	{
-		returnbuffer=&parameterliste[parameter].ausgangsbuffer;
-		returnbuffer->startzeit=flash_meta[index].startzeit;
-		flash_meta[index].startzeit=-1;
-		returnbuffer->paket_size=FLASHPAGESIZE;
-		read_block(index*PAGESIZE,(uint8_t*)(returnbuffer->daten));
-		//erase_data(index*PAGESIZE);
-		flash_meta[index].parameternummer=NOPARAM;
+		if(get_flash_state()==IDLE)
+		{
+			returnbuffer=&parameterliste[parameter].ausgangsbuffer;
+			returnbuffer->startzeit=flash_meta[index].startzeit;
+			flash_meta[index].startzeit=-1;
+			returnbuffer->paket_size=FLASHPAGESIZE;
+			//returnbuffer->paket_size=0x100;
+			read_block(index*PAGESIZE,(uint8_t*)(returnbuffer->daten));
+			//erase_data(index*PAGESIZE);
+			flash_meta[index].parameternummer=NOPARAM;
+		}
+		else
+		{
+			returnbuffer=&fehlerpaket;
+		}
 	}
 	else
 	{
 		returnbuffer=&parameterliste[parameter].eingangsbuffer;
+		(parameterliste[parameter].eingangsbuffer.startzeit)+=(parameterliste[parameter].eingangsbuffer.paket_size >> 2);
+		parameterliste[parameter].eingangsbuffer.paket_size=parameterliste[parameter].eingangsbuffersize;
+		parameterliste[parameter].eingangsbuffersize=0;
 	}
 
 	return returnbuffer;
