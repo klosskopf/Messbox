@@ -102,7 +102,7 @@ void new_data(PARAMETER parameter, volatile float data)
 			gefunden->startzeit=parameterliste[parameter].eingangsbuffer.startzeit;
 			(parameterliste[parameter].eingangsbuffer.startzeit)+=(FLASHPAGESIZE>>2);
 			parameterliste[parameter].eingangsbuffersize=0;
-			write_block(index*PAGESIZE,(uint8_t*)(parameterliste[parameter].eingangsbuffer.daten));
+			write_block(index*FLASHPAGESIZE,(uint8_t*)(parameterliste[parameter].eingangsbuffer.daten));
 			gefunden->parameternummer=parameter;
 		}
 	}
@@ -179,8 +179,7 @@ volatile get_daten_t* get_datenblock(PARAMETER parameter)
 			returnbuffer->startzeit=flash_meta[index].startzeit;
 			flash_meta[index].startzeit=-1;
 			returnbuffer->paket_size=FLASHPAGESIZE;
-			//returnbuffer->paket_size=0x100;
-			read_block(index*PAGESIZE,(uint8_t*)(returnbuffer->daten));
+			read_block(index*FLASHPAGESIZE,(uint8_t*)(returnbuffer->daten));
 			//erase_data(index*PAGESIZE);
 			flash_meta[index].parameternummer=NOPARAM;
 		}

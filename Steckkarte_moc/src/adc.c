@@ -42,7 +42,7 @@ void init_adc()
 	ADC1->ISR |= ADC_ISR_ADRDY;				//clear for next check (optional)
 
 	NVIC_ClearPendingIRQ(ADC1_2_IRQn);		//set the NVIC for EOC
-	NVIC_SetPriority(ADC1_2_IRQn,7);		//must be higher priority than sample
+	NVIC_SetPriority(ADC1_2_IRQn,15);		//must be higher priority than sample
 	NVIC_EnableIRQ(ADC1_2_IRQn);			//
 }
 

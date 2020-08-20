@@ -158,6 +158,7 @@ void get_daten_decoder(uint32_t position, uint8_t datum)
 		block = get_datenblock(nummer);
 
 		send_com_block(block,block->paket_size+8);
+		//for(int i=0; i<5000;i++);
 		decoderbytenr=0;
 	}
 }
