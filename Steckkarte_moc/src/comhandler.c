@@ -23,6 +23,8 @@ void send_com_block(volatile void* data,volatile uint32_t size);
 uint8_t read_com();
 void stop_transfere();
 
+extern const GPIO_PIN LED;
+
 const GPIO_PIN SS1PIN ={GPIOB, 0};
 const GPIO_PIN CLK1PIN ={GPIOA, 5};
 const GPIO_PIN MISO1PIN ={GPIOA, 6};
@@ -156,10 +158,11 @@ void get_daten_decoder(uint32_t position, uint8_t datum)
 	else if (position == 5)
 	{
 		nummer |= datum<<24;
+		set_gpio(LED,1);
 		block = get_datenblock(nummer);
-
+		set_gpio(LED,0);
 		send_com_block(block,block->paket_size+8);
-		for(int i=0; i<5000;i++);
+	//	for(int i=0; i<5000;i++);
 		decoderbytenr=0;
 	}
 }

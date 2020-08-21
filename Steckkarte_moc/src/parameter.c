@@ -76,11 +76,8 @@ void init_parameter()
 
 void new_data(PARAMETER parameter, volatile float data)
 {
-	if(!full)
-	{
-		parameterliste[parameter].buffer->peingangsbuffer->daten[(parameterliste[parameter].buffer->eingangsbuffersize)>>2]=data;
-		parameterliste[parameter].buffer->eingangsbuffersize+=4;
-	}
+	parameterliste[parameter].buffer->peingangsbuffer->daten[(parameterliste[parameter].buffer->eingangsbuffersize)>>2]=data;
+	parameterliste[parameter].buffer->eingangsbuffersize+=4;
 
 	if (parameterliste[parameter].buffer->eingangsbuffersize == FLASHPAGESIZE)
 	{
@@ -104,7 +101,8 @@ void new_data(PARAMETER parameter, volatile float data)
 		if (!gefunden)
 		{
 			set_gpio(LED,1);
-			full=true;
+			parameterliste[parameter].buffer->eingangsbuffersize=0;
+			parameterliste[parameter].buffer->eingangsbufferstartzeit+=0x1000;
 		}
 		else
 		{
@@ -185,7 +183,7 @@ volatile get_daten_t* get_datenblock(PARAMETER parameter)
 	{
 		if(get_flash_state()==IDLE)
 		{
-			returnbuffer=&parameterliste[parameter].buffer->ausgangsbuffer;
+			returnbuffer=&(parameterliste[parameter].buffer->ausgangsbuffer);
 			returnbuffer->startzeit=flash_meta[index].startzeit;
 			flash_meta[index].startzeit=-1;
 			returnbuffer->paket_size=FLASHPAGESIZE;
