@@ -3,7 +3,12 @@
 
 #include "gpio.h"
 
-const GPIO_PIN LED ={GPIOB,5};
-const GPIO_PIN SAMPLE ={GPIOA,2};
+#define COMSPI_PRIO 5
+
+#define COMDMA_PRIO 6
+
+#define FLASH_PRIO 7
+
+#define SAMPLE_PRIO 8
 
 #endif

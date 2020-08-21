@@ -41,6 +41,7 @@ typedef struct{
 	uint32_t wahlnr;
 	get_daten_t eingangsbuffer,ausgangsbuffer;
 	uint32_t eingangsbuffersize;				//This contains the current value of the eingangsbuffer. eingangsbuffer->paket_size is the size, when written to the raspberry
+	uint32_t eingangsbufferstartzeit;			//This contains the startzeit of the current eingangsbuffer. It gets written to eingangsbuffer->startzeit, when transmitted
 }parameter_t;
 
 void init_parameter();

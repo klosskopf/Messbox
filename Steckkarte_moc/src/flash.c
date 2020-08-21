@@ -8,7 +8,7 @@
 #include "gpio.h"
 #include "stm32l4xx.h"
 #include "flash.h"
-
+#include "main.h"
 
 
 typedef enum {WRITE_ENABLE, INSTRUCTION, ADDRESS, DUMMY, DATA, BUSY, END}FlashOperation_t;
@@ -57,15 +57,15 @@ void init_flash()
 
 	DMA1_CSELR->CSELR |= (1<<DMA_CSELR_C4S_Pos) | (1<<DMA_CSELR_C5S_Pos);					//Set Channel 4 and 5 of DMA1 to SPI2RX and SPI2TX
 
-	NVIC_SetPriority(DMA1_Channel4_IRQn,10);		//Enable RX DMA interrupt, but gets masked before read block
+	NVIC_SetPriority(DMA1_Channel4_IRQn,FLASH_PRIO);		//Enable RX DMA interrupt, but gets masked before read block
 	NVIC_ClearPendingIRQ(DMA1_Channel4_IRQn);
 	NVIC_EnableIRQ(DMA1_Channel4_IRQn);
 
-	NVIC_SetPriority(SPI2_IRQn,10);				//Enable SPI2 interrupt, but gets masked before send/read single byte; gets triggered by receive either way!
+	NVIC_SetPriority(SPI2_IRQn,FLASH_PRIO);				//Enable SPI2 interrupt, but gets masked before send/read single byte; gets triggered by receive either way!
 	NVIC_ClearPendingIRQ(SPI2_IRQn);
 	NVIC_EnableIRQ(SPI2_IRQn);
 
-	NVIC_SetPriority(DMA1_Channel5_IRQn,10);		//Enable TX DMA interrupt, but gets masked before send block
+	NVIC_SetPriority(DMA1_Channel5_IRQn,FLASH_PRIO);		//Enable TX DMA interrupt, but gets masked before send block
 	NVIC_ClearPendingIRQ(DMA1_Channel5_IRQn);
 	NVIC_EnableIRQ(DMA1_Channel5_IRQn);
 }

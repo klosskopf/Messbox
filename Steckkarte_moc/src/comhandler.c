@@ -8,6 +8,7 @@
 #include "parameter.h"
 #include "string.h"
 #include "gpio.h"
+#include "main.h"
 
 void get_parameter_decoder(uint32_t position, uint8_t datum);
 void set_parameter_decoder(uint32_t position, uint8_t datum);
@@ -52,11 +53,11 @@ void init_comhandler()
 	EXTI->FTSR1 |= EXTI_FTSR1_FT0; 	//generate trigger on falling edge (A button press)
 	EXTI->RTSR1 |= EXTI_RTSR1_RT0; 	//and rising edge (A button release)
 	EXTI->PR1 = EXTI_PR1_PIF0;		//clear the pending flags
-	NVIC_SetPriority(EXTI0_IRQn,0);									//Set the priority
+	NVIC_SetPriority(EXTI0_IRQn,COMSPI_PRIO);									//Set the priority
 	NVIC_EnableIRQ(EXTI0_IRQn);		//Enable the EXTI0 interrupt if required
 //Init SPI
 	RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
-	NVIC_SetPriority(SPI1_IRQn, 0);        // set lowest prio
+	NVIC_SetPriority(SPI1_IRQn, COMSPI_PRIO);        // set lowest prio
 	NVIC_ClearPendingIRQ(SPI1_IRQn);        // clear potentially pending bits
 	NVIC_EnableIRQ(SPI1_IRQn);              // enable interrupt in NVIC
 	SPI1->CR1=SPI_CR1_SSM;					//configure SPI as software slave
@@ -69,7 +70,7 @@ void init_comhandler()
 	DMA1_Channel3->CPAR = (uint32_t)&SPI1->DR;								//send data to the SPI->DR (please, please be a 8bit operation)
 	DMA1_CSELR->CSELR |= (1<<DMA_CSELR_C3S_Pos);	//Set Channel 2 and 3 of DMA1 to SPIRX and SPITX
 
-	NVIC_SetPriority(DMA1_Channel3_IRQn,2);		//enable ISR for receiving DMA. write and read use both dma.
+	NVIC_SetPriority(DMA1_Channel3_IRQn,COMDMA_PRIO);		//enable ISR for receiving DMA. write and read use both dma.
 	NVIC_ClearPendingIRQ(DMA1_Channel3_IRQn);	//the receiving always triggers after the sending dma
 	NVIC_EnableIRQ(DMA1_Channel3_IRQn);
 
@@ -158,7 +159,7 @@ void get_daten_decoder(uint32_t position, uint8_t datum)
 		block = get_datenblock(nummer);
 
 		send_com_block(block,block->paket_size+8);
-		//for(int i=0; i<5000;i++);
+		for(int i=0; i<5000;i++);
 		decoderbytenr=0;
 	}
 }

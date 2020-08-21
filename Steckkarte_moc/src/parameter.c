@@ -59,6 +59,7 @@ void init_parameter()
 	{
 		parameterliste[i].eingangsbuffer.paket_size=0;
 		parameterliste[i].eingangsbuffersize=0;
+		parameterliste[i].eingangsbufferstartzeit=0;
 		parameterliste[i].ausgangsbuffer.startzeit=0;
 	}
 	full=false;
@@ -99,8 +100,8 @@ void new_data(PARAMETER parameter, volatile float data)
 		else
 		{
 			full=false;
-			gefunden->startzeit=parameterliste[parameter].eingangsbuffer.startzeit;
-			(parameterliste[parameter].eingangsbuffer.startzeit)+=(FLASHPAGESIZE>>2);
+			gefunden->startzeit=parameterliste[parameter].eingangsbufferstartzeit;
+			(parameterliste[parameter].eingangsbufferstartzeit)+=(FLASHPAGESIZE>>2);
 			parameterliste[parameter].eingangsbuffersize=0;
 			write_block(index*FLASHPAGESIZE,(uint8_t*)(parameterliste[parameter].eingangsbuffer.daten));
 			gefunden->parameternummer=parameter;
@@ -110,8 +111,8 @@ void new_data(PARAMETER parameter, volatile float data)
 
 void reset_data()
 {
-	nextindexwritten=0;
-	nextreadindex=0;
+	nextindexwritten++;
+	nextreadindex++;
 	set_gpio(LED,0);
 	for (uint32_t i=0; i<MAXPARAMETER; i++)
 	{
@@ -120,6 +121,7 @@ void reset_data()
 		parameterliste[i].eingangsbuffer.startzeit=0;
 		parameterliste[i].ausgangsbuffer.startzeit=0;
 		parameterliste[i].eingangsbuffersize=0;
+		parameterliste[i].eingangsbufferstartzeit=0;
 	}
 	for (uint32_t i=0; i<FLASHPAGECOUNT; i++)
 	{
@@ -191,7 +193,8 @@ volatile get_daten_t* get_datenblock(PARAMETER parameter)
 	else
 	{
 		returnbuffer=&parameterliste[parameter].eingangsbuffer;
-		(parameterliste[parameter].eingangsbuffer.startzeit)+=(parameterliste[parameter].eingangsbuffer.paket_size >> 2);
+		parameterliste[parameter].eingangsbuffer.startzeit=parameterliste[parameter].eingangsbufferstartzeit;
+		(parameterliste[parameter].eingangsbufferstartzeit)+=(parameterliste[parameter].eingangsbuffersize >> 2);
 		parameterliste[parameter].eingangsbuffer.paket_size=parameterliste[parameter].eingangsbuffersize;
 		parameterliste[parameter].eingangsbuffersize=0;
 	}

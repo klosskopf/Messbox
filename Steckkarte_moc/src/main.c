@@ -21,13 +21,11 @@
 void L412_80MHz_MSI(void);
 void init_sample();
 
-volatile uint8_t daten[0xFFF];
+const GPIO_PIN LED ={GPIOB,5};
+const GPIO_PIN SAMPLE ={GPIOA,2};
 
 int main(void)
 {
-
-	for (int i=0; i<0x1000; i++)daten[i]=i;
-
     __disable_irq();
 	L412_80MHz_MSI();
 	init_parameter();
@@ -39,7 +37,6 @@ int main(void)
 	init_gpio(LED, OUT, PUSH_PULL, OPEN, VERY_HIGH);
 	init_gpio(SAMPLE, IN, PUSH_PULL, OPEN, VERY_HIGH);//Probably not needed. I think EXTI samples the pin, not the input
 	__enable_irq();
-
 
 	erase_device();
 	set_gpio(LED,1);
@@ -59,7 +56,7 @@ void init_sample()
 	EXTI->RTSR1 |= EXTI_RTSR1_RT2; 	//and rising edge (A button release)
 	EXTI->PR1 = EXTI_PR1_PIF2;		//clear the pending flags
 	NVIC_ClearPendingIRQ(EXTI2_IRQn);
-	NVIC_SetPriority(EXTI2_IRQn,8);									//Set the priority
+	NVIC_SetPriority(EXTI2_IRQn,SAMPLE_PRIO);									//Set the priority
 	NVIC_EnableIRQ(EXTI2_IRQn);		//Enable the EXTI0 interrupt if required
 }
 

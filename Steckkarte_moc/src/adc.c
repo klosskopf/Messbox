@@ -8,6 +8,8 @@
 #include "stm32l4xx.h"
 #include "parameter.h"
 #include <stdint.h>
+#include "dac.h"
+#include "main.h"
 
 const GPIO_PIN VOLTAGE_IN = {GPIOA,0};
 
@@ -42,7 +44,7 @@ void init_adc()
 	ADC1->ISR |= ADC_ISR_ADRDY;				//clear for next check (optional)
 
 	NVIC_ClearPendingIRQ(ADC1_2_IRQn);		//set the NVIC for EOC
-	NVIC_SetPriority(ADC1_2_IRQn,15);		//must be higher priority than sample
+	NVIC_SetPriority(ADC1_2_IRQn,SAMPLE_PRIO);		//must be higher priority than sample
 	NVIC_EnableIRQ(ADC1_2_IRQn);			//
 }
 
@@ -62,6 +64,8 @@ void ADC1_IRQHandler()
 	uint32_t result=ADC1->DR;				//fetch conversion; clears the EOC flag
 	float voltage= (float)result*3.3/0xFFF0;
 	new_data(SPANNUNG_IN,(float)voltage);				//store conversion
+	new_data(SPANNUNG_OUT,1);
+	set_dac(1);
 }
 
 void calibrate_adc()
