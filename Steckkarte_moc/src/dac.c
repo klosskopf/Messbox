@@ -9,9 +9,11 @@
 #include "stm32l4xx.h"
 
 const GPIO_PIN DAC_OUT={GPIOA,4};
+float dac_voltage;
 
 void init_dac()
 {
+	dac_voltage=0;
 	init_gpio(DAC_OUT,ANALOG,OPEN_DRAIN,OPEN,VERY_HIGH);	//Set pin to analog
 	RCC->APB1ENR1 |= RCC_APB1ENR1_DAC1EN;					//enable DAC1 module
 	DAC->DHR12R1 = 0;										//start with 0V output
@@ -20,6 +22,7 @@ void init_dac()
 
 void set_dac(float voltage)
 {
+	dac_voltage=voltage;
 	uint32_t result;
 	if(voltage>3.3)voltage=3.3;
 	if(voltage<0)voltage=0;

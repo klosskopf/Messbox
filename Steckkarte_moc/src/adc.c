@@ -13,6 +13,8 @@
 
 const GPIO_PIN VOLTAGE_IN = {GPIOA,0};
 
+extern float dac_voltage;
+
 void calibrate_adc();
 void wakeup_adc();
 
@@ -64,8 +66,7 @@ void ADC1_IRQHandler()
 	uint32_t result=ADC1->DR;				//fetch conversion; clears the EOC flag
 	float voltage= (float)result*3.3/0xFFF0;
 	new_data(SPANNUNG_IN,voltage);				//store conversion
-	new_data(SPANNUNG_OUT,1);
-	set_dac(1);
+	new_data(SPANNUNG_OUT,dac_voltage);
 }
 
 void calibrate_adc()

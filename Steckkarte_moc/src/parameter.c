@@ -46,7 +46,7 @@ void init_parameter()
 	parameterliste[SPANNUNG_OUT].parametrierbar=FREI;
 	parameterliste[SPANNUNG_OUT].min=0;
 	parameterliste[SPANNUNG_OUT].max=3.3;
-	parameterliste[SPANNUNG_OUT].wahlnr=4;
+	parameterliste[SPANNUNG_OUT].wahlnr=5;
 	static char* vout_wahl[5]={"0","1","2","3","3.3"};
 	parameterliste[SPANNUNG_OUT].wahl=vout_wahl;
 	parameterliste[SPANNUNG_OUT].buffer=&voltage_out_buffer;

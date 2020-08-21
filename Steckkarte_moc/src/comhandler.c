@@ -9,6 +9,8 @@
 #include "string.h"
 #include "gpio.h"
 #include "main.h"
+#include <stdint.h>
+#include <strings.h>
 
 void get_parameter_decoder(uint32_t position, uint8_t datum);
 void set_parameter_decoder(uint32_t position, uint8_t datum);
@@ -23,15 +25,61 @@ void send_com_block(volatile void* data,volatile uint32_t size);
 uint8_t read_com();
 void stop_transfere();
 
-extern const GPIO_PIN LED;
-
 const GPIO_PIN SS1PIN ={GPIOB, 0};
 const GPIO_PIN CLK1PIN ={GPIOA, 5};
 const GPIO_PIN MISO1PIN ={GPIOA, 6};
 const GPIO_PIN MOSI1PIN ={GPIOA, 7};
 
+extern parameter_t parameterliste[MAXPARAMETER];
+
+struct get_parameter_t {
+	const uint32_t paket_size;
+	const char parameter[200];
+}get_parameter_data = {200,{0}};  //{200,"Testmodul,1,Spannnung_in,f,n,0,3.3,2,Spannung_out,f,f,0,3.3{0,1,2,3,3.3}3,LED Test,s,l,0,0{LED AN,LED AUS}"};
+
 void init_comhandler()
 {
+	char helper[100];
+
+	strcat(get_parameter_data.parameter,"Testmodul,");
+	for (uint32_t parameter=1; parameter<MAXPARAMETER; parameter++)
+	{
+		itoa(parameter,helper,10);
+		strcat(get_parameter_data.parameter,helper);
+		strcat(get_parameter_data.parameter,",");
+
+		strcat(get_parameter_data.parameter,parameterliste[parameter].name);
+		strcat(get_parameter_data.parameter,",");
+
+		if (parameterliste[parameter].string_not_float==STRING) strcat(get_parameter_data.parameter,"s,");
+		else strcat(get_parameter_data.parameter,"f,");
+
+		if (parameterliste[parameter].parametrierbar==FREI) strcat(get_parameter_data.parameter,"f,");
+		else if (parameterliste[parameter].parametrierbar==LISTE) strcat(get_parameter_data.parameter,"l,");
+		else strcat(get_parameter_data.parameter,"n,");
+
+		sprintf(helper,"%f,",parameterliste[parameter].min);
+		strcat(get_parameter_data.parameter,helper);
+
+		sprintf(helper,"%f",parameterliste[parameter].max);
+		strcat(get_parameter_data.parameter,helper);
+		if (parameterliste[parameter].wahlnr)
+		{
+			strcat(get_parameter_data.parameter,"{");
+
+			for (uint32_t i=0;i<parameterliste[parameter].wahlnr;i++)
+			{
+				if (i) strcat(get_parameter_data.parameter,",");
+				strcat(get_parameter_data.parameter,parameterliste[parameter].wahl[i]);
+			}
+			strcat(get_parameter_data.parameter,"}");
+		}
+		else
+		{
+			strcat(get_parameter_data.parameter,",");
+		}
+	}
+
 //Init decoder
 	decoderbytenr=0;
 	//befehllut[0]=&nofault;
@@ -106,10 +154,6 @@ void SPI1_IRQHandler()
 	else befehllut[befehl](++decoderbytenr, character);
 }
 
-struct get_parameter_t {
-	const uint32_t paket_size;
-	const char parameter[200];
-}get_parameter_data = {200,"Testmodul,1,Spannnung_in,f,n,0,3.3,2,Spannung_out,f,f,0,3.3{0,1,2,3,3.3}3,LED Test,s,l,0,0{LED AN,LED AUS}"};
 void get_parameter_decoder(uint32_t position, uint8_t datum)
 {
 	send_com_block(&get_parameter_data,get_parameter_data.paket_size+4);
@@ -158,11 +202,8 @@ void get_daten_decoder(uint32_t position, uint8_t datum)
 	else if (position == 5)
 	{
 		nummer |= datum<<24;
-		set_gpio(LED,1);
 		block = get_datenblock(nummer);
-		set_gpio(LED,0);
 		send_com_block(block,block->paket_size+8);
-	//	for(int i=0; i<5000;i++);
 		decoderbytenr=0;
 	}
 }
