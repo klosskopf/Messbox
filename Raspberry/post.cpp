@@ -20,6 +20,7 @@ void Post::spi_thread()
             {
             case COM_GET_PARAMETER:
             {
+                std::this_thread::sleep_for(std::chrono::seconds(1));
                 uint8_t ask_for[5]={(uint8_t)COM_GET_PARAMETER,0,0,0,0};
                 Gpio::enable_slave(currentpaket->empfaengerindex);
                 wiringPiSPIDataRW (0, ask_for, 5) ;
@@ -57,7 +58,7 @@ void Post::spi_thread()
                 Gpio::enable_slave(currentpaket->empfaengerindex);
                 wiringPiSPIDataRW(0,&befehl,1);
                 wiringPiSPIDataRW (0, (uint8_t*)&parameternummer, 4);
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                std::this_thread::sleep_for(std::chrono::microseconds(900));        //The STM32 takes up to 900us to check the flash metadata
                 wiringPiSPIDataRW (0, (uint8_t*)&(currentpaket->laenge), 4);
                 if (currentpaket->laenge < 5000)
                 {
