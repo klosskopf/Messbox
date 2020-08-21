@@ -25,6 +25,9 @@ bool full;
 volatile int nextindexwritten,nextreadindex;
 const get_daten_t fehlerpaket={0,0,{0}};
 
+parameterbuffer_t voltage_in_buffer;
+parameterbuffer_t voltage_out_buffer;
+
 void init_parameter()
 {
 	nextindexwritten=0;
@@ -36,6 +39,7 @@ void init_parameter()
 	parameterliste[SPANNUNG_IN].max=3.3;
 	parameterliste[SPANNUNG_IN].wahlnr=0;
 	parameterliste[SPANNUNG_IN].wahl=NULL;
+	parameterliste[SPANNUNG_IN].buffer=&voltage_in_buffer;
 
 	parameterliste[SPANNUNG_OUT].name="Voltage out";
 	parameterliste[SPANNUNG_OUT].string_not_float=FLOAT;
@@ -45,6 +49,7 @@ void init_parameter()
 	parameterliste[SPANNUNG_OUT].wahlnr=4;
 	static char* vout_wahl[5]={"0","1","2","3","3.3"};
 	parameterliste[SPANNUNG_OUT].wahl=vout_wahl;
+	parameterliste[SPANNUNG_OUT].buffer=&voltage_out_buffer;
 
 	parameterliste[LED_TEST].name="LED test";
 	parameterliste[LED_TEST].string_not_float=STRING;
@@ -54,13 +59,17 @@ void init_parameter()
 	parameterliste[LED_TEST].wahlnr=2;
 	static char* ledtest_wahl[2]={"LED AN","LED AUS"};
 	parameterliste[LED_TEST].wahl=ledtest_wahl;
+	parameterliste[LED_TEST].buffer=NULL;
 
-	for (uint32_t i=0; i<MAXPARAMETER; i++)
+	for (uint32_t i=1; i<MAXPARAMETER; i++)
 	{
-		parameterliste[i].eingangsbuffer.paket_size=0;
-		parameterliste[i].eingangsbuffersize=0;
-		parameterliste[i].eingangsbufferstartzeit=0;
-		parameterliste[i].ausgangsbuffer.startzeit=0;
+		if (parameterliste[i].buffer)
+		{
+			parameterliste[i].buffer->peingangsbuffer=&(parameterliste[i].buffer->eingangsbuffer[0]);
+			parameterliste[i].buffer->eingangsbuffersize=0;
+			parameterliste[i].buffer->eingangsbufferstartzeit=0;
+			parameterliste[i].buffer->ausgangsbuffer.startzeit=0;
+		}
 	}
 	full=false;
 }
@@ -69,11 +78,11 @@ void new_data(PARAMETER parameter, volatile float data)
 {
 	if(!full)
 	{
-		parameterliste[parameter].eingangsbuffer.daten[(parameterliste[parameter].eingangsbuffersize)>>2]=data;
-		parameterliste[parameter].eingangsbuffersize+=4;
+		parameterliste[parameter].buffer->peingangsbuffer->daten[(parameterliste[parameter].buffer->eingangsbuffersize)>>2]=data;
+		parameterliste[parameter].buffer->eingangsbuffersize+=4;
 	}
 
-	if (parameterliste[parameter].eingangsbuffersize == FLASHPAGESIZE)
+	if (parameterliste[parameter].buffer->eingangsbuffersize == FLASHPAGESIZE)
 	{
 		Datenblock_t* gefunden=NULL;
 		int index;
@@ -100,10 +109,13 @@ void new_data(PARAMETER parameter, volatile float data)
 		else
 		{
 			full=false;
-			gefunden->startzeit=parameterliste[parameter].eingangsbufferstartzeit;
-			(parameterliste[parameter].eingangsbufferstartzeit)+=(FLASHPAGESIZE>>2);
-			parameterliste[parameter].eingangsbuffersize=0;
-			write_block(index*FLASHPAGESIZE,(uint8_t*)(parameterliste[parameter].eingangsbuffer.daten));
+			get_daten_t* oldbuffer=parameterliste[parameter].buffer->peingangsbuffer;
+			parameterliste[parameter].buffer->eingangsbuffersize=0;
+			if(oldbuffer==parameterliste[parameter].buffer->eingangsbuffer) parameterliste[parameter].buffer->peingangsbuffer = &(parameterliste[parameter].buffer->eingangsbuffer[1]);
+			else parameterliste[parameter].buffer->peingangsbuffer = &(parameterliste[parameter].buffer->eingangsbuffer[0]);
+			gefunden->startzeit=parameterliste[parameter].buffer->eingangsbufferstartzeit;
+			(parameterliste[parameter].buffer->eingangsbufferstartzeit)+=(FLASHPAGESIZE>>2);
+			write_block(index*FLASHPAGESIZE,(uint8_t*)(oldbuffer->daten));
 			gefunden->parameternummer=parameter;
 		}
 	}
@@ -116,12 +128,8 @@ void reset_data()
 	set_gpio(LED,0);
 	for (uint32_t i=0; i<MAXPARAMETER; i++)
 	{
-		parameterliste[i].eingangsbuffer.paket_size=0;
-		parameterliste[i].ausgangsbuffer.paket_size=0;
-		parameterliste[i].eingangsbuffer.startzeit=0;
-		parameterliste[i].ausgangsbuffer.startzeit=0;
-		parameterliste[i].eingangsbuffersize=0;
-		parameterliste[i].eingangsbufferstartzeit=0;
+		parameterliste[i].buffer->eingangsbuffersize=0;
+		parameterliste[i].buffer->eingangsbufferstartzeit=0;
 	}
 	for (uint32_t i=0; i<FLASHPAGECOUNT; i++)
 	{
@@ -177,7 +185,7 @@ volatile get_daten_t* get_datenblock(PARAMETER parameter)
 	{
 		if(get_flash_state()==IDLE)
 		{
-			returnbuffer=&parameterliste[parameter].ausgangsbuffer;
+			returnbuffer=&parameterliste[parameter].buffer->ausgangsbuffer;
 			returnbuffer->startzeit=flash_meta[index].startzeit;
 			flash_meta[index].startzeit=-1;
 			returnbuffer->paket_size=FLASHPAGESIZE;
@@ -192,11 +200,15 @@ volatile get_daten_t* get_datenblock(PARAMETER parameter)
 	}
 	else
 	{
-		returnbuffer=&parameterliste[parameter].eingangsbuffer;
-		parameterliste[parameter].eingangsbuffer.startzeit=parameterliste[parameter].eingangsbufferstartzeit;
-		(parameterliste[parameter].eingangsbufferstartzeit)+=(parameterliste[parameter].eingangsbuffersize >> 2);
-		parameterliste[parameter].eingangsbuffer.paket_size=parameterliste[parameter].eingangsbuffersize;
-		parameterliste[parameter].eingangsbuffersize=0;
+		returnbuffer=parameterliste[parameter].buffer->peingangsbuffer;
+
+		returnbuffer->startzeit=parameterliste[parameter].buffer->eingangsbufferstartzeit;
+		(parameterliste[parameter].buffer->eingangsbufferstartzeit)+=(parameterliste[parameter].buffer->eingangsbuffersize >> 2);
+		returnbuffer->paket_size=parameterliste[parameter].buffer->eingangsbuffersize;
+		parameterliste[parameter].buffer->eingangsbuffersize=0;
+
+		if(returnbuffer==parameterliste[parameter].buffer->eingangsbuffer) parameterliste[parameter].buffer->peingangsbuffer = &(parameterliste[parameter].buffer->eingangsbuffer[1]);
+		else parameterliste[parameter].buffer->peingangsbuffer = &(parameterliste[parameter].buffer->eingangsbuffer[0]);
 	}
 
 	return returnbuffer;
