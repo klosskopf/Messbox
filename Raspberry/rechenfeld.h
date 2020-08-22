@@ -23,10 +23,10 @@ public:
     std::list<Rechenblock*> bloecke;
     std::list<Parameter*> activeparameter;
     QMutex rechenfeld_mutex;
+    QTextEdit *xfeld,*yfeld;
     void update();
 private:
     QLabel *xerror,*yerror,*xlabel,*ylabel;
-    QTextEdit *xfeld,*yfeld;
     QString zahlstring,parameterstring;
     DECODESTATE state;
 

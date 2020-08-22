@@ -18,7 +18,7 @@ class mainWindow;
 class Rechenblock;
 
 enum Modus {CONT,STARTSTOP};
-enum Zustand {MESS,STOP};
+enum Zustand {MESS,STOP,SAVE};
 
 class Control
 {
@@ -42,9 +42,11 @@ public:
     static float vbat;
     static float vlade;
     static float vin;
+    static bool last_paket_to_save_received;
 
     static void start();
     static void stop();
     static void check_karten();
+    static void saveprocedure();
     static Karte* findkarte(int Karte);
 };

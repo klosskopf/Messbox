@@ -15,7 +15,7 @@ void Graphersteller::graph_thread()
 {
     while(1)
     {
-        emit create_graph_send();
+        if(Control::zustand!=SAVE) emit create_graph_send();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }

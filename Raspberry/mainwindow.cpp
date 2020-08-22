@@ -57,6 +57,7 @@ mainWindow::mainWindow()
     savebutton = new QPushButton("Save");
     savebutton->setFont(QFont("Arial", 12));
     savebutton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    connect(savebutton, SIGNAL (pressed()),this, SLOT (handlesavebutton()));
 
     graph = new QChart();
     graph->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -184,4 +185,10 @@ void mainWindow::handlesample()
     {
        Control::start();
     }
+}
+
+void mainWindow::handlesavebutton()
+{
+    if(Control::zustand==MESS)Control::stop();
+    Control::saveprocedure();
 }

@@ -182,6 +182,7 @@ void Decoder::decode_get_daten(Paket* paket)
             }
         }
     }
+    else if(paket->savepaket) Control::last_paket_to_save_received=true;
 }
 void Decoder::decode_start_cont()
 {

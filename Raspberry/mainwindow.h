@@ -32,6 +32,7 @@ private slots:
     void handlemodebutton();
     void handletimframe();
     void handlesample();
+    void handlesavebutton();
 public:
     QWidget* centralwidget;
     QMenuBar* menubar;

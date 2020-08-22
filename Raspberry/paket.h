@@ -15,4 +15,5 @@ public:
     uint32_t laenge;
     uint32_t ausgewaertet;
     uint8_t daten[5000];
+    bool savepaket;
 };

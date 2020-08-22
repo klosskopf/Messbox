@@ -163,9 +163,10 @@ void Post::send_set_parameter(int index, uint32_t nummer, std::string wert)
     setparameterpaket->empfaengerindex=index;
     Briefkasten.push_back(setparameterpaket);
 }
-void Post::send_get_daten(int index, uint32_t nummer)
+void Post::send_get_daten(int index, uint32_t nummer, bool savepaket)
 {
     Paket* getdatenpaket = new Paket();
+    getdatenpaket->savepaket=savepaket;
     getdatenpaket->befehl=COM_GET_DATEN;
     getdatenpaket->daten[3]= nummer>>24;
     getdatenpaket->daten[2]= nummer>>16;

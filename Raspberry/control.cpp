@@ -1,33 +1,39 @@
 #include "control.h"
 #include <QtDebug>
+#include <QFileDialog>
+#include <QDateTime>
+
 void Control::control_thread(mainWindow* n_gui)
 {
     gui=n_gui;
 
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+   // std::this_thread::sleep_for(std::chrono::seconds(2));
     while(1)
     {
-        check_karten();
-      //  Post::send_get_status();
-        Post::briefkasten_mutex.lock();
-//        qDebug()<<"Controlthread nimmt briefkasten";
-        if (Post::Briefkasten.size() < 10)
+        if(zustand!=SAVE)
         {
-            gui->rechenfeld->rechenfeld_mutex.lock();
-//            qDebug()<<"Controllthread nimmt rechenfeld";
-            if (gui->rechenfeld->activeparameter.size())
+            check_karten();
+          //  Post::send_get_status();
+            Post::briefkasten_mutex.lock();
+    //        qDebug()<<"Controlthread nimmt briefkasten";
+            if (Post::Briefkasten.size() < 10)
             {
-                Parameter* parameter=gui->rechenfeld->activeparameter.front();
-                gui->rechenfeld->activeparameter.pop_front();
-                Post::send_get_daten(parameter->karte->index,parameter->nummer);
-                gui->rechenfeld->activeparameter.push_back(parameter);
-            }
+                gui->rechenfeld->rechenfeld_mutex.lock();
+    //            qDebug()<<"Controllthread nimmt rechenfeld";
+                if (gui->rechenfeld->activeparameter.size())
+                {
+                    Parameter* parameter=gui->rechenfeld->activeparameter.front();
+                    gui->rechenfeld->activeparameter.pop_front();
+                    Post::send_get_daten(parameter->karte->index,parameter->nummer,false);
+                    gui->rechenfeld->activeparameter.push_back(parameter);
+                }
 
- //           qDebug()<<"Controlthread gibt rechenfeld";
-            gui->rechenfeld->rechenfeld_mutex.unlock();
+     //           qDebug()<<"Controlthread gibt rechenfeld";
+                gui->rechenfeld->rechenfeld_mutex.unlock();
+            }
+     //       qDebug()<<"Control gibt Briefkasten";
+            Post::briefkasten_mutex.unlock();
         }
- //       qDebug()<<"Control gibt Briefkasten";
-        Post::briefkasten_mutex.unlock();
         std::this_thread::sleep_for(std::chrono::microseconds(1));
     }
 }
@@ -125,6 +131,87 @@ Karte* Control::findkarte(int karte)
     return NULL;
 }
 
+void Control::saveprocedure()
+{
+    zustand = SAVE;
+    gui->savebutton->setEnabled(false);
+    gui->startstopbutton->setEnabled(false);
+    gui->modebutton->setEnabled(false);
+    gui->sample->setEnabled(false);
+    gui->rechenfeld->xfeld->setEnabled(false);
+    gui->rechenfeld->yfeld->setEnabled(false);
+
+    kartenset_mutex.lock();
+    for (Karte* karte : Kartenset)
+    {
+        for(Parameter* currentparameter:*(karte->parameter))
+        {
+            if (currentparameter->f_nots)
+            {
+                last_paket_to_save_received=false;
+                do
+                {
+                    Post::briefkasten_mutex.lock();
+                    Post::send_get_daten(karte->index,currentparameter->nummer,true);
+                    Post::briefkasten_mutex.unlock();
+
+                    uint32_t size;
+                    while(Post::Briefkasten.size())std::this_thread::sleep_for(std::chrono::microseconds(5));;
+                }while(!last_paket_to_save_received);
+            }
+        }
+    }
+    QString dir = QFileDialog::getExistingDirectory(gui, "Open Directory","/home");
+
+    if (dir!="")
+    {
+        QString timestamp=  QDateTime::currentDateTime().toString("dd.MM.yyyy_hh:mm:ss");
+        for (Karte* karte : Kartenset)
+        {
+            for(Parameter* currentparameter:*(karte->parameter))
+            {
+                currentparameter->daten_mutex.lock();
+                if (currentparameter->f_nots)
+                {
+                    QString pathname=dir + "/" + timestamp + "/\"" + QString::number(karte->index) + ":" + QString::fromStdString(karte->name) + "\"/";
+                    QString filename="\"" + QString::fromStdString(currentparameter->name) + ".csv\"";
+                    QDir dir;
+
+                    if (!dir.exists(pathname))
+                        dir.mkpath(pathname);
+
+                    QFile file(pathname + filename);
+                    if(file.open(QIODevice::WriteOnly))
+                    {
+                        QTextStream stream(&file);
+                        for (Daten* datum:*(currentparameter->daten))
+                        {
+                            stream<<QString::number((datum->zeitpunkt)/samplefreq);
+                            stream<<";";
+                            stream<<QString::number(datum->messwert);
+                            stream<<"\n";
+                        }
+                        file.close();
+                    }
+                }
+                currentparameter->daten_mutex.unlock();
+            }
+        }
+    }
+
+
+    kartenset_mutex.unlock();
+
+    gui->startstopbutton->setEnabled(true);
+    gui->modebutton->setEnabled(true);
+    gui->timeframe->setEnabled(true);
+    gui->sample->setEnabled(true);
+    gui->rechenfeld->xfeld->setEnabled(true);
+    gui->rechenfeld->yfeld->setEnabled(true);
+    zustand = STOP;
+    gui->savebutton->setEnabled(true);
+}
+
 mainWindow* Control::gui;
 std::list<Karte*> Control::Kartenset;
 QMutex Control::kartenset_mutex;
@@ -142,3 +229,4 @@ float Control::icharge = -1;
 float Control::vbat = -1;
 float Control::vlade = -1;
 float Control::vin = -1;
+bool Control::last_paket_to_save_received=false;
