@@ -10,7 +10,6 @@
 #include "flash.h"
 #include "main.h"
 
-
 typedef enum {WRITE_ENABLE, INSTRUCTION, ADDRESS, DUMMY, DATA, BUSY, END}FlashOperation_t;
 
 GPIO_PIN FLASH_CS = {GPIOB, 12};
@@ -43,7 +42,7 @@ void init_flash()
 	init_gpio(FLASH_MOSI,AF5,PUSH_PULL, PULL_DOWN, MEDIUM);
 
 	RCC->APB1ENR1 |= RCC_APB1ENR1_SPI2EN;
-	SPI2->CR1 |= (3<<SPI_CR1_BR_Pos);
+	SPI2->CR1 |= (2<<SPI_CR1_BR_Pos);
 	SPI2->CR1 |= SPI_CR1_SSM | SPI_CR1_MSTR;				//SPI2 is master with software slave
 	SPI2->CR1 |= SPI_CR1_SSI;								//Let the module send
 	SPI2->CR2 |= SPI_CR2_FRXTH | (7<<SPI_CR2_DS_Pos);
@@ -199,7 +198,7 @@ void read_data_sm()
 		read_cycle=DATA;
 		break;
 	case DATA:
-		read_dma(0x1000,datap);
+		read_dma(FLASHPAGESIZE,datap);
 		read_cycle=END;
 		break;
 	case END:
@@ -409,7 +408,7 @@ void write_data_sm(){
 				set_gpio(FLASH_CS,1);
 				for(int i=0;i<100;i++);
 				write_cycle=WRITE_ENABLE;
-				if (write_count==15)
+				if (write_count==7)
 				{
 					write_count=0;
 					flash_state=IDLE;

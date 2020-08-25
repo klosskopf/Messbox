@@ -22,7 +22,9 @@ void L412_80MHz_MSI(void);
 void init_sample();
 
 const GPIO_PIN LED ={GPIOB,5};
-const GPIO_PIN SAMPLE ={GPIOA,2};
+const GPIO_PIN SAMPLE ={GPIOA,3};
+
+extern float dac_voltage;
 
 int main(void)
 {
@@ -51,20 +53,20 @@ int main(void)
 void init_sample()
 {
 	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
-	SYSCFG->EXTICR[0] |= (0<<SYSCFG_EXTICR1_EXTI2_Pos);	//Set PB0 to EXTI0
-	EXTI->IMR1 |= EXTI_IMR1_IM2;	//Mask the EXTI0 to generate a interrupt
-	EXTI->RTSR1 |= EXTI_RTSR1_RT2; 	//and rising edge (A button release)
+	SYSCFG->EXTICR[0] |= (0<<SYSCFG_EXTICR1_EXTI3_Pos);	//Set PA3 to EXTI3
+	EXTI->IMR1 |= EXTI_IMR1_IM3;	//Mask the EXTI3 to generate a interrupt
+	EXTI->RTSR1 |= EXTI_RTSR1_RT3; 	//and rising edge (A button release)
 	EXTI->PR1 = EXTI_PR1_PIF2;		//clear the pending flags
-	NVIC_ClearPendingIRQ(EXTI2_IRQn);
-	NVIC_SetPriority(EXTI2_IRQn,SAMPLE_PRIO);									//Set the priority
-	NVIC_EnableIRQ(EXTI2_IRQn);		//Enable the EXTI0 interrupt if required
+	NVIC_ClearPendingIRQ(EXTI3_IRQn);
+	NVIC_SetPriority(EXTI3_IRQn,SAMPLE_PRIO);									//Set the priority
+	NVIC_EnableIRQ(EXTI3_IRQn);		//Enable the EXTI0 interrupt if required
 }
 
-void EXTI2_IRQHandler(void)
+void EXTI3_IRQHandler(void)
 {
 	start_conv();
-	//new_data(SPANNUNG_IN,1);
-	EXTI->PR1 = EXTI_PR1_PIF2;
+	new_data(SPANNUNG_OUT,dac_voltage);
+	EXTI->PR1 = EXTI_PR1_PIF3;
 }
 
 void L412_80MHz_MSI(void)

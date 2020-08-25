@@ -9,10 +9,7 @@
 #define PARAMETER_H_
 
 #include <stdint.h>
-
-#define FLASHPAGESIZE 0x1000
-//#define FLASHPAGECOUNT 2048
-#define FLASHPAGECOUNT 0x800
+#include "flash.h"
 
 typedef struct{
 	volatile uint32_t paket_size;
@@ -23,9 +20,10 @@ typedef struct{
 typedef enum {
 	NOPARAM=0,
 	SPANNUNG_IN=1,
-	SPANNUNG_OUT=2,
-	LED_TEST=3,
-	MAXPARAMETER=4
+	WIDERSTAND_IN=2,
+	SPANNUNG_OUT=3,
+	LED_TEST=4,
+	MAXPARAMETER=5
 }PARAMETER;
 
 typedef enum { STRING, FLOAT } STRING_NOT_FLOAT;
@@ -37,6 +35,7 @@ typedef struct{
 	get_daten_t ausgangsbuffer;
 	uint32_t eingangsbuffersize;				//This contains the current value of the eingangsbuffer. eingangsbuffer->paket_size is the size, when written to the raspberry
 	uint32_t eingangsbufferstartzeit;			//This contains the startzeit of the current eingangsbuffer. It gets written to eingangsbuffer->startzeit, when transmitted
+	float lastvalue;
 }parameterbuffer_t;
 
 typedef struct{

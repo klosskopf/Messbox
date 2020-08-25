@@ -11,4 +11,6 @@
 
 #define SAMPLE_PRIO 8
 
+#define ADC_PRIO 9
+
 #endif

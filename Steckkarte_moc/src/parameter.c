@@ -27,6 +27,7 @@ const get_daten_t fehlerpaket={0,0,{0}};
 
 parameterbuffer_t voltage_in_buffer;
 parameterbuffer_t voltage_out_buffer;
+parameterbuffer_t resistance_in_buffer;
 
 void init_parameter()
 {
@@ -40,6 +41,15 @@ void init_parameter()
 	parameterliste[SPANNUNG_IN].wahlnr=0;
 	parameterliste[SPANNUNG_IN].wahl=NULL;
 	parameterliste[SPANNUNG_IN].buffer=&voltage_in_buffer;
+
+	parameterliste[WIDERSTAND_IN].name="Resistance in";
+	parameterliste[WIDERSTAND_IN].string_not_float=FLOAT;
+	parameterliste[WIDERSTAND_IN].parametrierbar=NICHT;
+	parameterliste[WIDERSTAND_IN].min=0;
+	parameterliste[WIDERSTAND_IN].max=3.3;
+	parameterliste[WIDERSTAND_IN].wahlnr=0;
+	parameterliste[WIDERSTAND_IN].wahl=NULL;
+	parameterliste[WIDERSTAND_IN].buffer=&resistance_in_buffer;
 
 	parameterliste[SPANNUNG_OUT].name="Voltage out";
 	parameterliste[SPANNUNG_OUT].string_not_float=FLOAT;
@@ -76,7 +86,8 @@ void init_parameter()
 
 void new_data(PARAMETER parameter, volatile float data)
 {
-	parameterliste[parameter].buffer->peingangsbuffer->daten[(parameterliste[parameter].buffer->eingangsbuffersize)>>2]=data;
+	parameterliste[parameter].buffer->lastvalue=(data+parameterliste[parameter].buffer->lastvalue)/2;
+	parameterliste[parameter].buffer->peingangsbuffer->daten[(parameterliste[parameter].buffer->eingangsbuffersize)>>2]=parameterliste[parameter].buffer->lastvalue;
 	parameterliste[parameter].buffer->eingangsbuffersize+=4;
 
 	if (parameterliste[parameter].buffer->eingangsbuffersize == FLASHPAGESIZE)
@@ -138,15 +149,15 @@ void reset_data()
 
 void set_parameter(uint32_t nummer, const char* anweisung)
 {
-	switch(nummer)
+	switch((PARAMETER)nummer)
 	{
-	case 2:
+	case SPANNUNG_OUT:
 	{
 		float voltage=atof(anweisung);
 		set_dac(voltage);
 		break;
 	}
-	case 3:
+	case LED_TEST:
 		if (strcmp(anweisung,"LED AN")==0)
 		{
 			set_gpio(LED,1);
