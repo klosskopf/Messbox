@@ -17,6 +17,11 @@ void Gpio::init()
     pinMode (2, OUTPUT);//Red Led
     pinMode (3, OUTPUT);//Green Led
     pinMode (4, OUTPUT);//Blue Led
+
+    pinMode (21, INPUT);//Button is input
+    digitalWrite(21,1);
+    //pullUpDnControl(21,PUD_UP);
+
  //   qDebug()<<"gpio gibt interface";
     interface_mutex.unlock();
     Gpio::set_led(LED_STOP);
@@ -109,6 +114,27 @@ void Gpio::set_led(led_state_t state)
     }
 //    qDebug()<<"led gibt interface";
     interface_mutex.unlock();
+}
+
+bool Gpio::read_button()
+{
+    bool retval=false;
+    static int buttoncnt=0;
+    if(!digitalRead(21))
+    {
+        if(buttoncnt)
+            buttoncnt++;
+        if (buttoncnt==50)  //in ms
+        {
+            buttoncnt=0;
+            retval=1;
+        }
+    }
+    else
+    {
+       buttoncnt=1;
+    }
+    return retval;
 }
 
 QMutex Gpio::interface_mutex;

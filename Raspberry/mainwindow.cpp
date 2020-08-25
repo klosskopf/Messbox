@@ -115,6 +115,10 @@ mainWindow::mainWindow()
     //setWindowState(Qt::WindowFullScreen);
 
     graphersteller = new Graphersteller(this);
+
+    connect(&buttontimer,&QTimer::timeout,this,&mainWindow::checkbutton);
+    buttontimer.start(1);
+
 }
 
 void mainWindow::handlestartstopbutton()
@@ -191,4 +195,13 @@ void mainWindow::handlesavebutton()
 {
     if(Control::zustand==MESS)Control::stop();
     Control::saveprocedure();
+}
+
+void mainWindow::checkbutton()
+{
+    if (Gpio::read_button())
+    {
+        if (Control::zustand==MESS) Control::stop();
+        else if (Control::zustand==STOP) Control::start();
+    }
 }

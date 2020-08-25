@@ -64,8 +64,8 @@ void Control::start()
 
 void Control::stop()
 {
-    //if(Control::timeouttimer.isActive())
-        //timeouttimer.stop();
+  //  if(Control::timeouttimer.isActive())
+  //      timeouttimer.stop();
     zustand = STOP;
     Post::send_stop();
     Gpio::set_led(LED_STOP);
@@ -220,7 +220,7 @@ Zustand Control::zustand=STOP;
 Rechenblock* Control::xAchse=new Axis_Block;
 Rechenblock* Control::yAchse=new Axis_Block;
 float Control::samplefreq=1000;
-float Control::timeframe=1;
+float Control::timeframe=10;
 //std::list<Kennliniendaten*> Control::kennlinie;
 bool Control::newkarte=false;
 float Control::vcc5V = -1;

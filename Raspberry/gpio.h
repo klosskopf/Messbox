@@ -14,6 +14,7 @@ public:
     static void enable_slave(int index);
     static void disable_slave(int index);
     static void set_led(led_state_t state);
+    static bool read_button();
 private:
     static QMutex interface_mutex;
     static int slave_to_gpio(int);

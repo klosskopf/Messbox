@@ -15,6 +15,7 @@
 #include "control.h"
 #include "rechenfeld.h"
 #include "graphersteller.h"
+#include <QTimer>
 class Parameterauswahl;
 class Graphersteller;
 class Rechenfeld;
@@ -33,7 +34,9 @@ private slots:
     void handletimframe();
     void handlesample();
     void handlesavebutton();
+    void checkbutton();
 public:
+    QTimer buttontimer;
     QWidget* centralwidget;
     QMenuBar* menubar;
     Parameterauswahl* parameterauswahl;
