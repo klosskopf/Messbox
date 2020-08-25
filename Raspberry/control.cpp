@@ -7,7 +7,7 @@ void Control::control_thread(mainWindow* n_gui)
 {
     gui=n_gui;
 
-   // std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     while(1)
     {
         if(zustand!=SAVE)

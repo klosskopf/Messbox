@@ -58,7 +58,7 @@ void Post::spi_thread()
                 Gpio::enable_slave(currentpaket->empfaengerindex);
                 wiringPiSPIDataRW(0,&befehl,1);
                 wiringPiSPIDataRW (0, (uint8_t*)&parameternummer, 4);
-                std::this_thread::sleep_for(std::chrono::microseconds(900));        //The STM32 takes up to 900us to check the flash metadata
+                std::this_thread::sleep_for(std::chrono::microseconds(2000));        //The STM32 takes up to 900us to check the flash metadata
                 wiringPiSPIDataRW (0, (uint8_t*)&(currentpaket->laenge), 4);
                 if (currentpaket->laenge < 5000)
                 {

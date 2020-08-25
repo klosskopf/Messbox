@@ -6,7 +6,7 @@
 #include "decoder.h"
 class Paket;
 
-#define DATA_BAUD 1000000           //the STM32 are fast. use that
+#define DATA_BAUD 330000           //the STM32 are fast. use that
 #define CONTROL_BAUD 1000       //The Atmega is mentally a bit slow, so it must be talked to in a slow and clear manner
 
 class Post
