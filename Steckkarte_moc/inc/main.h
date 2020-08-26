@@ -3,14 +3,16 @@
 
 #include "gpio.h"
 
-#define COMSPI_PRIO 5
+#define COMSPI_PRIO 0
 
-#define COMDMA_PRIO 6
+#define COMDMA_PRIO 1
 
-#define FLASH_PRIO 7
+#define FLASH_PRIO 2
 
-#define SAMPLE_PRIO 8
+#define SAMPLE_PRIO 4
 
-#define ADC_PRIO 9
+#define ADC_PRIO 3
+
+#define DAC_PRIO 8
 
 #endif

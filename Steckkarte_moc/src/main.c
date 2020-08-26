@@ -32,12 +32,12 @@ int main(void)
 	L412_80MHz_MSI();
 	init_parameter();
 	init_comhandler();
-	init_sample();
-	init_adc();
-	init_dac();
+	init_adc();			//adc needs a initialized parameterliste[]
 	init_flash();
 	init_gpio(LED, OUT, PUSH_PULL, OPEN, VERY_HIGH);
 	init_gpio(SAMPLE, IN, PUSH_PULL, OPEN, VERY_HIGH);//Probably not needed. I think EXTI samples the pin, not the input
+	init_sample();
+	init_dac();
 	__enable_irq();
 
 	erase_device();
@@ -47,6 +47,18 @@ int main(void)
 	while(1)
 	{
 
+	}
+}
+
+void led_test(const char* anweisung)
+{
+	if (strcmp(anweisung,"LED AN")==0)
+	{
+		set_gpio(LED,1);
+	}
+	else if (strcmp(anweisung,"LED AUS")==0)
+	{
+		set_gpio(LED,0);
 	}
 }
 
@@ -65,14 +77,14 @@ void init_sample()
 void EXTI3_IRQHandler(void)
 {
 	start_conv();
-	new_data(SPANNUNG_OUT,dac_voltage);
+	new_data(DAC_OUTPUT,dac_voltage);
 	EXTI->PR1 = EXTI_PR1_PIF3;
 }
 
 void L412_80MHz_MSI(void)
 {
-	FLASH->ACR = (1<<FLASH_ACR_LATENCY_Pos) | FLASH_ACR_PRFTEN;					// Set Flash latency to 2 wait cycles
-	while ((FLASH->ACR & FLASH_ACR_LATENCY) != (1<<FLASH_ACR_LATENCY_Pos)); 		// Wait till done
+	FLASH->ACR = (2<<FLASH_ACR_LATENCY_Pos) | FLASH_ACR_PRFTEN;					// Set Flash latency to 2 wait cycles
+	while ((FLASH->ACR & FLASH_ACR_LATENCY) != (2<<FLASH_ACR_LATENCY_Pos)); 		// Wait till done
 
 	RCC->CR &= (uint32_t)(~RCC_CR_PLLON);				// Disable PLL. After reset default: RCC->CR &= ~(1<<24)
 	while((RCC->CR & RCC_CR_PLLRDY) != 0);				// Wait until PLLRDY is cleared

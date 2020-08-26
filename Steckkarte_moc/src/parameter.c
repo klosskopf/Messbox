@@ -5,29 +5,26 @@
  *      Author: klosskopf
  */
 #include "parameter.h"
-#include "dac.h"
-#include "string.h"
 #include "gpio.h"
 #include "flash.h"
-#include <stdlib.h>
 #include <stdbool.h>
 
 extern const GPIO_PIN LED;
 
 typedef struct {
-	PARAMETER parameternummer;
-	uint32_t startzeit;
+	volatile PARAMETER parameternummer;
+	volatile uint32_t startzeit;
 }Datenblock_t;
 
-Datenblock_t flash_meta[FLASHPAGECOUNT]={0};
-parameter_t parameterliste[MAXPARAMETER];								//Ja index 0 ist ungenutzt ;)
-bool full;
+volatile Datenblock_t flash_meta[FLASHPAGECOUNT]={0};
+volatile parameter_t parameterliste[MAXPARAMETER];								//Ja index 0 ist ungenutzt ;)
+volatile bool full;
 volatile int nextindexwritten,nextreadindex;
-const get_daten_t fehlerpaket={0,0,{0}};
+volatile const get_daten_t fehlerpaket={0,0,{0}};
 
-parameterbuffer_t voltage_in_buffer;
-parameterbuffer_t voltage_out_buffer;
-parameterbuffer_t resistance_in_buffer;
+volatile parameterbuffer_t voltage_in_buffer;
+volatile parameterbuffer_t voltage_out_buffer;
+volatile parameterbuffer_t resistance_in_buffer;
 
 void init_parameter()
 {
@@ -40,7 +37,11 @@ void init_parameter()
 	parameterliste[SPANNUNG_IN].max=3.3;
 	parameterliste[SPANNUNG_IN].wahlnr=0;
 	parameterliste[SPANNUNG_IN].wahl=NULL;
+	parameterliste[SPANNUNG_IN].channel=ADC1_IN5;
+	parameterliste[SPANNUNG_IN].faktor=2.820432466;
+	parameterliste[SPANNUNG_IN].offset=0;
 	parameterliste[SPANNUNG_IN].buffer=&voltage_in_buffer;
+
 
 	parameterliste[WIDERSTAND_IN].name="Resistance in";
 	parameterliste[WIDERSTAND_IN].string_not_float=FLOAT;
@@ -49,17 +50,69 @@ void init_parameter()
 	parameterliste[WIDERSTAND_IN].max=3.3;
 	parameterliste[WIDERSTAND_IN].wahlnr=0;
 	parameterliste[WIDERSTAND_IN].wahl=NULL;
+	parameterliste[WIDERSTAND_IN].channel=ADC1_IN7;
+	parameterliste[WIDERSTAND_IN].faktor=754.3720191;
+	parameterliste[WIDERSTAND_IN].offset=7.733386328;
 	parameterliste[WIDERSTAND_IN].buffer=&resistance_in_buffer;
 
-	parameterliste[SPANNUNG_OUT].name="Voltage out";
-	parameterliste[SPANNUNG_OUT].string_not_float=FLOAT;
-	parameterliste[SPANNUNG_OUT].parametrierbar=FREI;
-	parameterliste[SPANNUNG_OUT].min=0;
-	parameterliste[SPANNUNG_OUT].max=3.3;
-	parameterliste[SPANNUNG_OUT].wahlnr=5;
-	static char* vout_wahl[5]={"0","1","2","3","3.3"};
-	parameterliste[SPANNUNG_OUT].wahl=vout_wahl;
-	parameterliste[SPANNUNG_OUT].buffer=&voltage_out_buffer;
+
+	parameterliste[DAC_MAXSPANNUNG].name="Output max.";
+	parameterliste[DAC_MAXSPANNUNG].string_not_float=STRING;
+	parameterliste[DAC_MAXSPANNUNG].parametrierbar=FREI;
+	parameterliste[DAC_MAXSPANNUNG].min=0;
+	parameterliste[DAC_MAXSPANNUNG].max=3.3;
+	parameterliste[DAC_MAXSPANNUNG].wahlnr=5;
+	static char* vout_max_wahl[5]={"0","1","2","3","3.3"};
+	parameterliste[DAC_MAXSPANNUNG].wahl=vout_max_wahl;
+	parameterliste[DAC_MAXSPANNUNG].channel=NOCHANNEL;
+	parameterliste[DAC_MAXSPANNUNG].faktor=1;
+	parameterliste[DAC_MAXSPANNUNG].offset=0;
+	parameterliste[DAC_MAXSPANNUNG].buffer=NULL;
+	extern void set_dac_maxvoltage();
+	parameterliste[DAC_MAXSPANNUNG].setfunction=&set_dac_maxvoltage;
+
+	parameterliste[DAC_MINSPANNUNG].name="Output min.";
+	parameterliste[DAC_MINSPANNUNG].string_not_float=STRING;
+	parameterliste[DAC_MINSPANNUNG].parametrierbar=FREI;
+	parameterliste[DAC_MINSPANNUNG].min=0;
+	parameterliste[DAC_MINSPANNUNG].max=3.3;
+	parameterliste[DAC_MINSPANNUNG].wahlnr=5;
+	static char* vout_min_wahl[5]={"0","1","2","3","3.3"};
+	parameterliste[DAC_MINSPANNUNG].wahl=vout_min_wahl;
+	parameterliste[DAC_MINSPANNUNG].channel=NOCHANNEL;
+	parameterliste[DAC_MINSPANNUNG].faktor=1;
+	parameterliste[DAC_MINSPANNUNG].offset=0;
+	parameterliste[DAC_MINSPANNUNG].buffer=NULL;
+	extern void set_dac_minvoltage();
+	parameterliste[DAC_MINSPANNUNG].setfunction=&set_dac_minvoltage;
+
+	parameterliste[DAC_FREQUENCY].name="Output freq.";
+	parameterliste[DAC_FREQUENCY].string_not_float=STRING;
+	parameterliste[DAC_FREQUENCY].parametrierbar=FREI;
+	parameterliste[DAC_FREQUENCY].min=0;
+	parameterliste[DAC_FREQUENCY].max=1000;
+	parameterliste[DAC_FREQUENCY].wahlnr=5;
+	static char* vout_freq_wahl[5]={"0","1","10","100","1000"};
+	parameterliste[DAC_FREQUENCY].wahl=vout_freq_wahl;
+	parameterliste[DAC_FREQUENCY].channel=NOCHANNEL;
+	parameterliste[DAC_FREQUENCY].faktor=1;
+	parameterliste[DAC_FREQUENCY].offset=0;
+	parameterliste[DAC_FREQUENCY].buffer=NULL;
+	extern void set_dac_frequency();
+	parameterliste[DAC_FREQUENCY].setfunction=&set_dac_frequency;
+
+	parameterliste[DAC_OUTPUT].name="Output voltage";
+	parameterliste[DAC_OUTPUT].string_not_float=FLOAT;
+	parameterliste[DAC_OUTPUT].parametrierbar=NICHT;
+	parameterliste[DAC_OUTPUT].min=0;
+	parameterliste[DAC_OUTPUT].max=3.3;
+	parameterliste[DAC_OUTPUT].wahlnr=0;
+	parameterliste[DAC_OUTPUT].wahl=NULL;
+	parameterliste[DAC_OUTPUT].channel=NOCHANNEL;
+	parameterliste[DAC_OUTPUT].faktor=1;
+	parameterliste[DAC_OUTPUT].offset=0;
+	parameterliste[DAC_OUTPUT].buffer=&voltage_out_buffer;
+
 
 	parameterliste[LED_TEST].name="LED test";
 	parameterliste[LED_TEST].string_not_float=STRING;
@@ -69,7 +122,12 @@ void init_parameter()
 	parameterliste[LED_TEST].wahlnr=2;
 	static char* ledtest_wahl[2]={"LED AN","LED AUS"};
 	parameterliste[LED_TEST].wahl=ledtest_wahl;
+	parameterliste[LED_TEST].channel=NOCHANNEL;
+	parameterliste[LED_TEST].faktor=1;
+	parameterliste[LED_TEST].offset=0;
 	parameterliste[LED_TEST].buffer=NULL;
+	extern void led_test(const char*);
+	parameterliste[LED_TEST].setfunction=&led_test;
 
 	for (uint32_t i=1; i<MAXPARAMETER; i++)
 	{
@@ -84,15 +142,15 @@ void init_parameter()
 	full=false;
 }
 
-void new_data(PARAMETER parameter, volatile float data)
+void new_data(volatile PARAMETER parameter, volatile float data)
 {
-	parameterliste[parameter].buffer->lastvalue=(data+parameterliste[parameter].buffer->lastvalue)/2;
+	parameterliste[parameter].buffer->lastvalue=(data);//+4*parameterliste[parameter].buffer->lastvalue)/5;
 	parameterliste[parameter].buffer->peingangsbuffer->daten[(parameterliste[parameter].buffer->eingangsbuffersize)>>2]=parameterliste[parameter].buffer->lastvalue;
 	parameterliste[parameter].buffer->eingangsbuffersize+=4;
 
 	if (parameterliste[parameter].buffer->eingangsbuffersize == FLASHPAGESIZE)
 	{
-		Datenblock_t* gefunden=NULL;
+		volatile Datenblock_t* gefunden=NULL;
 		int index;
 
 		index=nextindexwritten;
@@ -118,7 +176,7 @@ void new_data(PARAMETER parameter, volatile float data)
 		else
 		{
 			full=false;
-			get_daten_t* oldbuffer=parameterliste[parameter].buffer->peingangsbuffer;
+			volatile get_daten_t* oldbuffer=parameterliste[parameter].buffer->peingangsbuffer;
 			parameterliste[parameter].buffer->eingangsbuffersize=0;
 			if(oldbuffer==parameterliste[parameter].buffer->eingangsbuffer) parameterliste[parameter].buffer->peingangsbuffer = &(parameterliste[parameter].buffer->eingangsbuffer[1]);
 			else parameterliste[parameter].buffer->peingangsbuffer = &(parameterliste[parameter].buffer->eingangsbuffer[0]);
@@ -147,34 +205,19 @@ void reset_data()
 	full=false;
 }
 
-void set_parameter(uint32_t nummer, const char* anweisung)
+void set_parameter(volatile uint32_t nummer, volatile const char* anweisung)
 {
-	switch((PARAMETER)nummer)
+	if (nummer < MAXPARAMETER && parameterliste[nummer].setfunction)
 	{
-	case SPANNUNG_OUT:
-	{
-		float voltage=atof(anweisung);
-		set_dac(voltage);
-		break;
-	}
-	case LED_TEST:
-		if (strcmp(anweisung,"LED AN")==0)
-		{
-			set_gpio(LED,1);
-		}
-		else if (strcmp(anweisung,"LED AUS")==0)
-		{
-			set_gpio(LED,0);
-		}
-		break;
+		parameterliste[nummer].setfunction(anweisung);
 	}
 }
 
-volatile get_daten_t* get_datenblock(PARAMETER parameter)
+volatile get_daten_t* get_datenblock(volatile PARAMETER parameter)
 {
 	volatile get_daten_t* returnbuffer;
-	Datenblock_t* gefunden=NULL;
-	uint32_t index;
+	volatile Datenblock_t* gefunden=NULL;
+	volatile uint32_t index;
 
 	index=nextreadindex;
 	do

@@ -33,13 +33,13 @@ const GPIO_PIN MOSI1PIN ={GPIOA, 7};
 extern parameter_t parameterliste[MAXPARAMETER];
 
 struct get_parameter_t {
-	const uint32_t paket_size;
-	const char parameter[200];
-}get_parameter_data = {200,{0}};  //{200,"Testmodul,1,Spannnung_in,f,n,0,3.3,2,Spannung_out,f,f,0,3.3{0,1,2,3,3.3}3,LED Test,s,l,0,0{LED AN,LED AUS}"};
+	uint32_t paket_size;
+	const char parameter[1000];
+}get_parameter_data = {0,{0}};  //{200,"Testmodul,1,Spannnung_in,f,n,0,3.3,2,Spannung_out,f,f,0,3.3{0,1,2,3,3.3}3,LED Test,s,l,0,0{LED AN,LED AUS}"};
 
 void init_comhandler()
 {
-	char helper[100];
+	char helper[1000];
 
 	strcat(get_parameter_data.parameter,"Testmodul,");
 	for (uint32_t parameter=1; parameter<MAXPARAMETER; parameter++)
@@ -79,6 +79,7 @@ void init_comhandler()
 			strcat(get_parameter_data.parameter,",");
 		}
 	}
+	get_parameter_data.paket_size=strlen(get_parameter_data.parameter);
 
 //Init decoder
 	decoderbytenr=0;

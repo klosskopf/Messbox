@@ -16,16 +16,16 @@ const GPIO_PIN VOLTAGE_IN = {GPIOA,0};
 const GPIO_PIN RESISTANCE_IN = {GPIOA,2};
 
 extern const GPIO_PIN LED;
+extern parameter_t parameterliste[MAXPARAMETER];
 
-typedef enum {ADC1_IN5=0, ADC1_IN7=1} sequence_t;
-volatile sequence_t sequence;
+volatile uint32_t messsequence;
 
 void calibrate_adc();
 void wakeup_adc();
 
 void init_adc()
 {
-	sequence=0;
+	messsequence=1;
 	init_gpio(RESISTANCE_IN, ANALOG, OPEN_DRAIN, OPEN, VERY_HIGH);
 	init_gpio(VOLTAGE_IN, ANALOG, OPEN_DRAIN, OPEN, VERY_HIGH);
 
@@ -42,12 +42,19 @@ void init_adc()
 	ADC1->CFGR2 |= (3<<ADC_CFGR2_OVSR_Pos);	//set oversampling ratio to 16
 	ADC1->CFGR2 |= ADC_CFGR2_ROVSE;			//enable oversampling
 
-	ADC1->SMPR1 |= (0<<ADC_SMPR1_SMP5_Pos);	//Set 640.5 sampling clocks to ADC1_IN5
-	ADC1->SMPR1 |= (0<<ADC_SMPR1_SMP7_Pos);	//Set 640.5 sampling clocks to ADC1_IN5
+	ADC1->SMPR1 |= (4<<ADC_SMPR1_SMP5_Pos);	//Set 640.5 sampling clocks to ADC1_IN5
+	ADC1->SMPR1 |= (4<<ADC_SMPR1_SMP7_Pos);	//Set 640.5 sampling clocks to ADC1_IN9
 
-	ADC1->SQR1 |= (5<<ADC_SQR1_SQ1_Pos);
-	ADC1->SQR1 |= (7<<ADC_SQR1_SQ2_Pos);	//Set ADC1_IN5 to first position in sequence
-	ADC1->SQR1 |= (1<<ADC_SQR1_L_Pos);		//Set to 1 conversion in sequence
+	uint32_t number_of_channels=0;
+	for(uint32_t i=1;i<MAXPARAMETER;i++)
+	{
+		if (parameterliste[i].channel !=NOCHANNEL)				//Automatically populate the adc sequence
+		{
+			number_of_channels++;
+			ADC1->SQR1 |= (parameterliste[i].channel << (6*number_of_channels));
+		}
+	}
+	ADC1->SQR1 |= ((number_of_channels-1)<<ADC_SQR1_L_Pos);		//Set to 1 conversion in sequence
 
 	ADC1->ISR |= ADC_ISR_ADRDY;				//clear the adc ready bit, to later recheck
 	ADC1->CR |= ADC_CR_ADEN;				//start the ADC module
@@ -61,7 +68,7 @@ void init_adc()
 
 void start_conv()
 {
-	sequence=0;
+	messsequence=1;
 	ADC1->CR |= ADC_CR_ADSTART;				//start a conversion
 }
 
@@ -73,26 +80,22 @@ void stop_conv()
 
 void ADC1_IRQHandler()
 {
-	uint32_t result=ADC1->DR;				//fetch conversion; clears the EOC flag
-	switch(sequence)
+	volatile uint32_t raw_data=ADC1->DR;				//fetch conversion; clears the EOC flag
+	for(;messsequence<MAXPARAMETER;messsequence++)		//skip all paramters without adc
 	{
-	case ADC1_IN5:
+		if (parameterliste[messsequence].channel != NOCHANNEL)
+		{
+			volatile float adc_voltage = (float)raw_data*3.3/0xFFF0; //to ease development, first calculate the pin voltage
+			volatile float result = adc_voltage * parameterliste[messsequence].faktor + parameterliste[messsequence].offset;	//apply the configuration
+			new_data(messsequence,result);				//store conversion
+			messsequence++;							//next data gets in next paramter
+			break;
+		}
+	}
+	if(messsequence==MAXPARAMETER)
 	{
-		volatile float voltage= (float)result*3.3/0xFFF0;
-		new_data(SPANNUNG_IN,voltage);				//store conversion
-		break;
+		set_gpio(LED,1);	//error
 	}
-	case ADC1_IN7:
-	{
-		volatile float voltage= (float)result*3.3/0xFFF0;
-		new_data(WIDERSTAND_IN,voltage);				//store conversion
-		break;
-	}
-	default:
-		set_gpio(LED,1);
-		break;
-	}
-	sequence++;
 }
 
 void calibrate_adc()
