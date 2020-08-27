@@ -36,7 +36,7 @@ void init_adc()
 	wakeup_adc();							// Wakeup ADC
 	calibrate_adc();
 
-	ADC1->IER |= ADC_IER_EOCIE;				//Mask the EOC interrupt
+	ADC1->IER |= ADC_IER_EOCIE | ADC_IER_EOSIE;				//Mask the EOC interrupt
 
 	ADC1->CFGR2 |= (0<<ADC_CFGR2_OVSS_Pos);	//set oversampling shift to 0
 	ADC1->CFGR2 |= (3<<ADC_CFGR2_OVSR_Pos);	//set oversampling ratio to 16
@@ -80,21 +80,29 @@ void stop_conv()
 
 void ADC1_IRQHandler()
 {
-	volatile uint32_t raw_data=ADC1->DR;				//fetch conversion; clears the EOC flag
-	for(;messsequence<MAXPARAMETER;messsequence++)		//skip all paramters without adc
+	if(ADC1->ISR & ADC_ISR_EOC)
 	{
-		if (parameterliste[messsequence].channel != NOCHANNEL)
+		volatile uint32_t raw_data=ADC1->DR;				//fetch conversion; clears the EOC flag
+		for(;messsequence<MAXPARAMETER;messsequence++)		//skip all paramters without adc
 		{
-			volatile float adc_voltage = (float)raw_data*3.3/0xFFF0; //to ease development, first calculate the pin voltage
-			volatile float result = adc_voltage * parameterliste[messsequence].faktor + parameterliste[messsequence].offset;	//apply the configuration
-			new_data(messsequence,result);				//store conversion
-			messsequence++;							//next data gets in next paramter
-			break;
+			if (parameterliste[messsequence].channel != NOCHANNEL)
+			{
+				volatile float adc_voltage = (float)raw_data*3.3/0xFFF0; //to ease development, first calculate the pin voltage
+				volatile float result = adc_voltage * parameterliste[messsequence].faktor + parameterliste[messsequence].offset;	//apply the configuration
+				new_data(messsequence,result);				//store conversion
+				messsequence++;							//next data gets in next paramter
+				break;
+			}
+		}
+		if(messsequence==MAXPARAMETER)
+		{
+			set_gpio(LED,1);	//error
 		}
 	}
-	if(messsequence==MAXPARAMETER)
+	else if(ADC1->ISR & ADC_ISR_EOS)
 	{
-		set_gpio(LED,1);	//error
+		page_out_next();
+		ADC1->ISR |= ADC_ISR_EOS;
 	}
 }
 

@@ -42,7 +42,7 @@ void init_flash()
 	init_gpio(FLASH_MOSI,AF5,PUSH_PULL, PULL_DOWN, MEDIUM);
 
 	RCC->APB1ENR1 |= RCC_APB1ENR1_SPI2EN;
-	SPI2->CR1 |= (3<<SPI_CR1_BR_Pos);
+	SPI2->CR1 |= (5<<SPI_CR1_BR_Pos);
 	SPI2->CR1 |= SPI_CR1_SSM | SPI_CR1_MSTR;				//SPI2 is master with software slave
 	SPI2->CR1 |= SPI_CR1_SSI;								//Let the module send
 	SPI2->CR2 |= SPI_CR2_FRXTH | (7<<SPI_CR2_DS_Pos);

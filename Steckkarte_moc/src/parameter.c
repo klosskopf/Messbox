@@ -134,12 +134,56 @@ void init_parameter()
 		if (parameterliste[i].buffer)
 		{
 			parameterliste[i].buffer->peingangsbuffer=&(parameterliste[i].buffer->eingangsbuffer[0]);
+			parameterliste[i].buffer->pauslagerungsbuffer=NULL;
 			parameterliste[i].buffer->eingangsbuffersize=0;
 			parameterliste[i].buffer->eingangsbufferstartzeit=0;
 			parameterliste[i].buffer->ausgangsbuffer.startzeit=0;
 		}
 	}
 	full=false;
+}
+
+void page_out_next()
+{
+	if (get_flash_state()!=IDLE) return;
+
+	for (uint32_t i=1;i<MAXPARAMETER;i++)
+	{
+		if(parameterliste[i].buffer && parameterliste[i].buffer->pauslagerungsbuffer)
+		{
+
+			volatile Datenblock_t* gefunden=NULL;
+			int index;
+
+			index=nextindexwritten;
+			do
+			{
+				if(flash_meta[index].parameternummer == NOPARAM)
+				{
+					nextindexwritten=index;
+					gefunden=&flash_meta[index];
+					break;
+				}
+				index++;
+				if(index==FLASHPAGECOUNT)index=0;
+			}while(nextindexwritten!=index);
+
+			if (gefunden)
+			{
+				full=false;
+
+				gefunden->startzeit=parameterliste[i].buffer->pauslagerungsbuffer->startzeit;
+				write_block(index*FLASHPAGESIZE,(uint8_t*)(parameterliste[i].buffer->pauslagerungsbuffer->daten));
+				gefunden->parameternummer=i;
+			}
+			else
+			{
+				set_gpio(LED,1);
+			}
+			parameterliste[i].buffer->pauslagerungsbuffer=NULL;
+			break;
+		}
+	}
 }
 
 void new_data(volatile PARAMETER parameter, volatile float data)
@@ -150,41 +194,15 @@ void new_data(volatile PARAMETER parameter, volatile float data)
 
 	if (parameterliste[parameter].buffer->eingangsbuffersize == FLASHPAGESIZE)
 	{
-		volatile Datenblock_t* gefunden=NULL;
-		int index;
+		volatile get_daten_t* oldbuffer=parameterliste[parameter].buffer->peingangsbuffer;
+		oldbuffer->startzeit=parameterliste[parameter].buffer->eingangsbufferstartzeit;
+		parameterliste[parameter].buffer->pauslagerungsbuffer=oldbuffer;
 
-		index=nextindexwritten;
-		do
-		{
-			if(flash_meta[index].parameternummer == NOPARAM)
-			{
-				nextindexwritten=index;
-				gefunden=&flash_meta[index];
-				break;
-			}
-			index++;
-			if(index==FLASHPAGECOUNT)index=0;
+		parameterliste[parameter].buffer->eingangsbuffersize=0;
+		(parameterliste[parameter].buffer->eingangsbufferstartzeit)+=(FLASHPAGESIZE>>2);
 
-		}while(nextindexwritten!=index);
-
-		if (!gefunden)
-		{
-			set_gpio(LED,1);
-			parameterliste[parameter].buffer->eingangsbuffersize=0;
-			parameterliste[parameter].buffer->eingangsbufferstartzeit+=0x1000;
-		}
-		else
-		{
-			full=false;
-			volatile get_daten_t* oldbuffer=parameterliste[parameter].buffer->peingangsbuffer;
-			parameterliste[parameter].buffer->eingangsbuffersize=0;
-			if(oldbuffer==parameterliste[parameter].buffer->eingangsbuffer) parameterliste[parameter].buffer->peingangsbuffer = &(parameterliste[parameter].buffer->eingangsbuffer[1]);
-			else parameterliste[parameter].buffer->peingangsbuffer = &(parameterliste[parameter].buffer->eingangsbuffer[0]);
-			gefunden->startzeit=parameterliste[parameter].buffer->eingangsbufferstartzeit;
-			(parameterliste[parameter].buffer->eingangsbufferstartzeit)+=(FLASHPAGESIZE>>2);
-			write_block(index*FLASHPAGESIZE,(uint8_t*)(oldbuffer->daten));
-			gefunden->parameternummer=parameter;
-		}
+		if(oldbuffer==parameterliste[parameter].buffer->eingangsbuffer) parameterliste[parameter].buffer->peingangsbuffer = &(parameterliste[parameter].buffer->eingangsbuffer[1]);
+		else parameterliste[parameter].buffer->peingangsbuffer = &(parameterliste[parameter].buffer->eingangsbuffer[0]);
 	}
 }
 
@@ -215,9 +233,16 @@ void set_parameter(volatile uint32_t nummer, volatile const char* anweisung)
 
 volatile get_daten_t* get_datenblock(volatile PARAMETER parameter)
 {
+
 	volatile get_daten_t* returnbuffer;
 	volatile Datenblock_t* gefunden=NULL;
 	volatile uint32_t index;
+
+	if (parameter==NOPARAM || (parameterliste[parameter].buffer==NULL))
+	{
+		returnbuffer=&fehlerpaket;
+		return returnbuffer;
+	}
 
 	index=nextreadindex;
 	do
@@ -249,6 +274,12 @@ volatile get_daten_t* get_datenblock(volatile PARAMETER parameter)
 		{
 			returnbuffer=&fehlerpaket;
 		}
+	}
+	else if(parameterliste[parameter].buffer->pauslagerungsbuffer)
+	{
+		returnbuffer=parameterliste[parameter].buffer->pauslagerungsbuffer;
+		returnbuffer->paket_size=FLASHPAGESIZE;
+		parameterliste[parameter].buffer->pauslagerungsbuffer=NULL;
 	}
 	else
 	{

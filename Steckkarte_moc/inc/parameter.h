@@ -36,6 +36,7 @@ typedef enum { FREI, LISTE, NICHT }PARAMETRIERBAR;
 typedef struct{
 	volatile get_daten_t eingangsbuffer[2];
 	volatile get_daten_t* peingangsbuffer;
+	volatile get_daten_t* pauslagerungsbuffer;
 	volatile get_daten_t ausgangsbuffer;
 	volatile uint32_t eingangsbuffersize;				//This contains the current value of the eingangsbuffer. eingangsbuffer->paket_size is the size, when written to the raspberry
 	volatile uint32_t eingangsbufferstartzeit;			//This contains the startzeit of the current eingangsbuffer. It gets written to eingangsbuffer->startzeit, when transmitted

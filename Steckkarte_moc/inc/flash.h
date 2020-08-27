@@ -10,7 +10,7 @@
 
 #define FLASHPAGESIZE 0x800		//8*256 write bytes
 //#define FLASHPAGECOUNT 2048
-#define FLASHPAGECOUNT 0x100
+#define FLASHPAGECOUNT 0x800
 
 typedef enum {IDLE, READ_DATA, ERASE_DATA, ERASE_ALL, WRITE_DATA}FlashStates_t;
 
