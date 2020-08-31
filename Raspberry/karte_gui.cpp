@@ -49,8 +49,11 @@ void Karte_GUI::wert_activated(const QString& name)
 
     int index=karte->index;
     std::string param= parameter->currentText().toUtf8().constData();
-    uint32_t nummer= karte->find_parameter(param)->nummer;
+    Parameter* parameter=karte->find_parameter(param);
+    uint32_t nummer= parameter->nummer;
     std::string newwert= wert->currentText().toUtf8().constData();
+
+    parameter->lastwert=wert->currentText();
 
     Post::send_set_parameter(index,nummer,newwert);
 
@@ -61,6 +64,7 @@ void Karte_GUI::set_wert_to_parameter(std::string name)
     Parameter* parameter = karte->find_parameter(name);
     if (parameter != NULL)
     {
+        QString lastwert=parameter->lastwert;
         if(parameter->parametrierbar == LISTE)
         {
             wert->clear();
@@ -82,6 +86,8 @@ void Karte_GUI::set_wert_to_parameter(std::string name)
             for(std::string moeglichkeit : *(parameter->auswahlliste))
             wert->addItem(QString::fromStdString(moeglichkeit));
         }
+        parameter->lastwert = lastwert;
+        wert->setCurrentText(parameter->lastwert);
     }
     else
     {

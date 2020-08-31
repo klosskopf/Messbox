@@ -11,7 +11,7 @@ Parameter::Parameter(uint32_t n_nummer,bool n_f_nots, std::string n_name, Parame
 void Parameter::add_auswahl(std::string auswahl)
 {
     auswahlliste->push_back(auswahl);
-
+    lastwert=QString::fromStdString(auswahlliste->front());
 }
 
 void Parameter::add_datum(uint32_t time, float datum)

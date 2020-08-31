@@ -23,6 +23,7 @@ public:
     float max;
     std::vector<Daten*>* daten;
     QMutex daten_mutex;
+    QString lastwert;
     bool is_plotbar() const;
     void add_datum(uint32_t time, float datum);
     void delete_daten();
