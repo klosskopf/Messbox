@@ -34,6 +34,8 @@ void init_com()
 	befehllut[SET_SAMPLE_FREQ]=&set_sample_freq_decoder;
 	befehllut[GET_STATUS]=&get_status_decoder;
 	
+	DDRB |= (1<<PINB4);
+	
 	DDRB &= ~(1<<PINB2);
 	PCICR |= (1<<PCIE0);
 	PCMSK0 |= (1<<PCINT2);
@@ -100,14 +102,16 @@ void set_sample_freq_decoder(uint32_t position, uint8_t datum)
 	}
 }
 
+extern volatile float status[ADC_MAX];
 void get_status_decoder(uint32_t position, uint8_t datum)
 {
-	
+	volatile uint8_t* pstatus = status;
+	send_com_char(pstatus[position-1]);
 }
 
 void send_com_char(uint8_t character)
 {
-	SPDR = character;
+	SPDR = ~character;
 }
 
 uint8_t read_com()
