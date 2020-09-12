@@ -1,11 +1,10 @@
 #include "post.h"
 #include <QtDebug>
-#include <wiringPiSPI.h>
+#include <bcm2835.h>
 
 void Post::spi_thread()
 {
     Paket* currentpaket;
-    wiringPiSPISetup (0, DATA_BAUD);
     while(1)
     {
         briefkasten_mutex.lock();
@@ -23,11 +22,11 @@ void Post::spi_thread()
                 std::this_thread::sleep_for(std::chrono::seconds(1));
                 uint8_t ask_for[5]={(uint8_t)COM_GET_PARAMETER,0,0,0,0};
                 Gpio::enable_slave(currentpaket->empfaengerindex);
-                wiringPiSPIDataRW (0, ask_for, 5) ;
+                bcm2835_spi_transfern((char*)ask_for,5);
                 currentpaket->laenge = ((uint32_t)ask_for[1]) + ((uint32_t)ask_for[2]<<8) +((uint32_t)ask_for[3]<<16) + ((uint32_t)ask_for[4]<<24);
                 if (currentpaket->laenge < 20000 && currentpaket->laenge!=0)
                 {
-                    wiringPiSPIDataRW (0, currentpaket->daten, currentpaket->laenge);
+                    bcm2835_spi_transfern((char*)currentpaket->daten,currentpaket->laenge);
                 }
                 else
                 {
@@ -45,8 +44,8 @@ void Post::spi_thread()
                 ask_for[2]=(currentpaket->laenge)>>8;
                 ask_for[1]=currentpaket->laenge;
                 Gpio::enable_slave(currentpaket->empfaengerindex);
-                wiringPiSPIDataRW (0, ask_for, 5);
-                wiringPiSPIDataRW (0, currentpaket->daten, currentpaket->laenge);
+                bcm2835_spi_transfern((char*)ask_for,5);
+                bcm2835_spi_transfern((char*)currentpaket->daten,currentpaket->laenge);
                 Gpio::disable_slave(currentpaket->empfaengerindex);
                 break;
             }
@@ -56,21 +55,21 @@ void Post::spi_thread()
                 memcpy(&parameternummer,currentpaket->daten,4);
                 uint8_t befehl=COM_GET_DATEN;
                 Gpio::enable_slave(currentpaket->empfaengerindex);
-                wiringPiSPIDataRW(0,&befehl,1);
-                wiringPiSPIDataRW (0, (uint8_t*)&parameternummer, 4);
+                bcm2835_spi_transfern((char*)&befehl,1);
+                bcm2835_spi_transfern((char*)&parameternummer,4);
                 std::this_thread::sleep_for(std::chrono::microseconds(2000));        //The STM32 takes up to 900us to check the flash metadata
-                wiringPiSPIDataRW (0, (uint8_t*)&(currentpaket->laenge), 4);
+                bcm2835_spi_transfern((char*)&(currentpaket->laenge),4);
                 if (currentpaket->laenge < 5000)
                 {
                     //Spi::txrx(currentpaket->daten, currentpaket->laenge + 4);
                     if (currentpaket->laenge > 3000)
                     {
-                        wiringPiSPIDataRW (0, currentpaket->daten+4, 3000) ;
-                        wiringPiSPIDataRW (0, currentpaket->daten+3004, currentpaket->laenge - 3000 + 4) ;
+                        bcm2835_spi_transfern((char*)currentpaket->daten+4,3000);
+                        bcm2835_spi_transfern((char*)currentpaket->daten+3004,currentpaket->laenge - 3000 + 4);
                     }
                     else
                     {
-                        wiringPiSPIDataRW (0, currentpaket->daten+4, currentpaket->laenge + 4);
+                        bcm2835_spi_transfern((char*)currentpaket->daten+4,currentpaket->laenge + 4);
                     }
                 }
                 else {
@@ -84,7 +83,7 @@ void Post::spi_thread()
                 uint8_t ask_for[1];
                 ask_for[0]=(uint8_t)COM_START_KONT;
                 Gpio::enable_slave(currentpaket->empfaengerindex);
-                wiringPiSPIDataRW (0, ask_for, 1);
+                bcm2835_spi_transfern((char*)ask_for,1);
                 Gpio::disable_slave(currentpaket->empfaengerindex);
                 break;
             }
@@ -93,7 +92,7 @@ void Post::spi_thread()
                 uint8_t ask_for[1];
                 ask_for[0]=(uint8_t)COM_START_STARTSTOP;
                 Gpio::enable_slave(currentpaket->empfaengerindex);
-                wiringPiSPIDataRW (0, ask_for, 1);
+                bcm2835_spi_transfern((char*)ask_for,1);
                 Gpio::disable_slave(currentpaket->empfaengerindex);
                 break;
             }
@@ -102,7 +101,7 @@ void Post::spi_thread()
                 uint8_t ask_for[1];
                 ask_for[0]=(uint8_t)COM_STOP;
                 Gpio::enable_slave(currentpaket->empfaengerindex);
-                wiringPiSPIDataRW (0, ask_for, 1);
+                bcm2835_spi_transfern((char*)ask_for,1);
                 Gpio::disable_slave(currentpaket->empfaengerindex);
                 break;
             }
@@ -115,7 +114,7 @@ void Post::spi_thread()
                 ask_for[3]=currentpaket->daten[2];
                 ask_for[4]=currentpaket->daten[3];
                 Gpio::enable_slave(currentpaket->empfaengerindex);
-                wiringPiSPIDataRW (0, ask_for, 5);
+                bcm2835_spi_transfern((char*)ask_for,5);
                 Gpio::disable_slave(currentpaket->empfaengerindex);
                 break;
             }
@@ -123,8 +122,8 @@ void Post::spi_thread()
             {
                 uint8_t ask_for[1]={COM_GET_STATUS};
                 Gpio::enable_slave(currentpaket->empfaengerindex);
-                wiringPiSPIDataRW (0, ask_for, 1);
-                wiringPiSPIDataRW (0, currentpaket->daten, 24);
+                bcm2835_spi_transfern((char*)ask_for,1);
+                bcm2835_spi_transfern((char*)currentpaket->daten,24);
                 Gpio::disable_slave(currentpaket->empfaengerindex);
                 break;
             }

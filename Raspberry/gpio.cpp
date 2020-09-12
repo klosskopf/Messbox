@@ -1,25 +1,31 @@
 #include "gpio.h"
-#include <wiringPi.h>
-#include <wiringPiSPI.h>
+#include <bcm2835.h>
 #include <QtDebug>
 void Gpio::init()
 {
     interface_mutex.lock();
 //    qDebug()<<"gpio nimmt interface";
-    wiringPiSetupGpio();
+    bcm2835_init();
+    bcm2835_spi_begin();
 
-    for (int i =1; i<11;i++) pinMode (slave_to_gpio(i), INPUT);
-    for (int i =1; i<11;i++) pullUpDnControl(slave_to_gpio(i), PUD_DOWN);
+    bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);
+    bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);
+    bcm2835_spi_setClockDivider(DATA_BAUD);
+    bcm2835_spi_chipSelect(BCM2835_SPI_CS0);
+    bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);
 
-    pinMode(slave_to_gpio(0), OUTPUT);
-    digitalWrite(slave_to_gpio(0),1);
+    for (int i =1; i<11;i++) bcm2835_gpio_fsel(slave_to_gpio(i), BCM2835_GPIO_FSEL_INPT);
+    for (int i =1; i<11;i++) bcm2835_gpio_set_pud(slave_to_gpio(i), BCM2835_GPIO_PUD_DOWN);
 
-    pinMode (2, OUTPUT);//Red Led
-    pinMode (3, OUTPUT);//Green Led
-    pinMode (4, OUTPUT);//Blue Led
+    bcm2835_gpio_fsel(slave_to_gpio(0), BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_set(slave_to_gpio(0));
 
-    pinMode (21, INPUT);//Button is input
-    digitalWrite(21,1);
+    bcm2835_gpio_fsel (2, BCM2835_GPIO_FSEL_OUTP);//Red Led
+    bcm2835_gpio_fsel (3, BCM2835_GPIO_FSEL_OUTP);//Green Led
+    bcm2835_gpio_fsel (4, BCM2835_GPIO_FSEL_OUTP);//Blue Led
+
+    bcm2835_gpio_fsel (21, BCM2835_GPIO_FSEL_INPT);//Button is input
+    bcm2835_gpio_set(21);
     //pullUpDnControl(21,PUD_UP);
 
  //   qDebug()<<"gpio gibt interface";
@@ -33,7 +39,7 @@ std::list<int> Gpio::get_new_karten()
 //    qDebug()<<"control nimmt interface";
     for(int i=1; i<11;i++)
     {
-        if(digitalRead(slave_to_gpio(i)))
+        if(bcm2835_gpio_lev(slave_to_gpio(i)))
         {
             n_Karten.push_back(i);
         }
@@ -48,23 +54,23 @@ void Gpio::enable_slave(int index)
   //  qDebug()<<"post nimmt interface";
     if (index==-1)
     {
-        wiringPiSPISetup (0, CONTROL_BAUD);
+        bcm2835_spi_setClockDivider(CONTROL_BAUD);
         for (int i=1; i<11;i++)
         {
-            digitalWrite(Gpio::slave_to_gpio(i),0);
-            pinMode(slave_to_gpio(i),OUTPUT);
+            bcm2835_gpio_clr(Gpio::slave_to_gpio(i));
+            bcm2835_gpio_fsel(slave_to_gpio(i),BCM2835_GPIO_FSEL_OUTP);
         }
-        digitalWrite(Gpio::slave_to_gpio(0),0);
+        bcm2835_gpio_clr(Gpio::slave_to_gpio(0));
     }
     else if (index==0)
     {
-        wiringPiSPISetup (0, CONTROL_BAUD);
-        digitalWrite(slave_to_gpio(0),0);
+        bcm2835_spi_setClockDivider(CONTROL_BAUD);
+        bcm2835_gpio_clr(slave_to_gpio(0));
     }
     else
     {
-    digitalWrite(Gpio::slave_to_gpio(index),0);
-    pinMode(slave_to_gpio(index),OUTPUT);
+    bcm2835_gpio_clr(Gpio::slave_to_gpio(index));
+    bcm2835_gpio_fsel(slave_to_gpio(index),BCM2835_GPIO_FSEL_OUTP);
     }
 }
 
@@ -72,23 +78,23 @@ void Gpio::disable_slave(int index)
 {
     if (index==-1)
     {
-        wiringPiSPISetup (0, DATA_BAUD);
+        bcm2835_spi_setClockDivider(DATA_BAUD);
         for (int i=1; i<11;i++)
         {
-            digitalWrite(Gpio::slave_to_gpio(i),1);
-            pinMode(slave_to_gpio(i),INPUT);
+            bcm2835_gpio_set(Gpio::slave_to_gpio(i));
+            bcm2835_gpio_fsel(slave_to_gpio(i),BCM2835_GPIO_FSEL_INPT);
         }
-        digitalWrite(Gpio::slave_to_gpio(0),1);
+        bcm2835_gpio_set(Gpio::slave_to_gpio(0));
     }
     else if (index==0)
     {
-        wiringPiSPISetup (0, DATA_BAUD);
-        digitalWrite(slave_to_gpio(0),1);
+        bcm2835_spi_setClockDivider(DATA_BAUD);
+        bcm2835_gpio_set(slave_to_gpio(0));
     }
     else
     {
-        digitalWrite(Gpio::slave_to_gpio(index),1);
-        pinMode(slave_to_gpio(index),INPUT);
+        bcm2835_gpio_set(Gpio::slave_to_gpio(index));
+        bcm2835_gpio_fsel(slave_to_gpio(index),BCM2835_GPIO_FSEL_INPT);
     }
 //    qDebug()<<"post gibt interface";
     interface_mutex.unlock();
@@ -107,19 +113,19 @@ void Gpio::set_led(led_state_t state)
     switch (state)
     {
     case LED_STOP:
-        digitalWrite(2,0);
-        digitalWrite(3,0);
-        digitalWrite(4,1);
+        bcm2835_gpio_clr(2);
+        bcm2835_gpio_clr(3);
+        bcm2835_gpio_set(4);
         break;
     case LED_RUN:
-        digitalWrite(2,0);
-        digitalWrite(3,1);
-        digitalWrite(4,0);
+        bcm2835_gpio_clr(2);
+        bcm2835_gpio_set(3);
+        bcm2835_gpio_clr(4);
         break;
     case LED_ERROR:
-        digitalWrite(2,1);
-        digitalWrite(3,0);
-        digitalWrite(4,0);
+        bcm2835_gpio_set(2);
+        bcm2835_gpio_clr(3);
+        bcm2835_gpio_clr(4);
         break;
     }
 //    qDebug()<<"led gibt interface";
@@ -130,7 +136,7 @@ bool Gpio::read_button()
 {
     bool retval=false;
     static int buttoncnt=0;
-    if(!digitalRead(21))
+    if(!bcm2835_gpio_lev(21))
     {
         if(buttoncnt)
             buttoncnt++;

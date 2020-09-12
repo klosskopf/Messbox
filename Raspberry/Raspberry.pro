@@ -39,4 +39,5 @@ DISTFILES +=
 
 RESOURCES +=
 
-LIBS += -lwiringPi
+LIBS += -lbcm2835
+

@@ -4,10 +4,11 @@
 #include <QMutex>
 #include "paket.h"
 #include "decoder.h"
+#include <bcm2835.h>
 class Paket;
 
-#define DATA_BAUD 330000           //the STM32 are fast. use that
-#define CONTROL_BAUD 50000       //The Atmega is mentally a bit slow, so it must be talked to in a slow and clear manner
+#define DATA_BAUD BCM2835_SPI_CLOCK_DIVIDER_1024           //the STM32 are fast. use that
+#define CONTROL_BAUD BCM2835_SPI_CLOCK_DIVIDER_8192        //The Atmega is mentally a bit slow, so it must be talked to in a slow and clear manner
 
 class Post
 {
