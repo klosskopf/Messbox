@@ -40,6 +40,9 @@ public:
     QWidget* centralwidget;
     QMenuBar* menubar;
     Parameterauswahl* parameterauswahl;
+    QLabel* status_5V;
+    QLabel* status_3V3;
+    QLabel* status_vbat;
     QPushButton* startstopbutton;
     QPushButton* modebutton;
     QLineEdit* timeframe;

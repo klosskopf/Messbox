@@ -12,9 +12,19 @@ void Control::control_thread(mainWindow* n_gui)
     {
         if(zustand!=SAVE)
         {
-            check_karten();
-          //  Post::send_get_status();
             Post::briefkasten_mutex.lock();
+
+            static uint32_t zaehler=0;
+            if (zaehler++ == 10000)
+            {
+                gui->status_5V->setText(QString("5V: ") + QString::number(Control::vcc5V) + QString("V"));
+                gui->status_3V3->setText(QString("3.3V: ") + QString::number(Control::vcc33V) + QString("V"));
+                gui->status_vbat->setText(QString("Battery: ") + QString::number(Control::vbat) + QString("V"));
+                zaehler=0;
+                Post::send_get_status();
+                check_karten();
+            }
+
     //        qDebug()<<"Controlthread nimmt briefkasten";
             if (Post::Briefkasten.size() < 10)
             {
@@ -215,12 +225,12 @@ void Control::saveprocedure()
 mainWindow* Control::gui;
 std::list<Karte*> Control::Kartenset;
 QMutex Control::kartenset_mutex;
-Modus Control::modus=STARTSTOP;
+Modus Control::modus=CONT;
 Zustand Control::zustand=STOP;
 Rechenblock* Control::xAchse=new Axis_Block;
 Rechenblock* Control::yAchse=new Axis_Block;
 float Control::samplefreq=1000;
-float Control::timeframe=10;
+float Control::timeframe=1;
 //std::list<Kennliniendaten*> Control::kennlinie;
 bool Control::newkarte=false;
 float Control::vcc5V = -1;

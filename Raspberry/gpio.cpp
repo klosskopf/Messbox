@@ -56,6 +56,11 @@ void Gpio::enable_slave(int index)
         }
         digitalWrite(Gpio::slave_to_gpio(0),0);
     }
+    else if (index==0)
+    {
+        wiringPiSPISetup (0, CONTROL_BAUD);
+        digitalWrite(slave_to_gpio(0),0);
+    }
     else
     {
     digitalWrite(Gpio::slave_to_gpio(index),0);
@@ -74,6 +79,11 @@ void Gpio::disable_slave(int index)
             pinMode(slave_to_gpio(i),INPUT);
         }
         digitalWrite(Gpio::slave_to_gpio(0),1);
+    }
+    else if (index==0)
+    {
+        wiringPiSPISetup (0, DATA_BAUD);
+        digitalWrite(slave_to_gpio(0),1);
     }
     else
     {

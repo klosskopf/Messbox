@@ -13,14 +13,26 @@ mainWindow::mainWindow()
 
     parameterauswahl = new Parameterauswahl();
 
-    startstopbutton = new QPushButton("Start");
+    QGridLayout* status_layout = new QGridLayout();
+    status_5V=new QLabel("5V: 0V");
+    status_3V3=new QLabel("3.3V: 0V");
+    status_vbat=new QLabel("Battery: 0V");
+    status_layout->addWidget(status_5V,0,0,1,1);
+    status_layout->addWidget(status_3V3,0,1,1,1);
+    status_layout->addWidget(status_vbat,1,0,1,2);
+    status_layout->setColumnStretch(0,10);
+    status_layout->setColumnStretch(1,10);
+    status_layout->setRowStretch(0,10);
+    status_layout->setRowStretch(1,10);
+
+    startstopbutton = new QPushButton("Stop");
     connect(startstopbutton, SIGNAL (pressed()),this, SLOT (handlestartstopbutton()));
     startstopbutton->setAutoFillBackground(true);
     startstopbutton->setFont(QFont("Arial", 15,QFont::Bold));
     startstopbutton->setStyleSheet("background-color: rgb(0, 255, 0); color: rgb(0, 0, 0)");
     startstopbutton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    modebutton = new QPushButton("Start/Stop");
+    modebutton = new QPushButton("Cont.");
     connect(modebutton, SIGNAL (pressed()),this, SLOT (handlemodebutton()));
     modebutton->setFont(QFont("Arial", 12));
     modebutton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -87,16 +99,17 @@ mainWindow::mainWindow()
 
     QGridLayout *mainLayout = new QGridLayout;
 
-    mainLayout->addWidget(parameterauswahl,0,0,10,3);
-    mainLayout->addWidget(startstopbutton,0,3,1,1);
-    mainLayout->addWidget(modebutton,1,3,1,1);
-    mainLayout->addLayout(timeframelayout,2,3,1,1);
-    mainLayout->addLayout(samplelayout,3,3,1,1);
-    mainLayout->addLayout(minmaxlayout,4,3,1,1);
-    mainLayout->addWidget(savebutton,5,3,1,1);
-    mainLayout->addWidget(graphview,0,4,6,6);
-    mainLayout->addWidget(rechenfeld,6,3,4,7);
-    for (int i=0;i<10;i++)
+    mainLayout->addWidget(parameterauswahl,0,0,9,2);
+    mainLayout->addLayout(status_layout,9,0,1,2);
+    mainLayout->addWidget(startstopbutton,0,2,1,1);
+    mainLayout->addWidget(modebutton,1,2,1,1);
+    mainLayout->addLayout(timeframelayout,2,2,1,1);
+    mainLayout->addLayout(samplelayout,3,2,1,1);
+    mainLayout->addLayout(minmaxlayout,4,2,1,1);
+    mainLayout->addWidget(savebutton,5,2,1,1);
+    mainLayout->addWidget(graphview,0,3,6,6);
+    mainLayout->addWidget(rechenfeld,6,2,4,7);
+    for (int i=0;i<9;i++)
     {
         mainLayout->setRowStretch(i,10);
         mainLayout->setColumnStretch(i,10);
