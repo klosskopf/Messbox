@@ -160,7 +160,7 @@ void Decoder::decode_get_parameter(Paket* paket)
 }
 void Decoder::decode_get_daten(Paket* paket)
 {
-    if (paket->laenge)
+    if (paket->laenge>=4)
     {
         uint32_t nummer = (paket->daten[3]<<24) + (paket->daten[2]<<16) + (paket->daten[1]<<8) + paket->daten[0];
         uint32_t starttime;
@@ -182,7 +182,7 @@ void Decoder::decode_get_daten(Paket* paket)
             }
         }
     }
-    else if(paket->savepaket) Control::last_paket_to_save_received=true;
+    else if(paket->savepaket && (paket->laenge==0)) Control::last_paket_to_save_received=true;
 }
 void Decoder::decode_start_cont()
 {

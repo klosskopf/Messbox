@@ -158,6 +158,8 @@ void Control::saveprocedure()
         {
             if (currentparameter->f_nots)
             {
+                while(Post::is_busy()) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
                 last_paket_to_save_received=false;
                 do
                 {
@@ -175,7 +177,7 @@ void Control::saveprocedure()
 
     if (dir!="")
     {
-        QString timestamp=  QDateTime::currentDateTime().toString("dd.MM.yyyy_hh:mm:ss");
+        QString timestamp=  QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss");
         for (Karte* karte : Kartenset)
         {
             for(Parameter* currentparameter:*(karte->parameter))
@@ -183,8 +185,8 @@ void Control::saveprocedure()
                 currentparameter->daten_mutex.lock();
                 if (currentparameter->f_nots)
                 {
-                    QString pathname=dir + "/" + timestamp + "/\"" + QString::number(karte->index) + ":" + QString::fromStdString(karte->name) + "\"/";
-                    QString filename="\"" + QString::fromStdString(currentparameter->name) + ".csv\"";
+                    QString pathname=dir + "/" + timestamp + "/" + QString::number(karte->index) + ":" + QString::fromStdString(karte->name) + "/";
+                    QString filename=QString::fromStdString(currentparameter->name) + ".csv";
                     QDir dir;
 
                     if (!dir.exists(pathname))

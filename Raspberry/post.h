@@ -25,4 +25,7 @@ public:
     static void send_set_sample_freq(float freq);
     static void send_get_status();
     static QMutex briefkasten_mutex;
+    static bool is_busy();
+private:
+    static bool busy;
 };

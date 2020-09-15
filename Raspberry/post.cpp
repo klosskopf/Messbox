@@ -11,6 +11,7 @@ void Post::spi_thread()
 //        qDebug()<<"post nimmt briefkasten";
         if (Briefkasten.size())
         {
+            busy=true;
             currentpaket=Briefkasten.front();
             Briefkasten.pop_front();
 //            qDebug()<<"post gibt briefkasten";
@@ -138,10 +139,17 @@ void Post::spi_thread()
         {
 //            qDebug()<<"post gibt briefkasten";
             briefkasten_mutex.unlock();
+            busy=false;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
+
+bool Post::is_busy()
+{
+    return busy;
+}
+
 void Post::send_get_parameter(int index)
 {
     Paket* getparameterpaket = new Paket();
@@ -223,3 +231,4 @@ void Post::send_get_status()
 
 std::list<Paket*> Post::Briefkasten;
 QMutex Post::briefkasten_mutex;
+bool Post::busy=false;
